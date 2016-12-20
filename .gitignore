@@ -1,0 +1,17 @@
+# Vim
+*~
+.*.sw?
+# Mac OS X
+.DS_Store
+# PyCharm
+.idea
+# IntelliJ IDEA
+*.iml
+# Eclipse/PyDev
+.project
+.pydevproject
+# Sublime
+*.sublime-project
+*.sublime-workspace
+# Netbeans
+/nbproject

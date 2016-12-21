@@ -1,7 +1,8 @@
 <?php
 namespace Freischutz\Application;
 
-use Phalcon\DI\FactoryDefault;
+use Phalcon\DI;
+use Phalcon\Http\Request;
 use Phalcon\Mvc\Application;
 use Phalcon\Mvc\Dispatcher;
 use Phalcon\Mvc\View;
@@ -15,7 +16,19 @@ class Core extends Application
 {
 
     /**
-     * Set dispatcher
+     * Set request service
+     *
+     * @param \Phalcon\DI $di Dependency Injector
+     */
+    private function setRequest($di)
+    {
+        $di->setShared('request', function() {
+            return new Request();
+        });
+    }
+
+    /**
+     * Set dispatcher service
      *
      * @param \Phalcon\DI $di Dependency Injector
      */
@@ -114,13 +127,14 @@ class Core extends Application
      */
     public function __construct($config)
     {
-        $di = new FactoryDefault();
+        $di = new DI();
         parent::__construct($di);
 
         // Load config
         $di->set('config', $config);
 
         // Load components
+        $this->setRequest($di);
         $this->setDispatcher($di);
         $this->setRoutes($di);
         $this->setView($di);

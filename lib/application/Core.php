@@ -22,8 +22,13 @@ class Core extends Application
      */
     private function setRequest($di)
     {
-        $di->setShared('request', function() {
-            return new Request();
+        $request = new Request();
+        if ($this->config->application->get('strict_host_check', false)) {
+            $request->setStrictHostCheck(true);
+        }
+
+        $di->setShared('request', function() use ($request) {
+            return $request;
         });
     }
 

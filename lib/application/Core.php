@@ -8,6 +8,9 @@ use Phalcon\Mvc\Dispatcher;
 use Phalcon\Mvc\View;
 use Phalcon\Mvc\Router;
 use Phalcon\Mvc\Router\Group;
+use Phalcon\Db\Adapter\Pdo\Mysql;
+use Phalcon\Db\Adapter\Pdo\Postgresql;
+use Phalcon\Db\Adapter\Pdo\Sqlite;
 
 /**
  * Freischutz\Application\Core
@@ -115,6 +118,42 @@ class Core extends Application
         $di->set('router', $router);
     }
 
+    /*
+     * Set databases
+     *
+     * @throws \Exception on unknown database adapter in loaded database config
+     * @param \Phalcon\DI $di Dependency Injector
+     */
+    private function setDatabases($di)
+    {
+        // Get directory path
+        $dir = $this->config->application->app_dir .
+            $this->config->application->databases_dir;
+
+        /**
+         * Load databases
+         */
+        foreach (glob($dir . '/*.php') as $file) {
+            $alias = basename($file, '.php');
+            $alias = (strtolower($alias) === 'default') ? 'db' : 'db' . $alias;
+            $config = include $file;
+
+            $adapter = ucfirst(strtolower($config['adapter']));
+            unset($config['adapter']);
+
+            // Validate adapter
+            if (!in_array($adapter, array('Mysql', 'Postgresql', 'Sqlite', true))) {
+                throw new \Exception(
+                    "Unexpected database adapter in $file: $adapter"
+                );
+            }
+            $adapter = "\\Phalcon\\Db\\Adapter\\Pdo\\$adapter";
+
+            // Set database service
+            $di->set($alias, new $adapter($config));
+        }
+    }
+
     /**
      * Set dummy view
      *
@@ -142,6 +181,7 @@ class Core extends Application
         $this->setRequest($di);
         $this->setDispatcher($di);
         $this->setRoutes($di);
+        $this->setDatabases($di);
         $this->setView($di);
 
         // Enable output without view

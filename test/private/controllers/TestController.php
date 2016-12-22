@@ -29,9 +29,15 @@ class TestController extends Controller
     {
         $response = new Response();
         $data = $this->data->getXml();
-        $response->setStatusCode(200);
-        $response->setContentType('application/xml', 'utf-8');
-        $response->setContent($data->asXML());
+        if ($data) {
+            $response->setStatusCode(200);
+            $response->setContentType('application/xml', 'utf-8');
+            $response->setContent($data->asXML());
+        } else {
+            $response->setStatusCode(422);
+            $response->setContentType('text/plain', 'utf-8');
+            $response->setContent('Data malformed or missing');
+        }
         return $response;
     }
 
@@ -42,9 +48,15 @@ class TestController extends Controller
     {
         $response = new Response();
         $data = $this->data->getJson();
-        $response->setStatusCode(200);
-        $response->setContentType('application/json', 'utf-8');
-        $response->setContent(json_encode($data));
+        if ($data) {
+            $response->setStatusCode(200);
+            $response->setContentType('application/json', 'utf-8');
+            $response->setContent(json_encode($data));
+        } else {
+            $response->setStatusCode(422);
+            $response->setContentType('text/plain', 'utf-8');
+            $response->setContent('Data malformed or missing');
+        }
         return $response;
     }
 

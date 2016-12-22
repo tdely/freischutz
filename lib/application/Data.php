@@ -29,20 +29,22 @@ class Data extends Component
     }
 
     /**
-     * Get JSON data
+     * Handle JSON data
      *
      * @param bool $assoc (optional) Return associative array instead of object.
-     * @return object|array
+     * @return object|array|false
      */
     public function getJson($assoc = false)
     {
-        return json_decode($this->data, $assoc);
+        $json = json_decode($this->data, $assoc);
+        $json = $json !== null ? $json : false;
+        return $json;
     }
 
     /**
-     * Get XML data
+     * Handle XML data
      *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|false
      */
     public function getXml()
     {

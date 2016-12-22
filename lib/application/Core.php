@@ -1,18 +1,18 @@
 <?php
 namespace Freischutz\Application;
 
+use Phalcon\Db\Adapter\Pdo\Mysql;
+use Phalcon\Db\Adapter\Pdo\Postgresql;
+use Phalcon\Db\Adapter\Pdo\Sqlite;
 use Phalcon\DI;
 use Phalcon\Http\Request;
 use Phalcon\Mvc\Application;
 use Phalcon\Mvc\Dispatcher;
 use Phalcon\Mvc\Model\Manager as ModelsManager;
 use Phalcon\Mvc\Model\MetaData\Memory as ModelsMetadata;
-use Phalcon\Mvc\View;
 use Phalcon\Mvc\Router;
 use Phalcon\Mvc\Router\Group;
-use Phalcon\Db\Adapter\Pdo\Mysql;
-use Phalcon\Db\Adapter\Pdo\Postgresql;
-use Phalcon\Db\Adapter\Pdo\Sqlite;
+use Phalcon\Mvc\View;
 
 /**
  * Freischutz\Application\Core
@@ -57,7 +57,7 @@ class Core extends Application
     /**
      * Set routes
      *
-     * @throws \Exception on no routes or malformed route definition rows
+     * @throws \Exception on no routes loaded or malformed route definition rows
      * @param \Phalcon\DI $di Dependency Injector
      */
     private function setRoutes($di)

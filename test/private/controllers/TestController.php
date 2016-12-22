@@ -1,8 +1,8 @@
 <?php
 namespace Test\Controllers;
 
-use Phalcon\Mvc\Controller;
 use Phalcon\Http\Response;
+use Phalcon\Mvc\Controller;
 use Test\Models\Test;
 
 /**

@@ -8,5 +8,8 @@ use Phalcon\Mvc\Model;
  */
 class Test extends Model
 {
-
+    public function initialize()
+    {
+        $this->setSource('Test');
+    }
 }

@@ -5,6 +5,8 @@ use Phalcon\DI;
 use Phalcon\Http\Request;
 use Phalcon\Mvc\Application;
 use Phalcon\Mvc\Dispatcher;
+use Phalcon\Mvc\Model\Manager as ModelsManager;
+use Phalcon\Mvc\Model\MetaData\Memory as ModelsMetadata;
 use Phalcon\Mvc\View;
 use Phalcon\Mvc\Router;
 use Phalcon\Mvc\Router\Group;
@@ -165,6 +167,26 @@ class Core extends Application
     }
 
     /**
+     * Set models manager
+     *
+     * @param \Phalcon\DI $di Dependency Injector
+     */
+    private function setModelsManager($di)
+    {
+        $di->set('modelsManager', new ModelsManager());
+    }
+
+    /**
+     * Set models metadata
+     *
+     * @param \Phalcon\DI $di Dependency Injector
+     */
+    private function setModelsMetadata($di)
+    {
+        $di->set('modelsMetadata', new ModelsMetadata());
+    }
+
+    /**
      * Set dummy view
      *
      * @param \Phalcon\DI $di Dependency Injector
@@ -193,6 +215,8 @@ class Core extends Application
         $this->setRoutes($di);
         $this->setDatabases($di);
         $this->setData($di);
+        $this->setModelsManager($di);
+        $this->setModelsMetadata($di);
         $this->setView($di);
 
         // Enable output without view

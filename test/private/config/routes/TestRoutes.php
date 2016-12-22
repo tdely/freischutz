@@ -1,2 +1,3 @@
 # Controller,action,pattern,method
-Test,test,/test,get
+Test,hello,/hello,get
+Test,get,/test,get

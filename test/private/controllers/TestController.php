@@ -23,6 +23,32 @@ class TestController extends Controller
     }
 
     /*
+     * XML test
+     */
+    public function xmlAction()
+    {
+        $response = new Response();
+        $data = $this->data->getXml();
+        $response->setStatusCode(200);
+        $response->setContentType('application/xml', 'utf-8');
+        $response->setContent($data->asXML());
+        return $response;
+    }
+
+    /*
+     * JSON test
+     */
+    public function jsonAction()
+    {
+        $response = new Response();
+        $data = $this->data->getJson();
+        $response->setStatusCode(200);
+        $response->setContentType('application/json', 'utf-8');
+        $response->setContent(json_encode($data));
+        return $response;
+    }
+
+    /*
      * Get all rows from table
      */
     public function getAction()

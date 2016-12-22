@@ -155,6 +155,16 @@ class Core extends Application
     }
 
     /**
+     * Set data container with request data
+     *
+     * @param \Phalcon\DI $di Dependency Injector
+     */
+    private function setData($di)
+    {
+        $di->set('data', new Data(file_get_contents('php://input')));
+    }
+
+    /**
      * Set dummy view
      *
      * @param \Phalcon\DI $di Dependency Injector
@@ -182,6 +192,7 @@ class Core extends Application
         $this->setDispatcher($di);
         $this->setRoutes($di);
         $this->setDatabases($di);
+        $this->setData($di);
         $this->setView($di);
 
         // Enable output without view

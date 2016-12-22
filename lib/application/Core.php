@@ -21,9 +21,9 @@ class Core extends Application
 {
 
     /**
-     * Set request service
+     * Set request service.
      *
-     * @param \Phalcon\DI $di Dependency Injector
+     * @param \Phalcon\DI $di Dependency Injector.
      */
     private function setRequest($di)
     {
@@ -38,9 +38,9 @@ class Core extends Application
     }
 
     /**
-     * Set dispatcher service
+     * Set dispatcher service.
      *
-     * @param \Phalcon\DI $di Dependency Injector
+     * @param \Phalcon\DI $di Dependency Injector.
      */
     private function setDispatcher($di)
     {
@@ -55,10 +55,10 @@ class Core extends Application
     }
 
     /**
-     * Set routes
+     * Set routes.
      *
-     * @throws \Exception on no routes loaded or malformed route definition rows
-     * @param \Phalcon\DI $di Dependency Injector
+     * @throws \Exception when no routes loaded or malformed route definition rows.
+     * @param \Phalcon\DI $di Dependency Injector.
      */
     private function setRoutes($di)
     {
@@ -120,11 +120,11 @@ class Core extends Application
         $di->set('router', $router);
     }
 
-    /*
-     * Set databases
+    /**
+     * Set databases.
      *
-     * @throws \Exception on unknown database adapter in loaded database config
-     * @param \Phalcon\DI $di Dependency Injector
+     * @throws \Exception on unknown database adapter in loaded database config.
+     * @param \Phalcon\DI $di Dependency Injector.
      */
     private function setDatabases($di)
     {
@@ -157,9 +157,9 @@ class Core extends Application
     }
 
     /**
-     * Set data container with request data
+     * Set data container with request data.
      *
-     * @param \Phalcon\DI $di Dependency Injector
+     * @param \Phalcon\DI $di Dependency Injector.
      */
     private function setData($di)
     {
@@ -167,9 +167,9 @@ class Core extends Application
     }
 
     /**
-     * Set models manager
+     * Set models manager.
      *
-     * @param \Phalcon\DI $di Dependency Injector
+     * @param \Phalcon\DI $di Dependency Injector.
      */
     private function setModelsManager($di)
     {
@@ -177,19 +177,20 @@ class Core extends Application
     }
 
     /**
-     * Set models metadata
+     * Set models metadata.
      *
-     * @param \Phalcon\DI $di Dependency Injector
+     * @param \Phalcon\DI $di Dependency Injector.
      */
     private function setModelsMetadata($di)
     {
+        // TODO: Make metadata storage configurable
         $di->set('modelsMetadata', new ModelsMetadata());
     }
 
     /**
-     * Set dummy view
+     * Set dummy view.
      *
-     * @param \Phalcon\DI $di Dependency Injector
+     * @param \Phalcon\DI $di Dependency Injector.
      */
     private function setView($di)
     {
@@ -197,9 +198,9 @@ class Core extends Application
     }
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param \Phalcon\Config\Ini $config Configuration settings
+     * @param \Phalcon\Config\Ini $config Configuration settings.
      */
     public function __construct($config)
     {
@@ -224,7 +225,7 @@ class Core extends Application
     }
 
     /*
-     * Run application and display output
+     * Run application and display output.
      */
     public function run()
     {

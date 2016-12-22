@@ -11,7 +11,7 @@ class Data extends Component
     private $data;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct($data)
     {
@@ -19,7 +19,7 @@ class Data extends Component
     }
 
     /**
-     * Get raw data
+     * Get raw data.
      *
      * @return string|binary
      */
@@ -29,7 +29,7 @@ class Data extends Component
     }
 
     /**
-     * Handle JSON data
+     * Handle JSON data.
      *
      * @param bool $assoc (optional) Return associative array instead of object.
      * @return object|array|false
@@ -42,7 +42,7 @@ class Data extends Component
     }
 
     /**
-     * Handle XML data
+     * Handle XML data.
      *
      * @return \SimpleXMLElement|false
      */

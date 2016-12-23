@@ -1,7 +1,7 @@
 <?php
 namespace Test\Controllers;
 
-use Phalcon\Http\Response;
+use Freischutz\Utility\Response;
 use Phalcon\Mvc\Controller;
 use Test\Models\Test;
 
@@ -16,9 +16,7 @@ class TestController extends Controller
     public function helloAction()
     {
         $response = new Response();
-        $response->setStatusCode(200);
-        $response->setContentType('text/plain');
-        $response->setContent('Hello world!');
+        $response->ok('Hello world!');
         return $response;
     }
 
@@ -30,13 +28,9 @@ class TestController extends Controller
         $response = new Response();
         $data = $this->data->getXml();
         if ($data) {
-            $response->setStatusCode(200);
-            $response->setContentType('application/xmls');
-            $response->setContent($data->asXML());
+            $response->ok($data);
         } else {
-            $response->setStatusCode(422);
-            $response->setContentType('text/plain');
-            $response->setContent('Data malformed or missing');
+            $response->unprocessableEntity('Data malformed or missing');
         }
         return $response;
     }
@@ -49,13 +43,9 @@ class TestController extends Controller
         $response = new Response();
         $data = $this->data->getJson();
         if ($data) {
-            $response->setStatusCode(200);
-            $response->setContentType('application/json');
-            $response->setContent(json_encode($data));
+            $response->ok($data);
         } else {
-            $response->setStatusCode(422);
-            $response->setContentType('text/plain');
-            $response->setContent('Data malformed or missing');
+            $response->unprocessableEntity('Data malformed or missing');
         }
         return $response;
     }
@@ -67,10 +57,9 @@ class TestController extends Controller
     {
         $response = new Response();
         $result = Test::find();
-        $responseData = $result->toArray();
-        $response->setStatusCode(200);
-        $response->setContentType('application/json');
-        $response->setContent(json_encode($responseData));
+        $data = $result->toArray();
+        $response->ok($data);
         return $response;
     }
 }
+

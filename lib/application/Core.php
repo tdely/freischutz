@@ -110,7 +110,7 @@ class Core extends Application
         /**
          * Load routes
          */
-        foreach (glob($routesDir . "/*Routes.php") as $file) {
+        foreach (glob($routesDir . "/*.routes") as $file) {
             $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             foreach ($lines as $line) {
                 // Allow comments starting with '#', ';', or '//'

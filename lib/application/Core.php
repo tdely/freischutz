@@ -1,10 +1,14 @@
 <?php
 namespace Freischutz\Application;
 
+use Freischutz\Utility\Response;
+use Freischutz\Event\Acl;
 use Phalcon\Db\Adapter\Pdo\Mysql;
 use Phalcon\Db\Adapter\Pdo\Postgresql;
 use Phalcon\Db\Adapter\Pdo\Sqlite;
 use Phalcon\DI;
+use Phalcon\Events\Event;
+use Phalcon\Events\Manager as EventsManager;
 use Phalcon\Http\Request;
 use Phalcon\Mvc\Application;
 use Phalcon\Mvc\Dispatcher;
@@ -35,6 +39,38 @@ class Core extends Application
         $di->setShared('request', function() use ($request) {
             return $request;
         });
+    }
+
+    /**
+     * Set events managers.
+     */
+    private function setEventsManagers()
+    {
+        $eventsManager = new EventsManager();
+        /**
+         * ACL
+         */
+        if ($this->config->acl->get('enable', false)) {
+            $eventsManager->attach(
+                "dispatch:beforeExecuteRoute",
+                function (Event $event, $dispatcher) {
+                    $controller = $this->dispatcher->getControllerName();
+                    $action = $this->dispatcher->getActionName();
+
+                    // TODO: Add user handling somewhere
+                    $client = 'user';
+
+                    $acl = new Acl;
+                    if (!$access = $acl->isAllowed($client, $controller, $action)) {
+                        $this->response->forbidden('Access denied.');
+                        $this->response->send();
+                    }
+
+                    return $access;
+                }
+            );
+        }
+        $this->dispatcher->setEventsManager($eventsManager);
     }
 
     /**
@@ -210,14 +246,19 @@ class Core extends Application
         // Load config
         $di->set('config', $config);
 
+        // Pre-load response
+        $di->set('response', new Response());
+
         // Load components
         $this->setRequest($di);
+        $di->set('response', new Response());
         $this->setDispatcher($di);
         $this->setRoutes($di);
         $this->setDatabases($di);
         $this->setData($di);
         $this->setModelsManager($di);
         $this->setModelsMetadata($di);
+        $this->setEventsManagers($di);
         $this->setView($di);
 
         // Enable output without view

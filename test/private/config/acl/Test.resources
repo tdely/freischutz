@@ -1,0 +1,2 @@
+# Controller,Description,AccessList
+Test,Test resource,json;xml;hello

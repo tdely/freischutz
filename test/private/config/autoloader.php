@@ -7,6 +7,7 @@ $loader = new PhalconLoader();
 $loader->registerNamespaces(array(
     'Freischutz' => LIB_DIR,
     'Freischutz\Application' => LIB_DIR . '/application',
+    'Freischutz\Event' => LIB_DIR . '/event',
     'Freischutz\Utility' => LIB_DIR . '/utility',
     'Test\Controllers' => APP_DIR . '/controllers',
     'Test\Models' => APP_DIR . '/models',

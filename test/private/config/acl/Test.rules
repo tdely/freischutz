@@ -1,2 +1,2 @@
 # Role,Controller,Action,Policy
-user,Test,json,allow
+user,test,json,allow

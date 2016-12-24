@@ -1,6 +1,7 @@
 <?php
 namespace Freischutz\Application;
 
+use Freischutz\Application\Users;
 use Freischutz\Utility\Response;
 use Freischutz\Event\Acl;
 use Phalcon\Db\Adapter\Pdo\Mysql;
@@ -57,11 +58,15 @@ class Core extends Application
                     $controller = $this->dispatcher->getControllerName();
                     $action = $this->dispatcher->getActionName();
 
-                    // TODO: Add user handling somewhere
-                    $client = 'user';
+                    // TODO: Put users in DI?
+                    $clientId = $this->request->getHeader('Client-Id');
+                    $users = new Users();
+                    $client = $users->getUser($clientId);
 
+                    syslog(LOG_NOTICE, "Client: " . $client->id . ":" . $client->name . ':' . $client->key);
+                    syslog(LOG_NOTICE, "Dispatch: " . $controller . ":" . $action);
                     $acl = new Acl;
-                    if (!$access = $acl->isAllowed($client, $controller, $action)) {
+                    if (!$access = $acl->isAllowed($client->name, $controller, $action)) {
                         $this->response->forbidden('Access denied.');
                         $this->response->send();
                     }

@@ -1,2 +1,2 @@
-# Controller,Description,AccessList
-Test,Test resource,json;xml;hello
+# Controller,Description,Action1;Action2;ActionN
+test,Test resource,json;xml;hello

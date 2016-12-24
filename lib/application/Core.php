@@ -63,8 +63,6 @@ class Core extends Application
                     $users = new Users();
                     $client = $users->getUser($clientId);
 
-                    syslog(LOG_NOTICE, "Client: " . $client->id . ":" . $client->name . ':' . $client->key);
-                    syslog(LOG_NOTICE, "Dispatch: " . $controller . ":" . $action);
                     $acl = new Acl;
                     if (!$access = $acl->isAllowed($client->name, $controller, $action)) {
                         $this->response->forbidden('Access denied.');

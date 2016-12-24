@@ -152,7 +152,7 @@ class Acl extends Component
                 if ($policy !== 'allow' && $policy !== 'deny') {
                     throw new \Exception("Illegal policy in $file: $policy");
                 }
-                syslog(LOG_NOTICE, "ACL: $policy " . $parts[0] . ':' . $parts[1] . ':' . $parts[2]);
+
                 $acl->$policy($parts[0], $parts[1], $parts[2]);
             };
         }

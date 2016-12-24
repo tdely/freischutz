@@ -58,10 +58,7 @@ class Core extends Application
                     $controller = $this->dispatcher->getControllerName();
                     $action = $this->dispatcher->getActionName();
 
-                    // TODO: Put users in DI?
-                    $clientId = $this->request->getHeader('Client-Id');
-                    $users = new Users();
-                    $client = $users->getUser($clientId);
+                    $client = $this->users->getUser($this->request->getHeader('Client-Id'));
 
                     $acl = new Acl;
                     if (!$access = $acl->isAllowed($client->name, $controller, $action)) {
@@ -206,6 +203,16 @@ class Core extends Application
     }
 
     /**
+     * Set users.
+     *
+     * @param \Phalcon\DI $di Dependency Injector.
+     */
+    private function setUsers($di)
+    {
+        $di->set('users', new Users());
+    }
+
+    /**
      * Set models manager.
      *
      * @param \Phalcon\DI $di Dependency Injector.
@@ -259,6 +266,7 @@ class Core extends Application
         $this->setRoutes($di);
         $this->setDatabases($di);
         $this->setData($di);
+        $this->setUsers($di);
         $this->setModelsManager($di);
         $this->setModelsMetadata($di);
         $this->setEventsManagers($di);

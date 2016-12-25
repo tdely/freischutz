@@ -8,21 +8,22 @@ use Phalcon\Mvc\User\Component;
  */
 class Users extends Component
 {
-    private $users;
+    private $userList;
+    private $user;
 
     /**
      * Load user details.
      *
      * @return array
      */
-    public function load()
+    public function __construct()
     {
         switch ($backend = strtolower($this->config->application->get('users_backend', 'file'))) {
             case 'file':
-                $users = $this->loadFromFiles();
+                $userList = $this->loadFromFiles();
                 break;
             case 'config':
-                $users = $this->loadFromConfig();
+                $userList = $this->loadFromConfig();
                 break;
             case 'database':
             case 'db':
@@ -33,21 +34,34 @@ class Users extends Component
                 throw new \Exception("Unknown users backend: $backend");
         }
 
-        return $users;
+        $this->userList = (object) $userList;
+    }
+
+    /**
+     * Set user.
+     *
+     * @param string $id Identifier of user to set.
+     * @return bool
+     */
+    public function setUser($id)
+    {
+        if (!isset($this->userList->$id)) {
+            return false;
+        }
+
+        $this->user = $this->userList->$id;
+
+        return true;
     }
 
     /**
      * Get user.
      *
-     * @return object
+     * @return bool
      */
-    public function getUser($id)
+    public function getUser()
     {
-        if (!is_object($this->users)) {
-            $this->users = $this->load();
-        }
-
-        return $this->users[$id];
+        return $this->user;
     }
 
     /**
@@ -57,13 +71,13 @@ class Users extends Component
      */
     private function loadFromFiles()
     {
-        $usersDir = $this->config->application->app_dir .
+        $userListDir = $this->config->application->app_dir .
             $this->config->application->users_dir;
 
         /**
          * Read user definitions
          */
-        foreach (glob($usersDir . '/' . '*.users') as $file) {
+        foreach (glob($userListDir . '/' . '*.users') as $file) {
             $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             foreach ($lines as $line) {
                 // Allow comments starting with '#', ';', or '//'
@@ -72,19 +86,18 @@ class Users extends Component
                     continue;
                 }
                 $parts = explode(',', $line);
-                // id,name,key
-                if (sizeof($parts) !== 3) {
+                // id,key
+                if (sizeof($parts) !== 2) {
                     throw new \Exception("Malformed row in $file: $line");
                 }
-                $users[$parts[0]] = (object) array(
-                    'id' => $parts[0],
-                    'name' => $parts[1],
-                    'key' => $parts[2]
+                $userList[$parts[0]] = (object) array(
+                    'id' => $parts[0], 
+                    'key' => $parts[1],
                 );
             };
         }
 
-        return $users;
+        return $userList;
     }
 
     /**
@@ -98,12 +111,10 @@ class Users extends Component
             throw new \Exception("Users backend 'config' requires section users in config file.");
         }
 
-        $id=1;
-        foreach ($this->config->users as $name => $key) {
-            $users[$id] = (object) array('id' => $id, 'name' => $name, 'key' => $key);
-            $id++;
+        foreach ($this->config->users as $id => $key) {
+            $userList[$id] = (object) array('id' => $id, 'key' => $key);
         }
 
-        return $users;
+        return $userList;
     }
 }

@@ -4,6 +4,7 @@ namespace Freischutz\Application;
 use Freischutz\Application\Users;
 use Freischutz\Utility\Response;
 use Freischutz\Event\Acl;
+use Freischutz\Event\Hawk;
 use Phalcon\Db\Adapter\Pdo\Mysql;
 use Phalcon\Db\Adapter\Pdo\Postgresql;
 use Phalcon\Db\Adapter\Pdo\Sqlite;
@@ -49,6 +50,33 @@ class Core extends Application
     {
         $eventsManager = new EventsManager();
         /**
+         * HMAC
+         */
+        if (isset($this->config->hawk) && $this->config->hawk->get('enable', false)) {
+            $eventsManager->attach(
+                "dispatch:beforeDispatch",
+                function (Event $event, $dispatcher) {
+                    $hmac = new Hawk();
+
+                    $userExists = $this->users->setUser($hmac->getParam('id'));
+                    $ret = false;
+                    if ($userExists) {
+                        $client = $this->users->getUser();
+                        $hmac->setKey($client->key);
+                        $auth = $hmac->authenticate();
+                        $ret = $auth->state;
+                    }
+
+                    if (!$userExists || !$auth->state) {
+                        $this->response->unauthorized('Access denied.', 'Hawk');
+                        $this->response->send();
+                    }
+
+                    return $ret;
+                }
+            );
+        }
+        /**
          * ACL
          */
         if ($this->config->acl->get('enable', false)) {
@@ -58,10 +86,10 @@ class Core extends Application
                     $controller = $this->dispatcher->getControllerName();
                     $action = $this->dispatcher->getActionName();
 
-                    $client = $this->users->getUser($this->request->getHeader('Client-Id'));
+                    $client = $this->users->getUser();
 
                     $acl = new Acl;
-                    if (!$access = $acl->isAllowed($client->name, $controller, $action)) {
+                    if (!$access = $acl->isAllowed($client->id, $controller, $action)) {
                         $this->response->forbidden('Access denied.');
                         $this->response->send();
                     }
@@ -70,6 +98,7 @@ class Core extends Application
                 }
             );
         }
+        $this->setEventsManager($eventsManager);
         $this->dispatcher->setEventsManager($eventsManager);
     }
 

@@ -58,21 +58,22 @@ class Core extends Application
                 function (Event $event, $dispatcher) {
                     $hmac = new Hawk();
 
-                    $userExists = $this->users->setUser($hmac->getParam('id'));
-                    $ret = false;
-                    if ($userExists) {
-                        $client = $this->users->getUser();
-                        $hmac->setKey($client->key);
-                        $auth = $hmac->authenticate();
-                        $ret = $auth->state;
+                    $return = false;
+
+                    if ($this->users->setUser($hmac->getParam('id'))) {
+                        $hmac->setKey($this->users->getUser()->key);
+                        $result = $hmac->authenticate();
+                        $return = $result->state;
                     }
 
-                    if (!$userExists || !$auth->state) {
-                        $this->response->unauthorized('Access denied.', 'Hawk');
+                    if (!$return) {
+                        $message = 'Hawk ts="' . date('U') . '", ' .
+                                   'alg="' . $this->config->hawk->algorithms . '"';
+                        $this->response->unauthorized('Access denied.', $message);
                         $this->response->send();
                     }
 
-                    return $ret;
+                    return $return;
                 }
             );
         }

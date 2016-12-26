@@ -23,6 +23,7 @@ class Hawk extends Component
             $set = explode('=', trim($param));
             $params[$set[0]] = isset($set[1]) ? trim($set[1], "'\"") : true;
         }
+        $params['ext'] = isset($params['ext']) ? $params['ext'] : false;
         $this->params = (object) $params;
     }
 

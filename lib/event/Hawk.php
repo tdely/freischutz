@@ -8,7 +8,7 @@ use Phalcon\Mvc\User\Component;
  */
 class Hawk extends Component
 {
-    private static $version = '0.1.0';
+    private static $version = '0.1.1';
     private $params;
     private $key;
 
@@ -83,20 +83,31 @@ class Hawk extends Component
         // Get allowed algorithms
         $algorithms = array_map(
             'trim',
-            explode(',', $this->config->hawk->get('algorithms', 'all'))
+            explode(',', $this->config->hawk->get('algorithms', 'sha256'))
         );
 
-        // Chosen algorithm allowed
-        if (!in_array($this->params->alg, $algorithms, true)
-                && $algorithms[0] !== 'all') {
+        if (!isset($this->params->alg) || empty($this->params->alg)) {
+            /**
+             * No algorithm requested, use default algorithm
+             */
+             $alg = $algorithms[0];
+        } elseif (!in_array($this->params->alg, $algorithms, true)) {
+            /**
+             * Requested algorithm not allowed
+             */
             return (object) array('state' => false, 'message' => 'algorithm not allowed');
+        } else {
+            /**
+             * Use requested algorithm
+             */
+             $alg = $this->params->alg;
         }
 
         // Create payload string
         $payload = 'hawk.1.payload\n' .
                    $this->request->getContentType() . '\n' .
                    $this->data->getRaw() . '\n';
-        $hash = hash('sha256', $payload);
+        $hash = hash($alg, $payload);
 
         // Create request string
         $message = 'hawk.1.header\n' .
@@ -110,7 +121,7 @@ class Hawk extends Component
                    $this->params->ext . '\n';
 
         // Create MAC for comparison
-        $serverMac = hash_hmac('sha256', $message, $this->key);
+        $serverMac = hash_hmac($alg, $message, $this->key);
 
         /**
          * Authenticate
@@ -169,7 +180,7 @@ class Hawk extends Component
                    $ext . "\n";
 
         // Create MAC
-        $mac = hash_hmac('sha256', $message, $this->key);
+        $mac = hash_hmac($alg, $message, $this->key);
         $extSet = $ext ? ", ext=$ext" : '';
 
         return "Server-Authorization: Hawk mac=$mac, hash=$hash" . $extSet;

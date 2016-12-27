@@ -1,6 +1,7 @@
 <?php
 namespace Freischutz\Event;
 
+use Phalcon\Mvc\Model\Query;
 use Phalcon\Mvc\User\Component;
 
 /**
@@ -8,7 +9,8 @@ use Phalcon\Mvc\User\Component;
  */
 class Hawk extends Component
 {
-    private $version = '0.3.0';
+    private $version = '0.4.0';
+    private $backend;
     private $nonceFile = 'freischutz.hawk.nonce';
     private $params;
     private $key;
@@ -26,6 +28,9 @@ class Hawk extends Component
         }
         $params['ext'] = isset($params['ext']) ? $params['ext'] : false;
         $this->params = (object) $params;
+
+        // Set backend
+        $this->backend = strtolower($this->config->hawk->get('storage', 'file'));
     }
 
     /**
@@ -209,6 +214,27 @@ class Hawk extends Component
      */
     private function manageNonces($nonce)
     {
+        switch ($this->backend) {
+            case 'file':
+                $this->manageNonceFile($nonce);
+                break;
+            case 'database':
+            case 'db':
+                $this->manageNonceDatabase($nonce);
+                break;
+            default:
+                throw new \Exception("Unknown nonce backend: $backend");
+        }
+    }
+
+    /**
+     * Record used nonce and forget expired nonces in file.
+     *
+     * @param string $nonce Nonce to record.
+     * @return void
+     */
+    private function manageNonceFile($nonce)
+    {
         $list = array();
         $timestamp = date('U');
         $file = $this->config->hawk->get('nonce_file', '/tmp') . '/' . $this->nonceFile;
@@ -221,7 +247,7 @@ class Hawk extends Component
             foreach ($lines as $line) {
                 $parts = explode(',', $line);
                 if (sizeof($parts) === 2) {
-                    if ($parts[1] + $this->config->hawk->get('expire', '60') < $timestamp) {
+                    if ($parts[1] + $this->config->hawk->get('expire', 60) < $timestamp) {
                         /**
                          * Forget expired nonces
                          */
@@ -242,6 +268,46 @@ class Hawk extends Component
     }
 
     /**
+     * Record used nonce and forget expired nonces in database.
+     *
+     * @param string $nonce Nonce to record.
+     * @return void
+     */
+    private function manageNonceDatabase($nonce)
+    {
+        $timestamp = date('U');
+        if (!isset($this->config->hawk) || !isset($this->config->hawk->nonce_model)) {
+            throw new \Exception(
+                "Nonce backend 'database' requires nonce_model set in hawk " .
+                "section in config file."
+            );
+        }
+
+        $modelName = $this->config->hawk->nonce_model;
+
+        if (!class_exists($modelName)) {
+            throw new \Exception("Nonce model not found: " . $modelName);
+        }
+
+        $model = new $modelName;
+        $metadata = $model->getModelsMetaData();
+
+        $result = $this->modelsManager->executeQuery(
+            "DELETE FROM $modelName WHERE (timestamp + :expire:) < :timestamp:",
+            array(
+                'expire' => $this->config->hawk->get('expire', 60),
+                'timestamp' => $timestamp,
+            )
+        );
+
+        $model->nonce = $nonce;
+        $model->timestamp = $timestamp;
+        if (!$model->save()) {
+            throw new \Exception("Could not save nonce to database");
+        }
+    }
+
+    /**
      * Check if nonce has been used previously.
      *
      * @param string $nonce Nonce to lookup.
@@ -249,7 +315,17 @@ class Hawk extends Component
      */
     private function lookupNonce($nonce)
     {
-        $result = $this->lookupNonceInFile($nonce);
+        switch ($this->backend) {
+            case 'file':
+                $result = $this->lookupNonceInFile($nonce);
+                break;
+            case 'database':
+            case 'db':
+                $result = $this->lookupNonceInDatabase($nonce);
+                break;
+            default:
+                throw new \Exception("Unknown nonce backend: $backend");
+        }
         return $result;
     }
 
@@ -279,5 +355,39 @@ class Hawk extends Component
         };
 
         return false;
+    }
+
+    /**
+     * Check if nonce is recorded in database.
+     *
+     * @param string $nonce Nonce to lookup.
+     * @return bool
+     */
+    private function lookupNonceInDatabase($nonce)
+    {
+        if (!isset($this->config->hawk) || !isset($this->config->hawk->nonce_model)) {
+            throw new \Exception(
+                "Nonce backend 'database' requires nonce_model set in hawk " .
+                "section in config file."
+            );
+        }
+
+        $modelName = $this->config->hawk->nonce_model;
+
+        if (!class_exists($modelName)) {
+            throw new \Exception("Nonce model not found: " . $modelName);
+        }
+
+        $model = new $modelName;
+        $metadata = $model->getModelsMetaData();
+
+        if (!$metadata->hasAttribute($model, 'nonce')
+                || !$metadata->hasAttribute($model, 'timestamp')) {
+            throw new \Exception(
+                "Nonce model must contain columns 'nonce' and 'timestamp'."
+            );
+        }
+        $search = array("nonce=':nonce:'", array('nonce' => $nonce));
+        return $model->findFirst($search) ? true : false;
     }
 }

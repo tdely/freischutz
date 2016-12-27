@@ -45,6 +45,9 @@ class Core extends Application
 
     /**
      * Set events managers.
+     *
+     * Attaches event listeners to events manager, and sets the event manager
+     * to be used by certain components.
      */
     private function setEventsManagers()
     {

@@ -50,9 +50,9 @@ class Acl extends Component
     /**
      * Check if role is allowed to access resource.
      *
-     * @param string $role
-     * @param string $controller
-     * @param string $action
+     * @param string $role Role requesting access.
+     * @param string $controller Controller being targeted.
+     * @param string $action Action being targeted.
      * @return bool
      */
     public function isAllowed($role, $controller, $action)
@@ -64,6 +64,8 @@ class Acl extends Component
      * Build ACL from file definitions.
      *
      * @param \Phalcon\Acl\Adapter\Memory $acl ACL object to build.
+     * @throw \Exception if encountering a malformed line.
+     * @throw \Exception if encountering a policy other than allow and deny.
      * @return \Phalcon\Acl\Adapter\Memory
      */
     private function buildFromFiles($acl)

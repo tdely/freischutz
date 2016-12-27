@@ -22,7 +22,7 @@ class Hawk extends Component
     {
         // Set authentication parameters
         $params = array();
-        foreach (explode(',', $this->request->getHeader('Authorization')) as $param) {
+        foreach (str_getcsv($this->request->getHeader('Authorization'), ',', '"') as $param) {
             $set = str_getcsv(trim($param), '=', '"');
             $params[$set[0]] = isset($set[1]) ? trim($set[1], "'\"") : true;
         }
@@ -171,14 +171,15 @@ class Hawk extends Component
      * Freischutz\Event\hawk::authenticate().
      *
      * @param string $ext (optional) Value for "ext=" in Server-Authorization
-     *    header.
-     * @throw \Exception when used without a validated request.
+     *   header.
+     * @throw \Exception if $params or $key properties not set, such as when
+     *   used before calling authenticate().
      * @return string Server-Authorization header string.
      */
     public function validateResponse($ext = false)
     {
         if (!$params || !$key) {
-            throw new \Exception();
+            throw new \Exception('');
         }
 
         $payload = "hawk.1.payload\n" .
@@ -210,6 +211,7 @@ class Hawk extends Component
      * Record used nonce and forget expired nonces.
      *
      * @param string $nonce Nonce to record.
+     * @throw \Exception on unknown backend.
      * @return void
      */
     private function manageNonces($nonce)
@@ -231,6 +233,7 @@ class Hawk extends Component
      * Record used nonce and forget expired nonces in file.
      *
      * @param string $nonce Nonce to record.
+     * @throw \Exception if encountering a malformed line.
      * @return void
      */
     private function manageNonceFile($nonce)
@@ -271,6 +274,9 @@ class Hawk extends Component
      * Record used nonce and forget expired nonces in database.
      *
      * @param string $nonce Nonce to record.
+     * @throw \Exception if nonce_model not set in config hawk section.
+     * @throw \Exception if model cannot be found.
+     * @throw \Exception if model fails to save.
      * @return void
      */
     private function manageNonceDatabase($nonce)
@@ -312,6 +318,7 @@ class Hawk extends Component
      * Check if nonce has been used previously.
      *
      * @param string $nonce Nonce to lookup.
+     * @throw \Exception on unknown backend.
      * @return bool
      */
     private function lookupNonce($nonce)
@@ -334,6 +341,7 @@ class Hawk extends Component
      * Check if nonce is recorded in file.
      *
      * @param string $nonce Nonce to lookup.
+     * @throw \Exception if encountering a malformed line.
      * @return bool
      */
     private function lookupNonceInFile($nonce)
@@ -362,6 +370,9 @@ class Hawk extends Component
      * Check if nonce is recorded in database.
      *
      * @param string $nonce Nonce to lookup.
+     * @throw \Exception if nonce_model not set in config hawk section.
+     * @throw \Exception if model cannot be found.
+     * @throw \Exception if model doesn't contain attributes nonce and timestamp.
      * @return bool
      */
     private function lookupNonceInDatabase($nonce)

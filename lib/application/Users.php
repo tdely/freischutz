@@ -12,9 +12,12 @@ class Users extends Component
     private $user;
 
     /**
-     * Load user details.
+     * Constructor.
      *
-     * @return array
+     * Loads user list from configured backend (default file) into $userList
+     * property.
+     *
+     * @throw \Exception on unknown backend.
      */
     public function __construct()
     {
@@ -40,6 +43,9 @@ class Users extends Component
     /**
      * Set user.
      *
+     * User object matching given string $id is read from $userList property
+     * and written to $user property.
+     *
      * @param string $id Identifier of user to set.
      * @return bool
      */
@@ -57,7 +63,7 @@ class Users extends Component
     /**
      * Get user.
      *
-     * @return bool
+     * @return object
      */
     public function getUser()
     {
@@ -67,6 +73,8 @@ class Users extends Component
     /**
      * Load user details from files.
      *
+     * @throw \Exception if users_dir not set in config application section.
+     * @throw \Exception if encountering a malformed line.
      * @return array
      */
     private function loadFromFiles()
@@ -110,6 +118,8 @@ class Users extends Component
     /**
      * Load user details from config.
      *
+     * @throw \Exception if users sections in config is missing and/or contains
+     *   no items.
      * @return array
      */
     private function loadFromConfig()
@@ -130,6 +140,10 @@ class Users extends Component
     /**
      * Load user details from database.
      *
+     * @throw \Exception if users_model not set in config application section.
+     * @throw \Exception if model cannot be found.
+     * @throw \Exception if model doesn't contain attributes id and key.
+     * @throw \Exception if model id is empty.
      * @return array
      */
     private function loadFromDatabase()

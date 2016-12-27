@@ -54,7 +54,7 @@ class Core extends Application
          */
         if (isset($this->config->hawk) && $this->config->hawk->get('enable', false)) {
             $eventsManager->attach(
-                "dispatch:beforeDispatch",
+                "application:beforeHandleRequest",
                 function (Event $event, $dispatcher) {
                     $hmac = new Hawk();
 
@@ -66,10 +66,14 @@ class Core extends Application
                         $return = $result->state;
                     }
 
+                    $message = $this->config->hawk->get('disclose', false)
+                        ? $result->message
+                        : 'Authentication failed.';
+
                     if (!$return) {
-                        $message = 'Hawk ts="' . date('U') . '", ' .
+                        $header = 'Hawk ts="' . date('U') . '", ' .
                                    'alg="' . $this->config->hawk->algorithms . '"';
-                        $this->response->unauthorized('Access denied.', $message);
+                        $this->response->unauthorized($message, $header);
                         $this->response->send();
                     }
 
@@ -312,6 +316,8 @@ class Core extends Application
     public function run()
     {
         $response = $this->handle();
-        echo $response->getContent();
+        if (gettype($response) === 'object') {
+            echo $response->getContent();
+        }
     }
 }

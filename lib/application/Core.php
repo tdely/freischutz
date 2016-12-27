@@ -72,7 +72,7 @@ class Core extends Application
 
                     if (!$return) {
                         $header = 'Hawk ts="' . date('U') . '", ' .
-                                   'alg="' . $this->config->hawk->algorithms . '"';
+                                  'alg="' . $this->config->hawk->algorithms . '"';
                         $this->response->unauthorized($message, $header);
                         $this->response->send();
                     }

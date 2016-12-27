@@ -276,7 +276,8 @@ class Hawk extends Component
     private function manageNonceDatabase($nonce)
     {
         $timestamp = date('U');
-        if (!isset($this->config->hawk) || !isset($this->config->hawk->nonce_model)) {
+        if (!isset($this->config->hawk)
+                || !isset($this->config->hawk->nonce_model)) {
             throw new \Exception(
                 "Nonce backend 'database' requires nonce_model set in hawk " .
                 "section in config file."
@@ -365,7 +366,8 @@ class Hawk extends Component
      */
     private function lookupNonceInDatabase($nonce)
     {
-        if (!isset($this->config->hawk) || !isset($this->config->hawk->nonce_model)) {
+        if (!isset($this->config->hawk)
+                || !isset($this->config->hawk->nonce_model)) {
             throw new \Exception(
                 "Nonce backend 'database' requires nonce_model set in hawk " .
                 "section in config file."

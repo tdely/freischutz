@@ -27,8 +27,7 @@ class Users extends Component
                 break;
             case 'database':
             case 'db':
-                //$this->user = $this->loadFromDatabase();
-                throw new \Exception("Users backend 'database' not implemented");
+                $userList = $this->loadFromDatabase();
                 break;
             default:
                 throw new \Exception("Unknown users backend: $backend");
@@ -71,6 +70,10 @@ class Users extends Component
      */
     private function loadFromFiles()
     {
+        if (!isset($this->config->application->users_dir)) {
+            throw new \Exception("Users backend 'file' requires users_dir set in application section in config file.");
+        }
+
         $userListDir = $this->config->application->app_dir .
             $this->config->application->users_dir;
 
@@ -113,6 +116,39 @@ class Users extends Component
 
         foreach ($this->config->users as $id => $key) {
             $userList[$id] = (object) array('id' => $id, 'key' => $key);
+        }
+
+        return $userList;
+    }
+
+    /**
+     * Load user details from database.
+     *
+     * @return array
+     */
+    private function loadFromDatabase()
+    {
+        if (!isset($this->config->application->users_model)) {
+            throw new \Exception("Users backend 'database' requires users_model set in application section in config file.");
+        }
+
+        if (!class_exists($this->config->application->users_model)) {
+            throw new \Exception("Users model not found: " . $this->config->application->users_model);
+        }
+
+        $model = new $this->config->application->users_model(null, $this->di);
+        $metadata = $model->getModelsMetaData();
+
+        if (!$metadata->hasAttribute($model, 'id') || !$metadata->hasAttribute($model, 'key')) {
+            throw new \Exception("Users model must contain columns 'id' and 'key'.");
+        }
+
+        $userList = array();
+        foreach ($model->find() as $row) {
+            if (empty($row->id)) {
+                throw new \Exception("Users model column 'id' cannot be empty.");
+            }
+            $userList[$row->id] = (object) array('id'=>$row->id, 'key'=>$row->key);
         }
 
         return $userList;

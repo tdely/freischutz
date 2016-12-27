@@ -295,14 +295,13 @@ class Core extends Application
 
         // Load components
         $this->setRequest($di);
-        $di->set('response', new Response());
         $this->setDispatcher($di);
         $this->setRoutes($di);
         $this->setDatabases($di);
         $this->setData($di);
-        $this->setUsers($di);
         $this->setModelsManager($di);
         $this->setModelsMetadata($di);
+        $this->setUsers($di);
         $this->setEventsManagers($di);
         $this->setView($di);
 

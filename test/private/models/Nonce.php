@@ -8,8 +8,5 @@ use Phalcon\Mvc\Model;
  */
 class Nonce extends Model
 {
-    public function initialize()
-    {
-        $this->setSource('Nonce');
-    }
+
 }

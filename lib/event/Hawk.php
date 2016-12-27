@@ -8,7 +8,8 @@ use Phalcon\Mvc\User\Component;
  */
 class Hawk extends Component
 {
-    private static $version = '0.1.1';
+    private $version = '0.2.0';
+    private $nonceFile = 'freischutz.hawk.nonce';
     private $params;
     private $key;
 
@@ -63,7 +64,7 @@ class Hawk extends Component
      *
      * @return string
      */
-    public static function getVersion()
+    public function getVersion()
     {
         return $this->version;
     }
@@ -103,6 +104,15 @@ class Hawk extends Component
              */
              $alg = $this->params->alg;
         }
+
+        // Check nonce
+        if ($this->lookupNonce($this->params->nonce)) {
+            $result->message = 'duplicate nonce';
+            return $result;
+        }
+
+        // Save nonce
+        $this->manageNonces($this->params->nonce);
 
         // Create payload string
         $payload = 'hawk.1.payload\n' .
@@ -159,7 +169,8 @@ class Hawk extends Component
      * @throw \Exception when used without a validated request.
      * @return string Server-Authorization header string
      */
-    public function validateResponse($ext = false) {
+    public function validateResponse($ext = false)
+    {
         if (!$params || !$key) {
             throw new \Exception();
         }
@@ -185,5 +196,85 @@ class Hawk extends Component
         $extSet = $ext ? ", ext=$ext" : '';
 
         return "Server-Authorization: Hawk mac=$mac, hash=$hash" . $extSet;
+    }
+    
+    /**
+     * Record used nonce and forget expired nonces.
+     *
+     * @param string $nonce Nonce to record.
+     * @return void
+     */
+    private function manageNonces($nonce)
+    {
+        $list = array();
+        $timestamp = date('U');
+        $file = $this->config->hawk->get('nonce_file', '/tmp') . '/' . $this->nonceFile;
+        if (file_exists($file)) {
+            /**
+             * Manage recorded nonces
+             */
+            $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            $handle = fopen($file, 'w');
+            foreach ($lines as $line) {
+                $parts = explode(',', $line);
+                if (sizeof($parts) === 2) {
+                    if ($parts[1] + $this->config->hawk->get('expire', '60') < $timestamp) {
+                        /**
+                         * Forget expired nonces
+                         */
+                        continue;
+                    }
+                    fwrite($handle, $line . "\n");
+                } else {
+                    throw new \Exception("Malformed row in $file: $line");
+                }
+            }
+        } else {
+            $handle = fopen($file, 'w');
+        }
+        // Record new nonce
+        fwrite($handle, "$nonce,$timestamp\n");
+        fclose($handle);
+        chmod($file, 0755);
+    }
+
+    /**
+     * Check if nonce has been used previously.
+     *
+     * @param string $nonce Nonce to lookup.
+     * @return bool
+     */
+    private function lookupNonce($nonce)
+    {
+        $result = $this->lookupNonceInFile($nonce);
+        return $result;
+    }
+
+    /**
+     * Check if nonce is recorded in file.
+     *
+     * @param string $nonce Nonce to lookup.
+     * @return bool
+     */
+    private function lookupNonceInFile($nonce)
+    {
+        $file = $this->config->hawk->get('nonce_file', '/tmp') . '/' . $this->nonceFile;
+        if (!file_exists($file)) {
+            return false;
+        }
+
+        $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            $parts = explode(',', $line);
+            if (sizeof($parts) === 2) {
+                if ($parts[0] === $nonce) {
+                    return true;
+                }
+            } else {
+                throw new \Exception("Malformed row in $file: $line");
+            }
+        };
+
+        return false;
     }
 }

@@ -8,7 +8,7 @@ use Phalcon\Mvc\User\Component;
  */
 class Hawk extends Component
 {
-    private $version = '0.2.0';
+    private $version = '0.3.0';
     private $nonceFile = 'freischutz.hawk.nonce';
     private $params;
     private $key;
@@ -21,7 +21,7 @@ class Hawk extends Component
         // Set authentication parameters
         $params = array();
         foreach (explode(',', $this->request->getHeader('Authorization')) as $param) {
-            $set = explode('=', trim($param));
+            $set = str_getcsv(trim($param), '=', '"');
             $params[$set[0]] = isset($set[1]) ? trim($set[1], "'\"") : true;
         }
         $params['ext'] = isset($params['ext']) ? $params['ext'] : false;
@@ -133,7 +133,7 @@ class Hawk extends Component
                    $this->params->ext . '\n';
 
         // Create MAC for comparison
-        $serverMac = hash_hmac($alg, $message, $this->key);
+        $serverMac = base64_encode(hash_hmac($alg, $message, $this->key, true));
 
         /**
          * Authenticate
@@ -193,7 +193,9 @@ class Hawk extends Component
                    $ext . "\n";
 
         // Create MAC
-        $mac = hash_hmac($alg, $message, $this->key);
+        syslog(LOG_DEBUG, hash_hmac($alg, $message, $this->key));
+        $mac = base64_encode(hash_hmac($alg, $message, $this->key));
+        syslog(LOG_DEBUG, $mac);
         $extSet = $ext ? ", ext=$ext" : '';
 
         return "Server-Authorization: Hawk mac=$mac, hash=$hash" . $extSet;

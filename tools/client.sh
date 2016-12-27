@@ -4,7 +4,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-VERSION='0.1.1'
+VERSION='0.2.0'
 
 content_type='text/plain'
 method='GET'
@@ -51,8 +51,7 @@ function hawk_build()
     [[ -z "${port}" ]] && port_string='' || port_string=":${port}"
     local uri=$(echo ${target} | grep -oP "(?<=${host}${port_string})(\\/.+)")
 
-    # TODO: randomize
-    local nonce='123'
+    local nonce=$(cat /dev/urandom|tr -dc 'a-zA-Z0-9'|fold -w 6|head -n 1)
 
     if [ -z "${port}" ]; then
         if [ "${proto}" = 'http' ]; then
@@ -70,7 +69,7 @@ function hawk_build()
     payload+="${content_type}\n"
     payload+="${data}\n"
 
-    local payload_hash=$(echo -n "${payload}" |sha256sum|sed -e 's/  -//')
+    local payload_hash=$(echo -n "${payload}"|sha256sum|sed -e 's/  -//')
 
     # Build Hawk header string for MAC
     local message="hawk.1.header\n"
@@ -83,7 +82,7 @@ function hawk_build()
     message+="${payload_hash}\n"
     message+="${ext}\n"
 
-    local mac=$(echo -n ${message} | openssl sha256 -hmac ${key} | sed -e 's/^.* //')
+    local mac=$(echo -n ${message}|openssl dgst -sha256 -hmac ${key} -binary|base64 -w0)
 
     if [ ${verbose} = true ]; then
         echo "-------------------------------------------"
@@ -95,7 +94,7 @@ function hawk_build()
         echo -e "${mac}\n"
     fi
 
-    extra_header="Authorization: Hawk, id='${id}', ts='${time}', nonce='${nonce}', mac='${mac}', hash='${payload_hash}', alg='sha256'"
+    extra_header="Authorization: Hawk, id=\"${id}\", ts=\"${time}\", nonce=\"${nonce}\", mac=\"${mac}\", hash=\"${payload_hash}\", alg=\"sha256\""
 }
 
 # getopt index variable

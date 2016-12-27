@@ -8,6 +8,7 @@ VERSION='0.2.0'
 
 content_type='text/plain'
 method='GET'
+algorithm='sha256'
 id=''
 key=''
 data=''
@@ -22,6 +23,7 @@ time=$(date +%s)
 function display_help()
 {
     echo "$(basename ${BASH_SOURCE[0]}) -m <STR> [-d <JSON>][-t] <STR> TARGET"
+    echo "    -a STR    hash algorithm to use, default sha256"
     echo "    -c STR    content-type, default text/plain"
     echo "    -d STR    data/payload to send"
     echo "    -e STR    optional ext value for Hawk"
@@ -69,7 +71,7 @@ function hawk_build()
     payload+="${content_type}\n"
     payload+="${data}\n"
 
-    local payload_hash=$(echo -n "${payload}"|sha256sum|sed -e 's/  -//')
+    local payload_hash=$(echo -n "${payload}"|${algorithm}sum|sed -e 's/  -//')
 
     # Build Hawk header string for MAC
     local message="hawk.1.header\n"
@@ -82,7 +84,7 @@ function hawk_build()
     message+="${payload_hash}\n"
     message+="${ext}\n"
 
-    local mac=$(echo -n ${message}|openssl dgst -sha256 -hmac ${key} -binary|base64 -w0)
+    local mac=$(echo -n ${message}|openssl dgst -${algorithm} -hmac ${key} -binary|base64 -w0)
 
     if [ ${verbose} = true ]; then
         echo "-------------------------------------------"
@@ -94,13 +96,16 @@ function hawk_build()
         echo -e "${mac}\n"
     fi
 
-    extra_header="Authorization: Hawk, id=\"${id}\", ts=\"${time}\", nonce=\"${nonce}\", mac=\"${mac}\", hash=\"${payload_hash}\", alg=\"sha256\""
+    extra_header="Authorization: Hawk, id=\"${id}\", ts=\"${time}\", nonce=\"${nonce}\", mac=\"${mac}\", hash=\"${payload_hash}\", alg=\"${algorithm}\""
 }
 
 # getopt index variable
 OPTIND=1
-while getopts ":c:d:e:Hhi:k:m:tVv" opt; do
+while getopts ":a:c:d:e:Hhi:k:m:tVv" opt; do
     case ${opt} in
+        a)
+            algorithm="${OPTARG}"
+            ;;
         c)
             content_type="${OPTARG}"
             ;;

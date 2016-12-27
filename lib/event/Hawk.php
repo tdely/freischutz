@@ -78,7 +78,7 @@ class Hawk extends Component
     {
         $result = (object) array('state' => false, 'message' => null);
         if (empty($this->key)) {
-            $result->message = 'key not found';
+            $result->message = 'User denied.';
             return $result;
         }
 
@@ -97,7 +97,8 @@ class Hawk extends Component
             /**
              * Requested algorithm not allowed
              */
-            return (object) array('state' => false, 'message' => 'algorithm not allowed');
+            $result->message = 'Algorithm not allowed.';
+            return $result;
         } else {
             /**
              * Use requested algorithm
@@ -107,7 +108,7 @@ class Hawk extends Component
 
         // Check nonce
         if ($this->lookupNonce($this->params->nonce)) {
-            $result->message = 'duplicate nonce';
+            $result->message = 'Duplicate nonce.';
             return $result;
         }
 
@@ -146,13 +147,13 @@ class Hawk extends Component
                     // Payload hash is correct
                     $result->state = true;
                 } else {
-                    $result->message = 'payload mismatch';
+                    $result->message = 'Payload mismatch.';
                 }
             } else {
-                $result->message = 'request expired';
+                $result->message = 'Request expired.';
             }
         } else {
-            $result->message = 'request not authentic';
+            $result->message = 'Request not authentic.';
         }
 
         return $result;
@@ -167,7 +168,7 @@ class Hawk extends Component
      * @param string $ext (optional) Value for "ext=" in Server-Authorization
      *    header.
      * @throw \Exception when used without a validated request.
-     * @return string Server-Authorization header string
+     * @return string Server-Authorization header string.
      */
     public function validateResponse($ext = false)
     {
@@ -197,7 +198,7 @@ class Hawk extends Component
 
         return "Server-Authorization: Hawk mac=$mac, hash=$hash" . $extSet;
     }
-    
+
     /**
      * Record used nonce and forget expired nonces.
      *

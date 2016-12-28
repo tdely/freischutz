@@ -7,7 +7,10 @@ use Phalcon\Mvc\User\Component;
 /**
  * Freischutz\Security\Hawk
  *
- *
+ * Implementation of the Hawk protocol.
+ * HTTP HMAC authentication with partial cryptographic verification of request,
+ * which covers method, URI, host and port, various other authentication
+ * details, and payload. Optionally allows for verification of response.
  */
 class Hawk extends Component
 {

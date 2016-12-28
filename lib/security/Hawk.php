@@ -1,11 +1,13 @@
 <?php
-namespace Freischutz\Event;
+namespace Freischutz\Security;
 
 use Phalcon\Mvc\Model\Query;
 use Phalcon\Mvc\User\Component;
 
 /**
- * Freischutz\Event\Hawk
+ * Freischutz\Security\Hawk
+ *
+ *
  */
 class Hawk extends Component
 {

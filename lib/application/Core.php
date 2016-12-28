@@ -2,9 +2,9 @@
 namespace Freischutz\Application;
 
 use Freischutz\Application\Users;
+use Freischutz\Application\Acl;
+use Freischutz\Security\Hawk;
 use Freischutz\Utility\Response;
-use Freischutz\Event\Acl;
-use Freischutz\Event\Hawk;
 use Phalcon\Db\Adapter\Pdo\Mysql;
 use Phalcon\Db\Adapter\Pdo\Postgresql;
 use Phalcon\Db\Adapter\Pdo\Sqlite;

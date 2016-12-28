@@ -1,5 +1,5 @@
 <?php
-namespace Freischutz\Event;
+namespace Freischutz\Application;
 
 use Phalcon\Acl as PhalconAcl;
 use Phalcon\Acl\Adapter\Memory as AclList;
@@ -8,7 +8,7 @@ use Phalcon\Acl\Role;
 use Phalcon\Mvc\User\Component;
 
 /**
- * Freischutz\Event\Acl
+ * Freischutz\Application\Acl
  */
 class Acl extends Component
 {

@@ -14,7 +14,6 @@ use Phalcon\Mvc\User\Component;
  */
 class Hawk extends Component
 {
-    const VERSION = '0.4.1';
     private $backend;
     private $nonceFile = 'freischutz.hawk.nonce';
     private $params;
@@ -67,16 +66,6 @@ class Hawk extends Component
     public function setKey($key)
     {
         $this->key = $key;
-    }
-
-    /**
-     * Get Freischutz\Event\Hawk version.
-     *
-     * @return string
-     */
-    public function getVersion()
-    {
-        return self::VERSION;
     }
 
     /**
@@ -230,7 +219,7 @@ class Hawk extends Component
                 $this->manageNonceDatabase($nonce);
                 break;
             default:
-                throw new \Exception("Unknown nonce backend: $backend");
+                throw new \Exception("Unknown Hawk backend: $backend");
         }
     }
 

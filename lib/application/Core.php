@@ -25,6 +25,17 @@ use Phalcon\Mvc\View;
  */
 class Core extends Application
 {
+    const VERSION = '0.1.0';
+
+    /**
+     * Get Freischutz version.
+     *
+     * @return string
+     */
+    public function getVersion()
+    {
+        return self::VERSION;
+    }
 
     /**
      * Set request service.

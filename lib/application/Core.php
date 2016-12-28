@@ -87,7 +87,7 @@ class Core extends Application
         /**
          * ACL
          */
-        if ($this->config->acl->get('enable', false)) {
+        if (isset($this->config->acl) && $this->config->acl->get('enable', false)) {
             $eventsManager->attach(
                 "dispatch:beforeExecuteRoute",
                 function (Event $event, $dispatcher) {
@@ -130,17 +130,24 @@ class Core extends Application
     /**
      * Set routes.
      *
+     * @throws \Exception if routes_dir not set in config application section.
      * @throws \Exception when no routes loaded or malformed route definition rows.
      * @param \Phalcon\DI $di Dependency Injector.
      */
     private function setRoutes($di)
     {
+        if (!isset($this->config->application->routes_dir)) {
+            throw new \Exception(
+                "Missing 'routes_dir' in config application section."
+            );
+        }
+
         $routesDir = $this->config->application->app_dir .
             $this->config->application->routes_dir;
 
         // Group routes for simplicity
         $group = new Group();
-        $group->setPrefix($this->config->application->base_uri);
+        $group->setPrefix($this->config->application->get('base_uri', ''));
 
         $routes = array();
 
@@ -196,11 +203,18 @@ class Core extends Application
     /**
      * Set databases.
      *
+     * @throws \Exception if databases_dir not set in config application section.
      * @throws \Exception on unknown database adapter in loaded database config.
      * @param \Phalcon\DI $di Dependency Injector.
      */
     private function setDatabases($di)
     {
+        if (!isset($this->config->application->databases_dir)) {
+            throw new \Exception(
+                "Missing 'databases_dir' in config application section."
+            );
+        }
+
         // Get directory path
         $dir = $this->config->application->app_dir .
             $this->config->application->databases_dir;
@@ -283,10 +297,17 @@ class Core extends Application
     /**
      * Constructor.
      *
+     * @throws \Exception if $config->application->app_dir not set.
      * @param \Phalcon\Config\Ini $config Configuration settings.
      */
     public function __construct($config)
     {
+        if (!isset($config->application->app_dir)) {
+            throw new \Exception(
+                "Core requires '\$config->application->app_dir' being set."
+            );
+        }
+
         $di = new DI();
         parent::__construct($di);
 

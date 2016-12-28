@@ -34,7 +34,7 @@ class Hawk extends Component
         $this->params = (object) $params;
 
         // Set backend
-        $this->backend = strtolower($this->config->hawk->get('storage', 'file'));
+        $this->backend = strtolower($this->config->hawk->get('backend', 'file'));
     }
 
     /**

@@ -21,13 +21,23 @@ class Acl extends Component
      */
     public function rebuild()
     {
-        $acl = new AclList();
-        $acl->setDefaultAction(PhalconAcl::DENY);
-
         /**
          * Build ACL
          */
-        $acl = $this->buildFromFiles($acl);
+        $backend = strtolower($this->config->acl->get('backend', 'file'));
+        switch ($backend) {
+            case 'file':
+                $acl = $this->buildFromFiles();
+                break;
+            case 'database':
+            case 'db':
+                $acl = $this->buildFromDatabase();
+                break;
+            default:
+                throw new \Exception("Unknown ACL backend: $backend");
+        }
+
+        $acl->setDefaultAction(PhalconAcl::DENY);
 
         return $acl;
     }
@@ -63,13 +73,14 @@ class Acl extends Component
     /**
      * Build ACL from file definitions.
      *
-     * @param \Phalcon\Acl\Adapter\Memory $acl ACL object to build.
      * @throw \Exception if encountering a malformed line.
      * @throw \Exception if encountering a policy other than allow and deny.
      * @return \Phalcon\Acl\Adapter\Memory
      */
-    private function buildFromFiles($acl)
+    private function buildFromFiles()
     {
+        $acl = new AclList();
+
         $aclDir = $this->config->application->app_dir .
             $this->config->acl->dir;
 
@@ -158,6 +169,118 @@ class Acl extends Component
                 $acl->$policy($parts[0], $parts[1], $parts[2]);
             };
         }
+        return $acl;
+    }
+
+    /**
+     * Build ACL from database definitions.
+     *
+     * @throw \Exception if *_model not set in config acl section.
+     * @throw \Exception if any model cannot be found.
+     * @throw \Exception if any model is missing a required attribute.
+     * @throw \Exception if encountering a policy other than allow and deny.
+     * @return \Phalcon\Acl\Adapter\Memory
+     */
+    private function buildFromDatabase()
+    {
+        $acl = new AclList();
+
+        $models = array(
+            'role',
+            'inherit',
+            'resource',
+            'rule'
+        );
+
+        // Throw exception if config options not set
+        foreach ($models as $item) {
+            $var = $item . '_model';
+            if (!isset($this->config->acl->$var)) {
+                throw new \Exception(
+                    "ACL backend 'database' requires $var set in acl " .
+                    "section in config file."
+                );
+            }
+        }
+
+        // Bind model names
+        foreach ($models as $item) {
+            $var = $item . '_model';
+            ${$item . 'ModelName'} = $this->config->acl->$var;
+            if (!class_exists(${$item . 'ModelName'})) {
+                throw new \Exception("ACL " . $item . " model not found: " . ${$item . 'ModelName'});
+            }
+        }
+
+        $roleModel = new $roleModelName;
+        $inheritModel = new $inheritModelName;
+        $resourceModel = new $resourceModelName;
+        $ruleModel = new $ruleModelName;
+
+        // Any model will do to get modelsMetaData object
+        $metadata = $roleModel->getModelsMetaData();
+
+        if (!$metadata->hasAttribute($roleModel, 'name')) {
+            throw new \Exception(
+                "Roles model must contain column 'name'."
+            );
+        } elseif (!$metadata->hasAttribute($inheritModel, 'role_name')
+                || !$metadata->hasAttribute($inheritModel, 'inherit')) {
+            throw new \Exception(
+                "Inherits model must contain columns 'role_name' and 'inherit'."
+            );
+        } elseif (!$metadata->hasAttribute($resourceModel, 'controller')
+                || !$metadata->hasAttribute($resourceModel, 'action')) {
+            throw new \Exception(
+                "Resources model must contain columns 'controller' and 'action'."
+            );
+        } elseif (!$metadata->hasAttribute($ruleModel, 'role_name')
+                || !$metadata->hasAttribute($ruleModel, 'resource_controller')
+                || !$metadata->hasAttribute($ruleModel, 'resource_action')
+                || !$metadata->hasAttribute($ruleModel, 'policy')) {
+            throw new \Exception(
+                "Resources model must contain columns 'role_name', " .
+                "'resource_controller', 'resource_action', and 'policy'."
+            );
+        }
+
+        /**
+         * Read role definitions
+         */
+        foreach ($roleModel->find() as $role) {
+            $description = isset($role->description) ? $role->description : '';
+            $acl->addRole(new Role($role->name, $description));
+        }
+
+        /**
+         * Read role inheritance definitions
+         */
+        foreach ($inheritModel->find() as $inherit) {
+            $acl->addInherit($inherit->role_name, $inherit->inherit);
+        }
+
+        /**
+         * Read resource definitions
+         */
+        foreach ($resourceModel->find() as $resource) {
+            $acl->addResource($resource->controller, $resource->action);
+        }
+
+        /**
+         * Read rule definitions
+         */
+        foreach ($ruleModel->find() as $rule) {
+            if ($rule->policy !== 'allow' && $rule->policy !== 'deny') {
+                throw new \Exception("Illegal ACL policy: " . $rule->policy);
+            }
+            $policy = $rule->policy;
+            $acl->$policy(
+                $rule->role_name,
+                $rule->resource_controller,
+                $rule->resource_action
+            );
+        }
+
         return $acl;
     }
 }

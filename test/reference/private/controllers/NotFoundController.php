@@ -1,23 +1,21 @@
 <?php
 namespace Test\Controllers;
 
+use Freischutz\Utility\Response;
 use Phalcon\Mvc\Controller;
-use Phalcon\Http\Response;
 
 /**
- * Controller for NotFound
+ * Handle requests to unknown routes.
  */
 class NotFoundController extends Controller
 {
     /**
-     * Respond with not found
+     * Respond with 404 Not Found
      */
     public function notFoundAction()
     {
         $response = new Response();
-        $response->setStatusCode(404);
-        $response->setContentType('text/plain', 'utf-8');
-        $response->setContent('Resource not found.');
+        $response->notFound('Resource not found.');
         return $response;
     }
 }

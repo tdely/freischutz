@@ -4,7 +4,7 @@ use Phalcon\Config\Adapter\Ini as Config;
 
 // Define important directories
 define('APP_DIR', __DIR__ . '/../private');
-define('LIB_DIR', __DIR__ . '/../../lib');
+define('LIB_DIR', __DIR__ . '/../../../lib');
 
 // Set up syslog
 openlog('freischutz_test', LOG_CONS | LOG_NDELAY | LOG_PID, LOG_USER);

@@ -9,7 +9,7 @@ use Phalcon\Mvc\User\Component;
  */
 class Hawk extends Component
 {
-    private $version = '0.4.0';
+    const VERSION = '0.4.1';
     private $backend;
     private $nonceFile = 'freischutz.hawk.nonce';
     private $params;
@@ -71,7 +71,7 @@ class Hawk extends Component
      */
     public function getVersion()
     {
-        return $this->version;
+        return self::VERSION;
     }
 
     /**

@@ -141,10 +141,12 @@ class Hawk extends Component
         /**
          * Authenticate
          */
+        $now = time();
         if ($serverMac === $this->params->mac) {
             // Message is authentic
             $expire = $this->config->hawk->get('expire', 60);
-            if ((time() - $this->params->ts) <= $expire) {
+            if (($now - $this->params->ts) <= $expire
+                    && ($this->params->ts - $now) <= $expire) {
                 // Message is valid
                 if (isset($this->params->hash) && $hash === $this->params->hash) {
                     // Payload hash is correct
@@ -155,6 +157,8 @@ class Hawk extends Component
                 } else {
                     $result->message = 'Payload mismatch.';
                 }
+            } elseif (($this->params->ts - $now) > $expire) {
+                $result->message = 'Request too far into future.';
             } else {
                 $result->message = 'Request expired.';
             }

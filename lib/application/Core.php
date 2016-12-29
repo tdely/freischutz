@@ -25,7 +25,7 @@ use Phalcon\Mvc\View;
  */
 class Core extends Application
 {
-    const VERSION = '0.1.0';
+    const VERSION = '0.1.1';
 
     /**
      * Get Freischutz version.
@@ -78,6 +78,11 @@ class Core extends Application
                         $hmac->setKey($this->users->getUser()->key);
                         $result = $hmac->authenticate();
                         $return = $result->state;
+                    } else {
+                        $result = (object) array(
+                            'message' => 'Request not authentic.',
+                            'state' => false
+                        );
                     }
 
                     $message = $this->config->hawk->get('disclose', false)
@@ -95,6 +100,7 @@ class Core extends Application
                 }
             );
         }
+
         /**
          * ACL
          */
@@ -160,8 +166,6 @@ class Core extends Application
         $group = new Group();
         $group->setPrefix($this->config->application->get('base_uri', ''));
 
-        $routes = array();
-
         /**
          * Load routes
          */
@@ -188,7 +192,7 @@ class Core extends Application
             };
         }
 
-        if (!isset($routes)) {
+        if (!$group->getRoutes()) {
             throw new \Exception("No routes found in $routesDir");
         }
 
@@ -261,7 +265,7 @@ class Core extends Application
      */
     private function setData($di)
     {
-        $di->set('data', new Data(file_get_contents('php://input')));
+        $di->set('data', new Data(file_get_contents('php://input'));
     }
 
     /**

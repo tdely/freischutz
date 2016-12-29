@@ -115,10 +115,14 @@ class Hawk extends Component
         $this->manageNonces($this->params->nonce);
 
         // Create payload string
-        $payload = 'hawk.1.payload\n' .
-                   $this->request->getContentType() . '\n' .
-                   $this->data->getRaw() . '\n';
-        $hash = hash($alg, $payload);
+        if (isset($this->params->hash)) {
+            $payload = 'hawk.1.payload\n' .
+                       $this->request->getContentType() . '\n' .
+                       $this->data->getRaw() . '\n';
+            $hash = hash($alg, $payload);
+        } else {
+            $hash = '';
+        }
 
         // Create request string
         $message = 'hawk.1.header\n' .
@@ -142,8 +146,11 @@ class Hawk extends Component
             $expire = $this->config->hawk->get('expire', 60);
             if ((time() - $this->params->ts) <= $expire) {
                 // Message is valid
-                if ($hash === $this->params->hash) {
+                if (isset($this->params->hash) && $hash === $this->params->hash) {
                     // Payload hash is correct
+                    $result->state = true;
+                } elseif (!isset($this->params->hash)) {
+                    // Payload not included in validation
                     $result->state = true;
                 } else {
                     $result->message = 'Payload mismatch.';

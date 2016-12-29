@@ -265,7 +265,7 @@ class Core extends Application
      */
     private function setData($di)
     {
-        $di->set('data', new Data(file_get_contents('php://input'));
+        $di->set('data', new Data(file_get_contents('php://input')));
     }
 
     /**

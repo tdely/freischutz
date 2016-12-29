@@ -1,0 +1,2 @@
+# Role,Controller,Action,Policy
+user,test,json,allow

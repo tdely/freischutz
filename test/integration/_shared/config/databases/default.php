@@ -2,11 +2,11 @@
 
 $database = [
     'adapter' => 'mysql',
-    'host' => '127.0.0.1',
+    'host' => 'mysql',
     'port' => 3306,
     'username' => 'root',
-    'password' => '',
-    'dbname' => 'test',
+    'password' => 'mysql',
+    'dbname' => 'freischutz_test',
     'charset' => 'utf8',
     'options' => [
         PDO::ATTR_EMULATE_PREPARES => false,         // Use native prepared statements

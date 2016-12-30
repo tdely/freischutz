@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit colors="true">
+    <php>
+        <var name="db_dsn" value="mysql:dbname=freischutz_test;host=mysql"/>
+        <var name="db_username" value="root"/>
+        <var name="db_password" value="mysql"/>
+    </php>
+
+    <testsuites>
+        <testsuite name="Freischutz Test Suite">
+            <directory>./test/integration/</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>./</directory>
+            <exclude>
+                <directory>./Test</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>

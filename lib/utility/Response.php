@@ -64,7 +64,7 @@ class Response extends PhalconResponse
      * @param string $charset (optional) Override default charset.
      * @return \Phalcon\Http\Response
      */
-    public function continue($content, $type = false, $charset = false)
+    public function cont($content, $type = false, $charset = false)
     {
         $this->setStatusCode(100);
         $this->setContentAuto($content, $type, $charset);

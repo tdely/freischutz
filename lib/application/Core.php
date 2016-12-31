@@ -20,12 +20,15 @@ use Phalcon\Mvc\Router;
 use Phalcon\Mvc\Router\Group;
 use Phalcon\Mvc\View;
 
+use Phalcon\Cache\Backend\Redis;
+use Phalcon\Cache\Frontend\Data as CacheData;
+
 /**
  * Freischutz\Application\Core
  */
 class Core extends Application
 {
-    const VERSION = '0.1.1';
+    const VERSION = '0.2.0';
 
     /**
      * Get Freischutz version.
@@ -142,6 +145,22 @@ class Core extends Application
         $dispatcher->setDefaultNamespace($namespace);
 
         $di->set('dispatcher', $dispatcher);
+    }
+
+    private function setCache($di)
+    {
+        if (!isset($this->config->application->cache_adapter)
+                || !$this->config->application->cache_adapter) {
+            return;
+        }
+
+        $adapter = '\\Phalcon\\Cache\\Backend\\' .
+            $this->config->application->cache_adapter;
+        $frontCache = new CacheData(array(
+            'lifetime' => $this->config->application->get('cache_lifetime', 300)
+        ));
+        $cache = new $adapter($frontCache, $config->$adapter);
+        $di->set('cache', $cache);
     }
 
     /**
@@ -335,6 +354,7 @@ class Core extends Application
         // Load components
         $this->setRequest($di);
         $this->setDispatcher($di);
+        $this->setCache($di);
         $this->setRoutes($di);
         $this->setDatabases($di);
         $this->setData($di);

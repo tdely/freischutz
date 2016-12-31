@@ -21,6 +21,17 @@ class Users extends Component
      */
     public function __construct()
     {
+        $doCache = in_array('users', array_map(
+            'trim',
+            explode(',', $this->config->application->get('cache_parts', false))
+        ));
+
+        if ($this->di->has('cache') && $doCache) {
+            if ($this->userList = $this->loadFromCache()) {
+                return;
+            };
+        }
+
         $backend = strtolower($this->config->application->get('users_backend', 'file'));
         switch ($backend) {
             case 'file':
@@ -35,6 +46,10 @@ class Users extends Component
                 break;
             default:
                 throw new \Exception("Unknown users backend: $backend");
+        }
+
+        if ($this->di->has('cache') && $doCache) {
+            $this->cache->save('freischutz_users', (object) $userList);
         }
 
         $this->userList = (object) $userList;
@@ -181,5 +196,16 @@ class Users extends Component
         }
 
         return $userList;
+    }
+
+    /**
+     * Load user details from cache.
+     *
+     * @return object|false
+     */
+    private function loadFromCache()
+    {
+        syslog(LOG_DEBUG, 'Loading users from cache');
+        return $this->cache->get('freischutz_users');
     }
 }

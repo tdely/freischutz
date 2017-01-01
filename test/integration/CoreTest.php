@@ -50,7 +50,7 @@ class CoreTest extends TestCase
     public function testCoreBaseUriOk()
     {
         $this->fakeRequest();
-        $_SERVER['REQUEST_URI'] = '/test/hello';
+        $_SERVER['REQUEST_URI'] = '/hello';
 
         $config = $this->configFile;
         $config->application->offsetSet('base_uri', '/test');
@@ -71,7 +71,7 @@ class CoreTest extends TestCase
     public function testCoreBaseUriFail()
     {
         $this->fakeRequest();
-        $_SERVER['REQUEST_URI'] = '/hello';
+        $_SERVER['REQUEST_URI'] = '/fail';
 
         $config = $this->configFile;
         $config->application->offsetSet('base_uri', '/test');

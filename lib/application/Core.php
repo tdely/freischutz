@@ -1,8 +1,9 @@
 <?php
 namespace Freischutz\Application;
 
-use Freischutz\Application\Users;
 use Freischutz\Application\Acl;
+use Freischutz\Application\Router;
+use Freischutz\Application\Users;
 use Freischutz\Security\Hawk;
 use Freischutz\Utility\Response;
 use Phalcon\Db\Adapter\Pdo\Mysql;
@@ -16,8 +17,6 @@ use Phalcon\Mvc\Application;
 use Phalcon\Mvc\Dispatcher;
 use Phalcon\Mvc\Model\Manager as ModelsManager;
 use Phalcon\Mvc\Model\MetaData\Memory as ModelsMetadata;
-use Phalcon\Mvc\Router;
-use Phalcon\Mvc\Router\Group;
 use Phalcon\Mvc\View;
 
 use Phalcon\Cache\Backend\Redis;
@@ -164,74 +163,16 @@ class Core extends Application
     }
 
     /**
-     * Set routes.
+     * Set router.
      *
-     * @throws \Exception if routes_dir not set in config application section.
-     * @throws \Exception when no routes loaded or malformed route definition rows.
      * @param \Phalcon\DI $di Dependency Injector.
      */
-    private function setRoutes($di)
+    private function setRouter($di)
     {
-        if (!isset($this->config->application->routes_dir)) {
-            throw new \Exception(
-                "Missing 'routes_dir' in config application section."
-            );
-        }
-
-        $routesDir = $this->config->application->app_dir .
-            $this->config->application->routes_dir;
-
-        // Group routes for simplicity
-        $group = new Group();
-        $group->setPrefix($this->config->application->get('base_uri', ''));
-
-        /**
-         * Load routes
-         */
-        foreach (glob($routesDir . "/*.routes") as $file) {
-            $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-            foreach ($lines as $line) {
-                // Allow comments starting with '#', ';', or '//'
-                if ($line[0] === '#' || $line[0] === ';'
-                        || substr($line, 0, 2) === '//') {
-                    continue;
-                }
-                $parts = explode(',', $line);
-                if (sizeof($parts) !== 4) {
-                    throw new \Exception("Malformed row in $file: $line");
-                }
-                $group->add(
-                    $parts[2],
-                    array(
-                        'controller' => $parts[0],
-                        'action' => $parts[1],
-                    ),
-                    strtoupper($parts[3])
-                );
-            };
-        }
-
-        if (!$group->getRoutes()) {
-            throw new \Exception("No routes found in $routesDir");
-        }
-
-        /**
-         * Set up router
-         */
         $router = new Router(false);
-        $router->mount($group);
-
-        // Remove trailing slashes
-        $router->removeExtraSlashes(true);
-
-        // Set unknown routes handler
-        $router->notFound([
-            'controller' => 'not-found',
-            'action'=> 'notFound',
-        ]);
 
         // Set router service
-        $di->set('router', $router);
+        $di->set('router', $router->getRouter());
     }
 
     /**
@@ -355,7 +296,7 @@ class Core extends Application
         $this->setRequest($di);
         $this->setDispatcher($di);
         $this->setCache($di);
-        $this->setRoutes($di);
+        $this->setRouter($di);
         $this->setDatabases($di);
         $this->setData($di);
         $this->setModelsManager($di);

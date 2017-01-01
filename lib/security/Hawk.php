@@ -16,6 +16,7 @@ class Hawk extends Component
 {
     private $backend;
     private $nonceFile = 'freischutz.hawk.nonce';
+    private $nonceCacheKey;
     private $params;
     private $key;
 
@@ -32,6 +33,8 @@ class Hawk extends Component
         }
         $params['ext'] = isset($params['ext']) ? $params['ext'] : false;
         $this->params = (object) $params;
+
+        $this->nonceCacheKey = '_freischutz_nonce_' . $params['nonce'];
 
         // Set backend
         $this->backend = strtolower($this->config->hawk->get('backend', 'file'));
@@ -229,6 +232,9 @@ class Hawk extends Component
             case 'db':
                 $this->manageNonceDatabase($nonce);
                 break;
+            case 'cache':
+                $this->manageNonceCache($nonce);
+                break;
             default:
                 throw new \Exception("Unknown Hawk backend: $backend");
         }
@@ -320,6 +326,23 @@ class Hawk extends Component
     }
 
     /**
+     * Record used nonce in cache.
+     *
+     * @param string $nonce Nonce to record.
+     * @throw \Exception if cache service not set.
+     * @return void
+     */
+    private function manageNonceCache($nonce)
+    {
+        if (!$this->di->has('cache')) {
+            throw new \Exception(
+                "Nonce backend 'cache' requires cache service to be configured."
+            );
+        }
+        $this->cache->save($this->nonceCacheKey, true);
+    }
+
+    /**
      * Check if nonce has been used previously.
      *
      * @param string $nonce Nonce to lookup.
@@ -335,6 +358,9 @@ class Hawk extends Component
             case 'database':
             case 'db':
                 $result = $this->lookupNonceInDatabase($nonce);
+                break;
+            case 'cache':
+                $result = $this->lookupNonceInCache($nonce);
                 break;
             default:
                 throw new \Exception("Unknown nonce backend: $backend");
@@ -407,5 +433,22 @@ class Hawk extends Component
         }
         $search = array("nonce=':nonce:'", array('nonce' => $nonce));
         return $model->findFirst($search) ? true : false;
+    }
+
+    /**
+     * Check if nonce is recorded in cache.
+     *
+     * @param string $nonce Nonce to lookup.
+     * @throw \Exception if cache service not set.
+     * @return bool
+     */
+    private function lookupNonceInCache($nonce)
+    {
+        if (!$this->di->has('cache')) {
+            throw new \Exception(
+                "Nonce backend 'cache' requires cache service to be configured."
+            );
+        }
+        return $this->cache->get($this->nonceCacheKey);
     }
 }

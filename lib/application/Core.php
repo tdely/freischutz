@@ -57,79 +57,6 @@ class Core extends Application
     }
 
     /**
-     * Set events managers.
-     *
-     * Attaches event listeners to events manager, and sets the event manager
-     * to be used by certain components.
-     */
-    private function setEventsManagers()
-    {
-        $eventsManager = new EventsManager();
-        /**
-         * HMAC
-         */
-        if (isset($this->config->hawk) && $this->config->hawk->get('enable', false)) {
-            $eventsManager->attach(
-                "application:beforeHandleRequest",
-                function (Event $event, $dispatcher) {
-                    $hmac = new Hawk();
-
-                    $return = false;
-
-                    if ($this->users->setUser($hmac->getParam('id'))) {
-                        $hmac->setKey($this->users->getUser()->key);
-                        $result = $hmac->authenticate();
-                        $return = $result->state;
-                    } else {
-                        $result = (object) array(
-                            'message' => 'Request not authentic.',
-                            'state' => false
-                        );
-                    }
-
-                    $message = $this->config->hawk->get('disclose', false)
-                        ? $result->message
-                        : 'Authentication failed.';
-
-                    if (!$return) {
-                        $header = 'Hawk ts="' . date('U') . '", ' .
-                                  'alg="' . $this->config->hawk->algorithms . '"';
-                        $this->response->unauthorized($message, $header);
-                        $this->response->send();
-                    }
-
-                    return $return;
-                }
-            );
-        }
-
-        /**
-         * ACL
-         */
-        if (isset($this->config->acl) && $this->config->acl->get('enable', false)) {
-            $eventsManager->attach(
-                "dispatch:beforeExecuteRoute",
-                function (Event $event, $dispatcher) {
-                    $controller = $this->dispatcher->getControllerName();
-                    $action = $this->dispatcher->getActionName();
-
-                    $client = $this->users->getUser();
-
-                    $acl = new Acl;
-                    if (!$access = $acl->isAllowed($client->id, $controller, $action)) {
-                        $this->response->forbidden('Access denied.');
-                        $this->response->send();
-                    }
-
-                    return $access;
-                }
-            );
-        }
-        $this->setEventsManager($eventsManager);
-        $this->dispatcher->setEventsManager($eventsManager);
-    }
-
-    /**
      * Set dispatcher service.
      *
      * @param \Phalcon\DI $di Dependency Injector.
@@ -229,16 +156,6 @@ class Core extends Application
     }
 
     /**
-     * Set users.
-     *
-     * @param \Phalcon\DI $di Dependency Injector.
-     */
-    private function setUsers($di)
-    {
-        $di->set('users', new Users());
-    }
-
-    /**
      * Set models manager.
      *
      * @param \Phalcon\DI $di Dependency Injector.
@@ -257,6 +174,89 @@ class Core extends Application
     {
         // TODO: Make metadata storage configurable
         $di->set('modelsMetadata', new ModelsMetadata());
+    }
+
+    /**
+     * Set users.
+     *
+     * @param \Phalcon\DI $di Dependency Injector.
+     */
+    private function setUsers($di)
+    {
+        $di->set('users', new Users());
+    }
+
+    /**
+     * Set events managers.
+     *
+     * Attaches event listeners to events manager, and sets the event manager
+     * to be used by certain components.
+     */
+    private function setEventsManagers()
+    {
+        $eventsManager = new EventsManager();
+        /**
+         * HMAC
+         */
+        if (isset($this->config->hawk) && $this->config->hawk->get('enable', false)) {
+            $eventsManager->attach(
+                "application:beforeHandleRequest",
+                function (Event $event, $dispatcher) {
+                    $hmac = new Hawk();
+
+                    $return = false;
+
+                    if ($this->users->setUser($hmac->getParam('id'))) {
+                        $hmac->setKey($this->users->getUser()->key);
+                        $result = $hmac->authenticate();
+                        $return = $result->state;
+                    } else {
+                        $result = (object) array(
+                            'message' => 'Request not authentic.',
+                            'state' => false
+                        );
+                    }
+
+                    $message = $this->config->hawk->get('disclose', false)
+                        ? $result->message
+                        : 'Authentication failed.';
+
+                    if (!$return) {
+                        $header = 'Hawk ts="' . date('U') . '", ' .
+                                  'alg="' . $this->config->hawk->algorithms . '"';
+                        $this->response->unauthorized($message, $header);
+                        $this->response->send();
+                    }
+
+                    return $return;
+                }
+            );
+        }
+
+        /**
+         * ACL
+         */
+        if (isset($this->config->acl) && $this->config->acl->get('enable', false)) {
+            $eventsManager->attach(
+                "dispatch:beforeExecuteRoute",
+                function (Event $event, $dispatcher) {
+                    $controller = $this->dispatcher->getControllerName();
+                    $action = $this->dispatcher->getActionName();
+
+                    $client = $this->users->getUser();
+
+                    $acl = new Acl;
+                    if (!$access = $acl->isAllowed($client->id, $controller, $action)) {
+                        $this->response->forbidden('Access denied.');
+                        $this->response->send();
+                    }
+
+                    return $access;
+                }
+            );
+        }
+        $this->setEventsManager($eventsManager);
+        $this->dispatcher->setEventsManager($eventsManager);
     }
 
     /**

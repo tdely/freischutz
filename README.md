@@ -1,7 +1,7 @@
 Freischutz
 ==========
 
-PHP framework for RESTful APIs, using Phalcon.
+PHP framework for RESTful APIs, built using Phalcon.
 
 Configuration Options
 ---------------------
@@ -16,13 +16,16 @@ Required section.
 * users_backend: _(file|config|database)_ users storage backend, **default file**.
 * users_dir: _(string)_ path to users file directory, **required if** `users_backend = file`.
 * users_model: _(string)_ users model class with full namespace including leading backslash (e.g. \Example\Model\User), **required if** `users_backend = database`.
+* cache_adapter: _(string)_ A \Phalcon\Cache\Backend\ to use for caching (class name only), **default false**.
+* cache_lifetime: _(int)_ time in seconds that cached data is kept, **default 60**.
+* cache_parts: _(string)_ one or more parts to cache in CSV without spaces (available: users,acl,routes), default **false**.
 
 ### hawk
 Optional section.
 * enable: _(boolean)_ use Hawk validation, **default false**.
 * algorithms: _(string)_ one or more allowed algorithms in CSV without spaces, **default sha256**.
 * expire: _(int)_ time in seconds from request creation until considered expired, **default 60**.
-* storage: _(file|database)_ nonce storage backend, **default file**.
+* storage: _(file|database|cache)_ nonce storage backend, **default file**.
 * disclose: _(boolean)_ disclose issue in response when validation fails, **default false**.
 * nonce_dir: _(string)_ path to nonce file directory, **default tmp**.
 * nonce_model: _(string)_ nonce model class with full namespace including leading backslash (e.g. \Example\Model\Nonce), **required if** `storage = database`.
@@ -51,22 +54,19 @@ Features
   * Read from files or database.
 * User system decoupled from validation/ACL schemes
   * Read from files, config, or database.
+* Caching with multiple supported backends
+  * Any \Phalcon\Cache\Backend class may be used.
+  * Able to set caching of ACL, routes, and users through config.
 
 
 Planned
 -------
 
-* Caching service
-  * Redis primarily, but the idea is to support multiple backends
-  * Option to cache each separate viable component:
-     * Users
-     * Routes
-     * ACL
-     * Hawk nonces
-* Some (semi-)automated tests
+* More automated integration tests
 * Documentation
   * Available classes
      * Public methods
   * Getting started
      * Requirements
      * Building your API
+  * Improved documentation

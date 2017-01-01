@@ -19,6 +19,9 @@ class AclTest extends TestCase
 
     }
 
+    /**
+     * Fake some request stuff.
+     */
     public function fakeRequest($header)
     {
         // Fake some request stuff
@@ -30,6 +33,9 @@ class AclTest extends TestCase
         $_SERVER['SERVER_PORT'] = 80;
     }
 
+    /**
+     * Test that ACL allows user access to a resource.
+     */
     public function testAclOk()
     {
         $alg = 'sha256';
@@ -71,6 +77,9 @@ class AclTest extends TestCase
         $this->assertTrue($out === 'Hello world!', $out);
     }
 
+    /**
+     * Test that ACL denies user access to a resource.
+     */
     public function testAclNoAccess()
     {
         $alg = 'sha256';
@@ -112,6 +121,9 @@ class AclTest extends TestCase
         $this->assertTrue($out === 'Access denied.', $out);
     }
 
+    /**
+     * Test that ACL doesn't interfere with missing resource action.
+     */
     public function testAclMissingResourceOk()
     {
         $alg = 'sha256';

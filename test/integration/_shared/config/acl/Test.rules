@@ -1,2 +1,4 @@
 # Role,Controller,Action,Policy
+; Role,Controller,Action,Policy
+// Role,Controller,Action,Policy
 user,test,json,allow

@@ -19,9 +19,11 @@ class CoreTest extends TestCase
 
     }
 
+    /**
+     * Fake some request stuff.
+     */
     public function fakeRequest()
     {
-        // Fake some request stuff
         $_SERVER['CONTENT_TYPE'] = 'text/plain';
         $_SERVER['REQUEST_URI'] = '/hello';
         $_SERVER['REQUEST_METHOD'] = 'GET';
@@ -29,6 +31,9 @@ class CoreTest extends TestCase
         $_SERVER['SERVER_PORT'] = 80;
     }
 
+    /**
+     * Test the simple 'Hello world!' action.
+     */
     public function testCoreOk()
     {
         $this->fakeRequest();
@@ -47,6 +52,10 @@ class CoreTest extends TestCase
         $this->assertSame('Hello world!', $out);
     }
 
+    /**
+     * Test that the base_uri option works by setting URI to just '/hello'
+     * and use base_uri to prefix '/test/'.
+     */
     public function testCoreBaseUriOk()
     {
         $this->fakeRequest();
@@ -68,13 +77,16 @@ class CoreTest extends TestCase
         $this->assertSame('Hello world!', $out);
     }
 
-    public function testCoreBaseUriFail()
+    /**
+    * Test that request without matching routes return missing resource message
+    * correctly.
+    */
+    public function testCoreMissingRoute()
     {
         $this->fakeRequest();
         $_SERVER['REQUEST_URI'] = '/fail';
 
         $config = $this->configFile;
-        $config->application->offsetSet('base_uri', '/test');
         // Set up application
         $app = new Freischutz\Application\Core($config);
         // Force reading URI from $_SERVER['REQUEST_URI']

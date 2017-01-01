@@ -21,6 +21,17 @@ class Acl extends Component
      */
     public function rebuild()
     {
+        $doCache = in_array('acl', array_map(
+            'trim',
+            explode(',', $this->config->application->get('cache_parts', false))
+        ));
+
+        if ($this->di->has('cache') && $doCache) {
+            if ($acl = $this->cache->get('_freischutz_acl')) {
+                return $acl;
+            };
+        }
+
         /**
          * Build ACL
          */
@@ -38,6 +49,10 @@ class Acl extends Component
         }
 
         $acl->setDefaultAction(PhalconAcl::DENY);
+
+        if ($this->di->has('cache') && $doCache) {
+            $this->cache->save('_freischutz_acl', $acl);
+        }
 
         return $acl;
     }

@@ -18,6 +18,7 @@ class Users extends Component
      * property.
      *
      * @throw \Exception on unknown backend.
+     * @return void
      */
     public function __construct()
     {
@@ -27,7 +28,7 @@ class Users extends Component
         ));
 
         if ($this->di->has('cache') && $doCache) {
-            if ($this->userList = $this->loadFromCache()) {
+            if ($this->userList = $this->cache->get('_freischutz_users')) {
                 return;
             };
         }
@@ -49,7 +50,7 @@ class Users extends Component
         }
 
         if ($this->di->has('cache') && $doCache) {
-            $this->cache->save('freischutz_users', (object) $userList);
+            $this->cache->save('_freischutz_users', (object) $userList);
         }
 
         $this->userList = (object) $userList;
@@ -196,16 +197,5 @@ class Users extends Component
         }
 
         return $userList;
-    }
-
-    /**
-     * Load user details from cache.
-     *
-     * @return object|false
-     */
-    private function loadFromCache()
-    {
-        syslog(LOG_DEBUG, 'Loading users from cache');
-        return $this->cache->get('freischutz_users');
     }
 }

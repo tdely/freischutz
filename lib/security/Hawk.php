@@ -25,9 +25,12 @@ class Hawk extends Component
      */
     public function __construct()
     {
+        // Strip 'Hawk ' from header
+        $header = substr($this->request->getHeader('Authorization'), 5);
+
         // Set authentication parameters
         $params = array();
-        foreach (str_getcsv($this->request->getHeader('Authorization'), ',', '"') as $param) {
+        foreach (str_getcsv($header, ',', '"') as $param) {
             $set = str_getcsv(trim($param), '=', '"');
             $params[$set[0]] = isset($set[1]) ? trim($set[1], "'\"") : true;
         }

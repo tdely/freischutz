@@ -96,7 +96,7 @@ function hawk_build()
         echo -e "${mac}\n"
     fi
 
-    extra_header="Authorization: Hawk, id=\"${id}\", ts=\"${time}\", nonce=\"${nonce}\", mac=\"${mac}\", hash=\"${payload_hash}\", alg=\"${algorithm}\""
+    extra_header="Authorization: Hawk id=\"${id}\", ts=\"${time}\", nonce=\"${nonce}\", mac=\"${mac}\", hash=\"${payload_hash}\", alg=\"${algorithm}\""
 }
 
 # getopt index variable

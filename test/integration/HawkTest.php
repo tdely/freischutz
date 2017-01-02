@@ -61,7 +61,7 @@ class HawkTest extends TestCase
                    '' . '\n';
 
         $mac = base64_encode(hash_hmac($alg, $message, 'pw', true));
-        $header = 'Hawk, id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", hash="'.$hash.'", alg="'.$alg.'"';
+        $header = 'Hawk id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", hash="'.$hash.'", alg="'.$alg.'"';
 
         $this->fakeRequest($header);
 
@@ -107,7 +107,7 @@ class HawkTest extends TestCase
                    '' . '\n';
 
         $mac = base64_encode(hash_hmac($alg, $message, 'pw', true));
-        $header = 'Hawk, id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", hash="'.$hash.'", alg="'.$alg.'"';
+        $header = 'Hawk id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", hash="'.$hash.'", alg="'.$alg.'"';
 
         $this->fakeRequest($header);
 
@@ -151,7 +151,7 @@ class HawkTest extends TestCase
                    '' . '\n';
 
         $mac = base64_encode(hash_hmac($alg, $message, 'pw', true));
-        $header = 'Hawk, id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", alg="'.$alg.'"';
+        $header = 'Hawk id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", alg="'.$alg.'"';
 
         $this->fakeRequest($header);
 
@@ -195,7 +195,7 @@ class HawkTest extends TestCase
                    '' . '\n';
 
         $mac = base64_encode(hash_hmac($alg, $message, 'wp', true));
-        $header = 'Hawk, id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", alg="'.$alg.'"';
+        $header = 'Hawk id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", alg="'.$alg.'"';
 
         $this->fakeRequest($header);
 
@@ -241,7 +241,7 @@ class HawkTest extends TestCase
                    '' . '\n';
 
         $mac = base64_encode(hash_hmac($alg, $message, 'pw', true));
-        $header = 'Hawk, id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", hash="", alg="'.$alg.'"';
+        $header = 'Hawk id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", hash="", alg="'.$alg.'"';
 
         $this->fakeRequest($header);
 
@@ -287,7 +287,7 @@ class HawkTest extends TestCase
                    '' . '\n';
 
         $mac = base64_encode(hash_hmac($alg, $message, 'pw', true));
-        $header = 'Hawk, id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", hash="'.$hash.'", alg="'.$alg.'"';
+        $header = 'Hawk id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", hash="'.$hash.'", alg="'.$alg.'"';
 
         $this->fakeRequest($header);
 
@@ -333,7 +333,7 @@ class HawkTest extends TestCase
                    '' . '\n';
 
         $mac = base64_encode(hash_hmac($alg, $message, 'pw', true));
-        $header = 'Hawk, id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", hash="'.$hash.'", alg="'.$alg.'"';
+        $header = 'Hawk id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", hash="'.$hash.'", alg="'.$alg.'"';
 
         $this->fakeRequest($header);
 
@@ -377,7 +377,7 @@ class HawkTest extends TestCase
                    '' . '\n';
 
         $mac = base64_encode(hash_hmac($alg, $message, 'pw', true));
-        $header = 'Hawk, ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", alg="'.$alg.'"';
+        $header = 'Hawk ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", alg="'.$alg.'"';
 
         $this->fakeRequest($header);
 
@@ -421,7 +421,7 @@ class HawkTest extends TestCase
                    '' . '\n';
 
         $mac = base64_encode(hash_hmac($alg, $message, 'pw', true));
-        $header = 'Hawk, id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", alg="'.$alg.'"';
+        $header = 'Hawk id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", alg="'.$alg.'"';
 
         $this->fakeRequest($header);
 
@@ -452,7 +452,7 @@ class HawkTest extends TestCase
                    '' . '\n';
 
         $mac = base64_encode(hash_hmac($alg, $message, 'pw', true));
-        $header = 'Hawk, id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", alg="'.$alg.'"';
+        $header = 'Hawk id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", alg="'.$alg.'"';
 
         $this->fakeRequest($header);
 

@@ -16,14 +16,14 @@ Required section.
 * users_backend: _(file|config|database)_ users storage backend, **default file**.
 * users_dir: _(string)_ path to users file directory, **required if** `users_backend = file`.
 * users_model: _(string)_ users model class with full namespace including leading backslash (e.g. \Example\Model\User), **required if** `users_backend = database`.
+* authenticate: _(string)_ authentication mechanism to allow in CSV (available: hawk), **default false**.
 * cache_adapter: _(string)_ A \Phalcon\Cache\Backend\ to use for caching (class name only), **default false**.
 * cache_lifetime: _(int)_ time in seconds that cached data is kept, **default 60**.
-* cache_parts: _(string)_ one or more parts to cache in CSV without spaces (available: users,acl,routes), default **false**.
+* cache_parts: _(string)_ one or more parts to cache in CSV (available: users,acl,routes), default **false**.
 
 ### hawk
-Optional section.
-* enable: _(boolean)_ use Hawk validation, **default false**.
-* algorithms: _(string)_ one or more allowed algorithms in CSV without spaces, **default sha256**.
+Required section **if** Hawk is allowed through application->authenticate.
+* algorithms: _(string)_ one or more algorithms to allow in CSV, **default sha256**.
 * expire: _(int)_ time in seconds from request creation until considered expired, **default 60**.
 * storage: _(file|database|cache)_ nonce storage backend, **default file**.
 * disclose: _(boolean)_ disclose issue in response when validation fails, **default false**.
@@ -41,7 +41,7 @@ Optional section.
 * rule_model: _(string)_ rule model class with full namespace including leading backslash (e.g. \Example\Model\Rule), **required if** `backend = database`.
 
 ### users
-Required section if users_backend is set to config under application.
+Required section **if** users_backend is set to config under application.
 Each key-value pair represents one user: `user_id = password`.
 
 

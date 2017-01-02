@@ -206,7 +206,12 @@ class Core extends Application
 
                     $return = false;
 
-                    if ($this->users->setUser($hmac->getParam('id'))) {
+                    if (strtolower(substr($this->request->getHeader('Authorization'), 0, 4)) !== 'hawk') {
+                        $result = (object) array(
+                            'message' => 'Authentication failed.',
+                            'state' => false
+                        );
+                    } elseif ($this->users->setUser($hmac->getParam('id'))) {
                         $hmac->setKey($this->users->getUser()->key);
                         $result = $hmac->authenticate();
                         $return = $result->state;

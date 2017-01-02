@@ -186,6 +186,81 @@ class Core extends Application
         $di->set('users', new Users());
     }
 
+    private function hawkAuth (Event $event, $dispatcher) {
+        $hmac = new Hawk();
+
+        $return = false;
+
+        if ($this->users->setUser($hmac->getParam('id'))) {
+            $hmac->setKey($this->users->getUser()->key);
+            $result = $hmac->authenticate();
+            $return = $result->state;
+        } else {
+            $result = (object) array(
+                'message' => 'Request not authentic.',
+                'state' => false
+            );
+        }
+
+        $message = $this->config->hawk->get('disclose', false)
+            ? $result->message
+            : 'Authentication failed.';
+
+        if (!$return) {
+            $header = 'Hawk ts="' . date('U') . '", ' .
+                      'alg="' . $this->config->hawk->algorithms . '"';
+            $this->response->unauthorized($message, $header);
+            $this->response->send();
+        }
+
+        return $return;
+    }
+
+    /**
+     * Set authentication through Hawk.
+     *
+     * @param \Phalcon\Events\Manager $eventsManager Events manager.
+     * @throws \Exception if config hawk section missing.
+     * @return void
+     */
+    private function authenticateHawk(EventsManager $eventsManager) {
+        if (!isset($this->config->hawk)) {
+            throw \Exception(
+                "Hawk authentication requires hawk section in config file."
+            );
+        }
+
+        $eventsManager->attach(
+            "application:beforeHandleRequest",
+            function (Event $event, $dispatcher) {
+                $hawk = new Hawk();
+
+                if ($this->users->setUser($hawk->getParam('id'))) {
+                    $hawk->setKey($this->users->getUser()->key);
+                    $result = $hawk->authenticate();
+                } else {
+                    $result = (object) array(
+                        'message' => 'Request not authentic.',
+                        'state' => false
+                    );
+                }
+
+                $message = $this->config->hawk->get('disclose', false)
+                    ? $result->message
+                    : 'Authentication failed.';
+
+                if (!$result->state) {
+                    $header = 'Hawk ts="' . date('U') . '", ' .
+                              'alg="' . $this->config->hawk->algorithms . '"';
+                    $this->response->unauthorized($message, $header);
+                    $this->response->send();
+                }
+
+                return $result->state;
+            }
+        );
+    }
+
     /**
      * Set events managers.
      *
@@ -195,47 +270,47 @@ class Core extends Application
     private function setEventsManagers()
     {
         $eventsManager = new EventsManager();
+
         /**
-         * HMAC
+         * Authentication
          */
-        if (isset($this->config->hawk) && $this->config->hawk->get('enable', false)) {
-            $eventsManager->attach(
-                "application:beforeHandleRequest",
-                function (Event $event, $dispatcher) {
-                    $hmac = new Hawk();
+        if ($authenticate = $this->config->application->get('authenticate', false)) {
+            // Get allowed authentication mechanisms
+            $mechanisms = array_map('trim', explode(',', $authenticate));
 
-                    $return = false;
+            // Get requested authentication mechanism
+            $reqMechanism;
+            preg_match('/(.+?)(\s|,)/', $this->request->getHeader('Authorization'), $reqMechanism);
+            $reqMechanism = isset($reqMechanism[1]) ? $reqMechanism[1] : false;
 
-                    if (strtolower(substr($this->request->getHeader('Authorization'), 0, 4)) !== 'hawk') {
-                        $result = (object) array(
-                            'message' => 'Authentication failed.',
-                            'state' => false
+            if (!$reqMechanism || !in_array(strtolower($reqMechanism), array_map('strtolower', $mechanisms))) {
+                /**
+                 * Illegal authentication mechanism
+                 */
+                $header = implode(', ', $mechanisms);
+                $eventsManager->attach(
+                    "application:beforeHandleRequest",
+                    function (Event $event, $dispatcher) use ($reqMechanism, $header) {
+                        $this->response->unauthorized(
+                            'Illegal authentication mechanism: ' . $reqMechanism,
+                            $header
                         );
-                    } elseif ($this->users->setUser($hmac->getParam('id'))) {
-                        $hmac->setKey($this->users->getUser()->key);
-                        $result = $hmac->authenticate();
-                        $return = $result->state;
-                    } else {
-                        $result = (object) array(
-                            'message' => 'Request not authentic.',
-                            'state' => false
-                        );
-                    }
-
-                    $message = $this->config->hawk->get('disclose', false)
-                        ? $result->message
-                        : 'Authentication failed.';
-
-                    if (!$return) {
-                        $header = 'Hawk ts="' . date('U') . '", ' .
-                                  'alg="' . $this->config->hawk->algorithms . '"';
-                        $this->response->unauthorized($message, $header);
                         $this->response->send();
+                        return false;
                     }
-
-                    return $return;
+                );
+            } else {
+                /**
+                 * Load authentication mechanism
+                 */
+                switch (strtolower($reqMechanism)) {
+                    case 'hawk':
+                        $this->authenticateHawk($eventsManager);
+                        break;
+                    default:
+                        throw \Exception('Unknown authentication mechanism: ' . $reqMechanism);
                 }
-            );
+            }
         }
 
         /**
@@ -260,6 +335,7 @@ class Core extends Application
                 }
             );
         }
+
         $this->setEventsManager($eventsManager);
         $this->dispatcher->setEventsManager($eventsManager);
     }

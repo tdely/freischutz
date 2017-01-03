@@ -6,6 +6,7 @@ use Freischutz\Application\Router;
 use Freischutz\Application\Users;
 use Freischutz\Security\Hawk;
 use Freischutz\Utility\Response;
+use Phalcon\Cache\Frontend\Data as CacheData;
 use Phalcon\Db\Adapter\Pdo\Mysql;
 use Phalcon\Db\Adapter\Pdo\Postgresql;
 use Phalcon\Db\Adapter\Pdo\Sqlite;
@@ -18,9 +19,6 @@ use Phalcon\Mvc\Dispatcher;
 use Phalcon\Mvc\Model\Manager as ModelsManager;
 use Phalcon\Mvc\Model\MetaData\Memory as ModelsMetadata;
 use Phalcon\Mvc\View;
-
-use Phalcon\Cache\Backend\Redis;
-use Phalcon\Cache\Frontend\Data as CacheData;
 
 /**
  * Freischutz\Application\Core
@@ -73,6 +71,11 @@ class Core extends Application
         $di->set('dispatcher', $dispatcher);
     }
 
+    /**
+     * Set cache service.
+     *
+     * @param \Phalcon\DI $di Dependency Injector.
+     */
     private function setCache($di)
     {
         if (!isset($this->config->application->cache_adapter)
@@ -80,17 +83,20 @@ class Core extends Application
             return;
         }
 
-        $adapter = '\\Phalcon\\Cache\\Backend\\' .
+        $adapterClass = '\\Phalcon\\Cache\\Backend\\' .
             $this->config->application->cache_adapter;
+
+        $adapterName = $this->config->application->cache_adapter;
+
         $frontCache = new CacheData(array(
             'lifetime' => $this->config->application->get('cache_lifetime', 300)
         ));
-        $cache = new $adapter($frontCache, $config->$adapter);
+        $cache = new $adapterClass($frontCache, (array) $this->config->$adapterName);
         $di->set('cache', $cache);
     }
 
     /**
-     * Set router.
+     * Set router service.
      *
      * @param \Phalcon\DI $di Dependency Injector.
      */
@@ -360,7 +366,7 @@ class Core extends Application
     {
         if (!isset($config->application->app_dir)) {
             throw new \Exception(
-                "Core requires '\$config->application->app_dir' being set."
+                "Missing 'app_dir' to be set in config application section."
             );
         }
 
@@ -390,7 +396,7 @@ class Core extends Application
         $this->view->disable();
     }
 
-    /*
+    /**
      * Run application and display output.
      */
     public function run()

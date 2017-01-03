@@ -19,7 +19,7 @@ class Acl extends Component
      *
      * @return \Phalcon\Acl\Adapter\Memory
      */
-    public function rebuild()
+    private function rebuild()
     {
         $doCache = in_array('acl', array_map(
             'trim',
@@ -62,7 +62,7 @@ class Acl extends Component
      *
      * @return \Phalcon\Acl\Adapter\Memory
      */
-    public function getAcl()
+    private function getAcl()
     {
         if (is_object($this->acl)) {
             return $this->acl;

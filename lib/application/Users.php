@@ -62,6 +62,7 @@ class Users extends Component
      * User object matching given string $id is read from $userList property
      * and written to $user property.
      *
+     * @internal
      * @param string $id Identifier of user to set.
      * @return bool
      */

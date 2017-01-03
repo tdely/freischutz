@@ -77,6 +77,7 @@ class Hawk extends Component
     /**
      * Authenticate client request.
      *
+     * @internal
      * @return object
      */
     public function authenticate()
@@ -181,8 +182,8 @@ class Hawk extends Component
      * Only usable in response to a request successfully validated by
      * Freischutz\Event\hawk::authenticate().
      *
-     * @param string $ext (optional) Value for "ext=" in Server-Authorization
-     *   header.
+     * @param string $ext (optional) Value for ext ('ext="$value"' in
+     *   Server-Authorization header.
      * @throw \Exception if $params or $key properties not set, such as when
      *   used before calling authenticate().
      * @return string Server-Authorization header string.

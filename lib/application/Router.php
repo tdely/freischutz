@@ -7,6 +7,8 @@ use Phalcon\Mvc\User\Component;
 
 /**
  * Freischutz\Application\Router
+ *
+ * @internal
  */
 class Router extends Component
 {
@@ -52,6 +54,7 @@ class Router extends Component
     /**
      * Get router.
      *
+     * @internal
      * @return \Phalcon\Mvc\Router
      */
     public function getRouter()

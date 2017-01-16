@@ -63,10 +63,15 @@ Planned
 -------
 
 * More automated integration tests
-* Documentation
-  * Available classes
-     * Public methods
-  * Getting started
-     * Requirements
-     * Building your API
-  * Improved documentation
+* Improved documentation
+
+Getting Started
+---------------
+
+### Requirements
+
+* PHP 5.6, PHP 7
+* Phalcon 3.0.1
+* Webserver
+* Database (MySQL/MariaDB/PostgreSQL/SQLite)
+* PHP database adapter

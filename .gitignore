@@ -13,5 +13,3 @@
 # Sublime
 *.sublime-project
 *.sublime-workspace
-# Netbeans
-/nbproject

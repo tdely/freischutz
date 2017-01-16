@@ -29,7 +29,7 @@ class Acl extends Component
         if ($this->di->has('cache') && $doCache) {
             if ($acl = $this->cache->get('_freischutz_acl')) {
                 return $acl;
-            };
+            }
         }
 
         /**
@@ -118,7 +118,7 @@ class Acl extends Component
                 } else {
                     throw new \Exception("Malformed row in $file: $line");
                 }
-            };
+            }
         }
 
         /**
@@ -137,7 +137,7 @@ class Acl extends Component
                     throw new \Exception("Malformed row in $file: $line");
                 }
                 $acl->addInherit($parts[0], $parts[1]);
-            };
+            }
         }
 
         /**
@@ -158,7 +158,7 @@ class Acl extends Component
                 $list = explode(';', $parts[2]);
 
                 $acl->addResource(new Resource($parts[0], $parts[1]), $list);
-            };
+            }
         }
 
         /**
@@ -182,7 +182,7 @@ class Acl extends Component
                 }
 
                 $acl->$policy($parts[0], $parts[1], $parts[2]);
-            };
+            }
         }
         return $acl;
     }

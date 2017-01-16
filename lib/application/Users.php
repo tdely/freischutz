@@ -30,7 +30,7 @@ class Users extends Component
         if ($this->di->has('cache') && $doCache) {
             if ($this->userList = $this->cache->get('_freischutz_users')) {
                 return;
-            };
+            }
         }
 
         $backend = strtolower($this->config->application->get('users_backend', 'file'));
@@ -126,7 +126,7 @@ class Users extends Component
                     'id' => $parts[0], 
                     'key' => $parts[1],
                 );
-            };
+            }
         }
 
         return $userList;

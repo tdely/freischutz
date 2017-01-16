@@ -190,8 +190,8 @@ class Hawk extends Component
      */
     public function validateResponse($ext = false)
     {
-        if (!$params || !$key) {
-            throw new \Exception('');
+        if (empty($this->params) || empty($this->key)) {
+            throw new \Exception("Properties 'params' and 'key' not set");
         }
 
         $payload = "hawk.1.payload\n" .
@@ -211,8 +211,7 @@ class Hawk extends Component
                    $ext . "\n";
 
         // Create MAC
-        syslog(LOG_DEBUG, hash_hmac($alg, $message, $this->key));
-        $mac = base64_encode(hash_hmac($alg, $message, $this->key));
+        $mac = base64_encode(hash_hmac($this->params->alg, $message, $this->key));
         syslog(LOG_DEBUG, $mac);
         $extSet = $ext ? ", ext=$ext" : '';
 

@@ -1,7 +1,6 @@
 <?php
 namespace Freischutz\Security;
 
-use Phalcon\Mvc\Model\Query;
 use Phalcon\Mvc\User\Component;
 
 /**

@@ -7,9 +7,6 @@ use Freischutz\Application\Users;
 use Freischutz\Security\Hawk;
 use Freischutz\Utility\Response;
 use Phalcon\Cache\Frontend\Data as CacheData;
-use Phalcon\Db\Adapter\Pdo\Mysql;
-use Phalcon\Db\Adapter\Pdo\Postgresql;
-use Phalcon\Db\Adapter\Pdo\Sqlite;
 use Phalcon\DI;
 use Phalcon\Events\Event;
 use Phalcon\Events\Manager as EventsManager;
@@ -32,7 +29,7 @@ class Core extends Application
      *
      * @return string
      */
-    public function getVersion()
+    public static function getVersion()
     {
         return self::VERSION;
     }
@@ -192,36 +189,6 @@ class Core extends Application
         $di->set('users', new Users());
     }
 
-    private function hawkAuth (Event $event, $dispatcher) {
-        $hmac = new Hawk();
-
-        $return = false;
-
-        if ($this->users->setUser($hmac->getParam('id'))) {
-            $hmac->setKey($this->users->getUser()->key);
-            $result = $hmac->authenticate();
-            $return = $result->state;
-        } else {
-            $result = (object) array(
-                'message' => 'Request not authentic.',
-                'state' => false
-            );
-        }
-
-        $message = $this->config->hawk->get('disclose', false)
-            ? $result->message
-            : 'Authentication failed.';
-
-        if (!$return) {
-            $header = 'Hawk ts="' . date('U') . '", ' .
-                      'alg="' . $this->config->hawk->algorithms . '"';
-            $this->response->unauthorized($message, $header);
-            $this->response->send();
-        }
-
-        return $return;
-    }
-
     /**
      * Set authentication through Hawk.
      *
@@ -285,7 +252,7 @@ class Core extends Application
             $mechanisms = array_map('trim', explode(',', $authenticate));
 
             // Get requested authentication mechanism
-            $reqMechanism;
+            $reqMechanism = array();
             preg_match('/(.+?)(\s|,)/', $this->request->getHeader('Authorization'), $reqMechanism);
             $reqMechanism = isset($reqMechanism[1]) ? $reqMechanism[1] : false;
 

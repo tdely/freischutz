@@ -107,7 +107,7 @@ class Router extends Component
                     ),
                     strtoupper($parts[3])
                 );
-            };
+            }
         }
 
         if (!$group->getRoutes()) {

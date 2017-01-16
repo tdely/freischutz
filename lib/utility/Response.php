@@ -506,7 +506,7 @@ class Response extends PhalconResponse
      * @param string $charset (optional) Override default charset.
      * @return \Phalcon\Http\Response
      */
-    public function Gone($content, $type = false, $charset = false)
+    public function gone($content, $type = false, $charset = false)
     {
         $this->setStatusCode(410);
         $this->setContentAuto($content, $type, $charset);

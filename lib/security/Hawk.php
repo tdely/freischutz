@@ -240,7 +240,7 @@ class Hawk extends Component
                 $this->manageNonceCache($nonce);
                 break;
             default:
-                throw new \Exception("Unknown Hawk backend: $backend");
+                throw new \Exception('Unknown Hawk backend: '. $this->backend);
         }
     }
 
@@ -253,7 +253,6 @@ class Hawk extends Component
      */
     private function manageNonceFile($nonce)
     {
-        $list = array();
         $timestamp = date('U');
         $file = $this->config->hawk->get('nonce_file', '/tmp') . '/' . $this->nonceFile;
         if (file_exists($file)) {
@@ -312,9 +311,8 @@ class Hawk extends Component
         }
 
         $model = new $modelName;
-        $metadata = $model->getModelsMetaData();
 
-        $result = $this->modelsManager->executeQuery(
+        $this->modelsManager->executeQuery(
             "DELETE FROM $modelName WHERE (timestamp + :expire:) < :timestamp:",
             array(
                 'expire' => $this->config->hawk->get('expire', 60),
@@ -332,11 +330,10 @@ class Hawk extends Component
     /**
      * Record used nonce in cache.
      *
-     * @param string $nonce Nonce to record.
      * @throw \Exception if cache service not set.
      * @return void
      */
-    private function manageNonceCache($nonce)
+    private function manageNonceCache()
     {
         if (!$this->di->has('cache')) {
             throw new \Exception(
@@ -367,7 +364,7 @@ class Hawk extends Component
                 $result = $this->lookupNonceInCache($nonce);
                 break;
             default:
-                throw new \Exception("Unknown nonce backend: $backend");
+                throw new \Exception("Unknown nonce backend: " . $this->backend);
         }
         return $result;
     }
@@ -396,7 +393,7 @@ class Hawk extends Component
             } else {
                 throw new \Exception("Malformed row in $file: $line");
             }
-        };
+        }
 
         return false;
     }
@@ -442,11 +439,10 @@ class Hawk extends Component
     /**
      * Check if nonce is recorded in cache.
      *
-     * @param string $nonce Nonce to lookup.
      * @throw \Exception if cache service not set.
      * @return bool
      */
-    private function lookupNonceInCache($nonce)
+    private function lookupNonceInCache()
     {
         if (!$this->di->has('cache')) {
             throw new \Exception(

@@ -14,7 +14,6 @@ use Phalcon\Http\Request;
 use Phalcon\Mvc\Application;
 use Phalcon\Mvc\Dispatcher;
 use Phalcon\Mvc\Model\Manager as ModelsManager;
-use Phalcon\Mvc\Model\MetaData\Memory as ModelsMetadata;
 use Phalcon\Mvc\View;
 
 /**
@@ -175,8 +174,19 @@ class Core extends Application
      */
     private function setModelsMetadata($di)
     {
-        // TODO: Make metadata storage configurable
-        $di->set('modelsMetadata', new ModelsMetadata());
+        $adapterClass = '\\Phalcon\\Mvc\\Model\\MetaData\\' .
+            $this->config->application->get('metadata_adapter', 'Memory');
+
+        $adapterName = $this->config->application->get('metadata_adapter', 'Memory');
+        $configSection = "metadata_$adapterName";
+
+        $config = isset($this->config->$configSection)
+            ? (array) $this->config->$configSection
+            : array();
+
+        $modelsMetadata = new $adapterClass($config);
+
+        $di->set('modelsMetadata', $modelsMetadata);
     }
 
     /**

@@ -17,6 +17,7 @@ Required section.
 * users_dir: _(string)_ path to users file directory, **required if** `users_backend = file`.
 * users_model: _(string)_ users model class with full namespace including leading backslash (e.g. \Example\Model\User), **required if** `users_backend = database`.
 * authenticate: _(string)_ authentication mechanism to allow in CSV (available: hawk), **default false**.
+* metadata_adapter: _(string)_ A \Phalcon\Mvc\Model\Metadata\ to use for storing model metadata (class name only), **default memory**
 * cache_adapter: _(string)_ A \Phalcon\Cache\Backend\ to use for caching (class name only), **default false**.
 * cache_lifetime: _(int)_ time in seconds that cached data is kept, **default 60**.
 * cache_parts: _(string)_ one or more parts to cache in CSV (available: users,acl,routes), default **false**.

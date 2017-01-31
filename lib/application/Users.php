@@ -123,7 +123,7 @@ class Users extends Component
                     throw new \Exception("Malformed row in $file: $line");
                 }
                 $userList[$parts[0]] = (object) array(
-                    'id' => $parts[0], 
+                    'id' => $parts[0],
                     'key' => $parts[1],
                 );
             }

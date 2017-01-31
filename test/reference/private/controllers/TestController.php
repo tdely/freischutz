@@ -26,7 +26,7 @@ class TestController extends Controller
      *
      * Takes POST payload and attempts to turn it into a SimpleXMLElement
      * object. If successful responds with 200 OK, sending the re-serialized
-     * object back as response payload. If failing to convert data into a 
+     * object back as response payload. If failing to convert data into a
      * SimpleXMLElement it will respond with 400 Bad Request.
      */
     public function xmlAction()

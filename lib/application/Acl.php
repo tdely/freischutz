@@ -114,7 +114,7 @@ class Acl extends Component
                 if (sizeof($parts) === 1) {
                     $acl->addRole($parts[0]);
                 } elseif (sizeof($parts) === 2) {
-                    $acl->addRole(new Role ($parts[0], $parts[1]));
+                    $acl->addRole(new Role($parts[0], $parts[1]));
                 } else {
                     throw new \Exception("Malformed row in $file: $line");
                 }

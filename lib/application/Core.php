@@ -45,7 +45,7 @@ class Core extends Application
             $request->setStrictHostCheck(true);
         }
 
-        $di->setShared('request', function() use ($request) {
+        $di->setShared('request', function () use ($request) {
             return $request;
         });
     }
@@ -206,7 +206,8 @@ class Core extends Application
      * @throws \Exception if config hawk section missing.
      * @return void
      */
-    private function authenticateHawk(EventsManager $eventsManager) {
+    private function authenticateHawk(EventsManager $eventsManager)
+    {
         if (!isset($this->config->hawk)) {
             throw \Exception(
                 "Hawk authentication requires hawk section in config file."

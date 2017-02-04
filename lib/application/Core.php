@@ -21,7 +21,7 @@ use Phalcon\Mvc\View;
  */
 class Core extends Application
 {
-    const VERSION = '0.2.0';
+    const VERSION = '0.3.0';
 
     /**
      * Get Freischutz version.

@@ -190,13 +190,15 @@ class Response extends PhalconResponse
      * 206 Partial Content.
      *
      * @param mixed $content Response content.
+     * @param mixed $range Content-Range header field numbers.
+     * @param mixed $rangeUnit Content-Range header field unit.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
      * @return \Phalcon\Http\Response
      */
-    public function partialContent($content, $type = false, $charset = false)
+    public function partialContent($content, $range, $rangeUnit, $type = false, $charset = false)
     {
-        // TODO: Make compliant
+        $this->setHeader('Content-Range', "$rangeUnit $range");
         $this->setStatusCode(206);
         $this->setContentAuto($content, $type, $charset);
     }
@@ -308,21 +310,26 @@ class Response extends PhalconResponse
     /**
      * 304 Not Modified.
      *
+     * The server generating a 304 response MUST generate any of the following
+     * header fields that would have been sent in a 200 OK response to the
+     * same request: Cache-Control, Content-Location, Date, ETag, Expires,
+     * and Vary.
+     *
      * @param mixed $content Response content.
+     * @param array $headers Associative array with header fields to set.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
      * @return \Phalcon\Http\Response
      */
-    public function notModified($content, $type = false, $charset = false)
+    public function notModified($content, $headers, $type = false, $charset = false)
     {
-        // TODO: Make compliant
-        /*
-         * The server generating a 304 response MUST generate any of the following
-         * header fields that would have been sent in a 200 OK response to the
-         * same request: Cache-Control, Content-Location, Date, ETag, Expires,
-         * and Vary.
-         */
+        $setable = array('Cache-Control', 'Content-Location', 'Date', 'ETag', 'Expires', 'Vary');
         $this->setStatusCode(304);
+        foreach ($headers as $header => $value) {
+            if (in_array($header, $setable)) {
+                $this->setHeader($header, $value);
+            }
+        }
         $this->setContentAuto($content, $type, $charset);
     }
 

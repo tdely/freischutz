@@ -190,8 +190,8 @@ class Response extends PhalconResponse
      * 206 Partial Content.
      *
      * @param mixed $content Response content.
-     * @param mixed $range Content-Range header field numbers.
-     * @param mixed $rangeUnit Content-Range header field unit.
+     * @param string $range Content-Range header field numbers.
+     * @param string $rangeUnit Content-Range header field unit.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
      * @return \Phalcon\Http\Response

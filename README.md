@@ -25,7 +25,7 @@ Required section.
 * cache_parts: _(string)_ one or more parts to cache in CSV (available: users,acl,routes), default **false**.
 
 ### hawk
-Required section **if** Hawk is allowed through application->authenticate.
+Required section **if** Hawk is enabled through application->authenticate.
 * algorithms: _(string)_ one or more algorithms to allow in CSV, **default sha256**.
 * expire: _(int)_ time in seconds from request creation until considered expired, **default 60**.
 * storage: _(file|database|cache)_ nonce storage backend, **default file**.
@@ -66,7 +66,7 @@ Planned
 -------
 
 * More automated integration tests
-* Improved documentation
+* More/improved documentation
 
 Getting Started
 ---------------

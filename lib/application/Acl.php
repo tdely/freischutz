@@ -110,7 +110,7 @@ class Acl extends Component
                         || substr($line, 0, 2) === '//') {
                     continue;
                 }
-                $parts = explode(',', $line);
+                $parts = str_getcsv($line);
                 if (sizeof($parts) === 1) {
                     $acl->addRole($parts[0]);
                 } elseif (sizeof($parts) === 2) {
@@ -132,7 +132,7 @@ class Acl extends Component
                         || substr($line, 0, 2) === '//') {
                     continue;
                 }
-                $parts = explode(',', $line);
+                $parts = str_getcsv($line);
                 if (sizeof($parts) !== 2) {
                     throw new \Exception("Malformed row in $file: $line");
                 }
@@ -151,11 +151,11 @@ class Acl extends Component
                         || substr($line, 0, 2) === '//') {
                     continue;
                 }
-                $parts = explode(',', $line);
+                $parts = str_getcsv($line);
                 if (sizeof($parts) !== 3) {
                     throw new \Exception("Malformed row in $file: $line");
                 }
-                $list = explode(';', $parts[2]);
+                $list = str_getcsv($parts[2], ';');
 
                 $acl->addResource(new Resource($parts[0], $parts[1]), $list);
             }
@@ -172,7 +172,7 @@ class Acl extends Component
                         || substr($line, 0, 2) === '//') {
                     continue;
                 }
-                $parts = explode(',', $line);
+                $parts = str_getcsv($line);
                 if (sizeof($parts) !== 4) {
                     throw new \Exception("Malformed row in $file: $line");
                 }

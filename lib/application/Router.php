@@ -95,7 +95,7 @@ class Router extends Component
                         || substr($line, 0, 2) === '//') {
                     continue;
                 }
-                $parts = explode(',', $line);
+                $parts = str_getcsv($line);
                 if (sizeof($parts) !== 4) {
                     throw new \Exception("Malformed row in $file: $line");
                 }

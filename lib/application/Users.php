@@ -117,7 +117,7 @@ class Users extends Component
                         || substr($line, 0, 2) === '//') {
                     continue;
                 }
-                $parts = explode(',', $line);
+                $parts = str_getcsv($line);
                 // id,key
                 if (sizeof($parts) !== 2) {
                     throw new \Exception("Malformed row in $file: $line");

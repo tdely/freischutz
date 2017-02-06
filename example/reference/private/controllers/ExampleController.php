@@ -13,6 +13,8 @@ class ExampleController extends Controller
 {
     /**
      * Respond with 'Hello world!'
+     *
+     * @return \Freischutz\Utility\Response
      */
     public function helloAction()
     {
@@ -28,6 +30,8 @@ class ExampleController extends Controller
      * object. If successful responds with 200 OK, sending the re-serialized
      * object back as response payload. If failing to convert data into a
      * SimpleXMLElement it will respond with 400 Bad Request.
+     *
+     * @return \Freischutz\Utility\Response
      */
     public function xmlAction()
     {
@@ -48,6 +52,8 @@ class ExampleController extends Controller
      * If successful responds with 200 OK, sending the re-serialized
      * object back as response payload. If json_decode fails to convert data
      * into an object it will respond with 400 Bad Request.
+     *
+     * @return \Freischutz\Utility\Response
      */
     public function jsonAction()
     {
@@ -66,13 +72,15 @@ class ExampleController extends Controller
      *
      * Retrieves all Example model records, which is all rows from the models
      * source table (example).
+     *
+     * @return \Freischutz\Utility\Response
      */
     public function getAction()
     {
         $response = new Response();
-        // Get Phalcon resultset, each row is built when it becomes required
+        // Get Phalcon result set, each row is built when it becomes required
         $result = Example::find();
-        // Get all objects from resultset (all rows become built)
+        // Get all objects from result set (all rows become built)
         $data = $result->toArray();
         $response->ok($data);
         return $response;

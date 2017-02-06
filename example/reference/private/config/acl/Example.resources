@@ -1,3 +1,3 @@
 # Controller,Description,Action1;Action2;ActionN
-not-found,Resource missing route,notFound
+not-found,Resource missing action,notFound
 example,Example resource,json;xml;get;hello

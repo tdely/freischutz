@@ -52,7 +52,7 @@ Features
 --------
 
 * Hawk validation/authentication
-  * Stores nonces in file or database.
+  * Stores nonces in file, database, or cache.
 * Access control through ACL
   * Read from files or database.
 * User system decoupled from validation/ACL schemes
@@ -67,6 +67,7 @@ Planned
 
 * More automated integration tests
 * More/improved documentation
+
 
 Getting Started
 ---------------

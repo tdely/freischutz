@@ -11,6 +11,8 @@ class NotFoundController extends Controller
 {
     /**
      * Respond with 404 Not Found
+     *
+     * @return \Freischutz\Utility\Response
      */
     public function notFoundAction()
     {

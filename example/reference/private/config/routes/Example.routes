@@ -1,0 +1,5 @@
+# Controller,Action,Pattern,Method
+example,hello,/hello,get
+example,get,/test,get
+example,xml,/xml,post
+example,json,/json,post

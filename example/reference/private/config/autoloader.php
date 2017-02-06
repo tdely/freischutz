@@ -9,8 +9,8 @@ $loader->registerNamespaces(array(
     'Freischutz\Application' => LIB_DIR . '/application',
     'Freischutz\Security' => LIB_DIR . '/security',
     'Freischutz\Utility' => LIB_DIR . '/utility',
-    'Test\Controllers' => APP_DIR . '/controllers',
-    'Test\Models' => APP_DIR . '/models',
+    'Reference\Controllers' => APP_DIR . '/controllers',
+    'Reference\Models' => APP_DIR . '/models',
 ));
 
 $loader->register();

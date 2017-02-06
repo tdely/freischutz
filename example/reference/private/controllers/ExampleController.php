@@ -1,15 +1,15 @@
 <?php
-namespace Test\Controllers;
+namespace Reference\Controllers;
 
 use Freischutz\Utility\Response;
 use Phalcon\Mvc\Controller;
-use Test\Models\Test;
+use Reference\Models\Example;
 
 /**
  * Controller illustrating some basic functionality, also usable for making
  * requests while testing configuration.
  */
-class TestController extends Controller
+class ExampleController extends Controller
 {
     /**
      * Respond with 'Hello world!'
@@ -22,7 +22,7 @@ class TestController extends Controller
     }
 
     /**
-     * XML test.
+     * XML example.
      *
      * Takes POST payload and attempts to turn it into a SimpleXMLElement
      * object. If successful responds with 200 OK, sending the re-serialized
@@ -36,13 +36,13 @@ class TestController extends Controller
         if ($data) {
             $response->ok($data);
         } else {
-            $response->unprocessableEntity('Data malformed or missing');
+            $response->badRequest('Data malformed or missing');
         }
         return $response;
     }
 
     /**
-     * JSON test.
+     * JSON example.
      *
      * Takes POST payload and attempts to decode it into a standard object
      * If successful responds with 200 OK, sending the re-serialized
@@ -56,22 +56,22 @@ class TestController extends Controller
         if ($data) {
             $response->ok($data);
         } else {
-            $response->unprocessableEntity('Data malformed or missing');
+            $response->badRequest('Data malformed or missing');
         }
         return $response;
     }
 
     /**
-     * Database test.
+     * Database example.
      *
-     * Retrieves all Test model records, which is all rows from the models
-     * source table (test).
+     * Retrieves all Example model records, which is all rows from the models
+     * source table (example).
      */
     public function getAction()
     {
         $response = new Response();
         // Get Phalcon resultset, each row is built when it becomes required
-        $result = Test::find();
+        $result = Example::find();
         // Get all objects from resultset (all rows become built)
         $data = $result->toArray();
         $response->ok($data);

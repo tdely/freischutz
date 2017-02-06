@@ -1,0 +1,3 @@
+# Role,Controller,Action,Policy
+*,not-found,notFound,allow
+user,example,hello,allow

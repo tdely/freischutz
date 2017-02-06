@@ -1,10 +1,10 @@
 <?php
-namespace Test\Models;
+namespace Reference\Models;
 
 use Phalcon\Mvc\Model;
 
 /**
- * Model for Test
+ * Model for user table
  */
 class User extends Model
 {

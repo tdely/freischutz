@@ -1,5 +1,0 @@
-# Controller,Action,Pattern,Method
-test,hello,/hello,get
-test,get,/test,get
-test,xml,/xml,post
-test,json,/json,post

@@ -1,5 +1,5 @@
 <?php
-namespace Test\Controllers;
+namespace Reference\Controllers;
 
 use Freischutz\Utility\Response;
 use Phalcon\Mvc\Controller;

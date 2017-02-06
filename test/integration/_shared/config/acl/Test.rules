@@ -1,4 +1,5 @@
 # Role,Controller,Action,Policy
 ; Role,Controller,Action,Policy
 // Role,Controller,Action,Policy
-user,test,json,allow
+*,not-found,notFound,allow
+user,test,hello,allow

@@ -1,4 +1,5 @@
 # Controller,Description,Action1;Action2;ActionN
 ; Controller,Description,Action1;Action2;ActionN
 // Controller,Description,Action1;Action2;ActionN
+not-found,Resource missing action,notFound
 test,Test resource,json;xml;hello

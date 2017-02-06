@@ -17,7 +17,7 @@ class Acl extends Component
     /**
      * Rebuild ACL.
      *
-     * @return \Phalcon\Acl\Adapter\Memory
+     * @return void
      */
     private function rebuild()
     {
@@ -32,29 +32,28 @@ class Acl extends Component
             }
         }
 
+        $acl = new AclList();
+        $acl->setDefaultAction(PhalconAcl::DENY);
+
         /**
          * Build ACL
          */
         $backend = strtolower($this->config->acl->get('backend', 'file'));
         switch ($backend) {
             case 'file':
-                $acl = $this->buildFromFiles();
+                $this->buildFromFiles($acl);
                 break;
             case 'database':
             case 'db':
-                $acl = $this->buildFromDatabase();
+                $this->buildFromDatabase($acl);
                 break;
             default:
                 throw new \Exception("Unknown ACL backend: $backend");
         }
 
-        $acl->setDefaultAction(PhalconAcl::DENY);
-
         if ($this->di->has('cache') && $doCache) {
             $this->cache->save('_freischutz_acl', $acl);
         }
-
-        return $acl;
     }
 
     /**
@@ -68,7 +67,7 @@ class Acl extends Component
             return $this->acl;
         }
 
-        $this->acl = $this->rebuild();
+        $this->rebuild();
         return $this->acl;
     }
 
@@ -90,12 +89,11 @@ class Acl extends Component
      *
      * @throw \Exception if encountering a malformed line.
      * @throw \Exception if encountering a policy other than allow and deny.
-     * @return \Phalcon\Acl\Adapter\Memory
+     * @param \Phalcon\Acl\Adapter\Memory $acl ACL object.
+     * @return void
      */
-    private function buildFromFiles()
+    private function buildFromFiles($acl)
     {
-        $acl = new AclList();
-
         $aclDir = $this->config->application->app_dir .
             $this->config->acl->dir;
 
@@ -184,7 +182,8 @@ class Acl extends Component
                 $acl->$policy($parts[0], $parts[1], $parts[2]);
             }
         }
-        return $acl;
+
+        $this->acl = $acl;
     }
 
     /**
@@ -194,12 +193,11 @@ class Acl extends Component
      * @throw \Exception if any model cannot be found.
      * @throw \Exception if any model is missing a required attribute.
      * @throw \Exception if encountering a policy other than allow and deny.
-     * @return \Phalcon\Acl\Adapter\Memory
+     * @param \Phalcon\Acl\Adapter\Memory $acl ACL object.
+     * @return void
      */
-    private function buildFromDatabase()
+    private function buildFromDatabase($acl)
     {
-        $acl = new AclList();
-
         $models = array(
             'role',
             'inherit',
@@ -296,6 +294,6 @@ class Acl extends Component
             );
         }
 
-        return $acl;
+        $this->acl = $acl;
     }
 }

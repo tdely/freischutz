@@ -314,7 +314,7 @@ converted from CamelCase to snake_case: 'Example' becomes 'example', 'MyTest'
 becomes 'my_test'.
 
 `example/reference/private/models/Example.php`:
-```
+```php
 <?php
 namespace Reference\Models;
 
@@ -331,7 +331,7 @@ class Example extends Model
 
 Using a non-default connection service may be accomplished by adding something
 like this:
-```
+```php
 public function initialize()
 {
     $this->setConnectionService('dbExample');

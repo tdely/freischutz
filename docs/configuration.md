@@ -39,3 +39,13 @@ Optional section.
 ### users
 Required section **if** users_backend is set to config under application.
 Each key-value pair represents one user: `user_id = password`.
+
+
+### Variable sections
+When using cache_adapter or metadata_adapter (other than Memory), parameters
+will be loaded from sections of the same name (lower case). Setting
+`cache_adapter = Redis` will enable the use of Redis caching, and requires the
+section 'redis' to be set with connection parameters. `metadata_adapter = Redis`
+will use the same 'redis' section.
+
+You could also create your own section for setting to use in your application.

@@ -39,7 +39,7 @@ function display_help()
     echo "    -v        print version and exit"
 }
 
-function display_help()
+function display_version()
 {
     echo "$(basename ${BASH_SOURCE[0]}) version ${VERSION}"
 }
@@ -163,8 +163,14 @@ if [ -z "${method}" ]; then
     exit 1
 fi
 
-if [ -z "${1}" ]; then
+if [ "${#}" = 0 ]; then
     echo "No target specified" >&2
+    display_help
+    exit 1
+fi
+
+if [ "${#}" > 1 ]; then
+    echo "Too many arguments" >&2
     display_help
     exit 1
 fi

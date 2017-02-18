@@ -169,7 +169,7 @@ if [ "${#}" = 0 ]; then
     exit 1
 fi
 
-if [ "${#}" > 1 ]; then
+if [ "${#}" -gt 1 ]; then
     echo "Too many arguments" >&2
     display_help
     exit 1

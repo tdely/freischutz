@@ -463,19 +463,10 @@ server {
     root        '/www/freischutz/example/reference/reference';
     charset     utf-8;
 
-    client_max_body_size 1M;
-    underscores_in_headers on;
-
-    gzip            on;
-    gzip_vary       on;
-    gzip_min_length 860;
-    gzip_comp_level 1;
-    gzip_types      text/plain application/json application/xml;
-
     try_files $uri $uri/ @rewrite;
 
     location @rewrite {
-        rewrite ^/((.*?))$ /public/index.php?_url=/$1;
+        rewrite ^/(.*?)$ /public/index.php?_url=/$1;
     }
 
     location ~ \.php$ {
@@ -489,7 +480,7 @@ server {
         fastcgi_param PATH_INFO     $request_uri;
         fastcgi_param SCRIPT_TRANSLATED $document_root$fastcgi_path_info;
         fastcgi_param SCRIPT_FILENAME   $document_root$fastcgi_script_name;
-     }
+    }
 }
 ```
 

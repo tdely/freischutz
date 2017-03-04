@@ -31,10 +31,10 @@ Optional section.
 * enable: _(boolean)_ use ACL, **default false**.
 * backend: _(file|database)_ ACL backend, **default file**.
 * dir: _(string)_ path to ACL file directory, **required**.
-* role_model: _(string)_ role model class with full namespace including leading backslash (e.g. \Example\Model\Role), **required if** `backend = database`.
-* inherit_model: _(string)_ role inheritance model class with full namespace including leading backslash (e.g. \Example\Model\Inherit), **required if** `backend = database`.
-* resource_model: _(string)_ resource model class with full namespace including leading backslash (e.g. \Example\Model\Resource), **required if** `backend = database`.
-* rule_model: _(string)_ rule model class with full namespace including leading backslash (e.g. \Example\Model\Rule), **required if** `backend = database`.
+* role_model: _(string)_ role model class with full namespace including leading backslash (e.g. \Example\Model\AclRole), **required if** `backend = database`.
+* inherit_model: _(string)_ role inheritance model class with full namespace including leading backslash (e.g. \Example\Model\AclInherit), **required if** `backend = database`.
+* resource_model: _(string)_ resource model class with full namespace including leading backslash (e.g. \Example\Model\AclResource), **required if** `backend = database`.
+* rule_model: _(string)_ rule model class with full namespace including leading backslash (e.g. \Example\Model\AclRule), **required if** `backend = database`.
 
 ### users
 Required section **if** users_backend is set to config under application.

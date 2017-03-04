@@ -4,9 +4,9 @@ namespace Reference\Models;
 use Phalcon\Mvc\Model;
 
 /**
- * Model for role table
+ * Model for acl_rule table
  */
-class Role extends Model
+class AclRule extends Model
 {
 
 }

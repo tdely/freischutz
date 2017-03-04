@@ -4,9 +4,9 @@ namespace Reference\Models;
 use Phalcon\Mvc\Model;
 
 /**
- * Model for inherit table
+ * Model for acl_inherit table
  */
-class Inherit extends Model
+class AclInherit extends Model
 {
 
 }

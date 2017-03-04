@@ -4,9 +4,9 @@ namespace Test\Models;
 use Phalcon\Mvc\Model;
 
 /**
- * Model for Test
+ * Model for acl_resource
  */
-class Resource extends Model
+class AclResource extends Model
 {
 
 }

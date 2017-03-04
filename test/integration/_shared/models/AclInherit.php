@@ -4,9 +4,9 @@ namespace Test\Models;
 use Phalcon\Mvc\Model;
 
 /**
- * Model for Test
+ * Model for acl_inherit
  */
-class Rule extends Model
+class AclInherit extends Model
 {
 
 }

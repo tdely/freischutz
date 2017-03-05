@@ -345,18 +345,18 @@ which URI and HTTP method was used.
 
 Route files end in '.routes' and are made up of 4 CSV fields:
 
-* Controller name
-* Action name
+* Controller name, stripped of 'Controller', underscored (or dashed) and lowercased; MyExampleController => my_example
+* Action name: Controller method name stripped of 'Action'
 * Pattern: Regex for URI matching
 * Method: HTTP method
 
 `example/reference/private/config/routes/Example.routes`:
 ```
 # Controller,Action,Pattern,Method
-test,hello,/hello,get
-test,get,/test,get
-test,xml,/xml,post
-test,json,/json,post
+example,hello,/hello,get
+example,get,/test,get
+example,xml,/xml,post
+example,json,/json,post
 ```
 
 
@@ -460,13 +460,13 @@ server {
     listen [::]:80 ipv6only=on;
 
     server_name localhost;
-    root        '/www/freischutz/example/reference/reference';
+    root        '/www/freischutz/example/reference/public';
     charset     utf-8;
 
     try_files $uri $uri/ @rewrite;
 
     location @rewrite {
-        rewrite ^/(.*?)$ /public/index.php?_url=/$1;
+        rewrite ^/(.*?)$ /index.php?_url=/$1;
     }
 
     location ~ \.php$ {

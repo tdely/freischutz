@@ -1,3 +1,5 @@
 # Role,Controller,Action,Policy
 *,not-found,notFound,allow
-user,example,hello,allow
+user,database,*,allow
+user,example,*,allow
+guest,example,hello,allow

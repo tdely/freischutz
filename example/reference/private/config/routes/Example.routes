@@ -1,5 +1,7 @@
 # Controller,Action,Pattern,Method
 example,hello,/hello,get
-example,get,/test,get
 example,xml,/xml,post
 example,json,/json,post
+database,get,/db/example,get
+database,get,/db/example/{id:[0-9]+},get
+database,filterGet,/db/filter/example,get

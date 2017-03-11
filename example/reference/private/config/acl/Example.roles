@@ -1,3 +1,5 @@
 # Role,Description
-user,Example group
+user,User group
+guest,Guest group
 jane,Example user
+bob,Example user

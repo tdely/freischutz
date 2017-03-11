@@ -66,24 +66,5 @@ class ExampleController extends Controller
         }
         return $response;
     }
-
-    /**
-     * Database example.
-     *
-     * Retrieves all Example model records, which is all rows from the models
-     * source table (example).
-     *
-     * @return \Freischutz\Utility\Response
-     */
-    public function getAction()
-    {
-        $response = new Response();
-        // Get Phalcon result set, each row is built when it becomes required
-        $result = Example::find();
-        // Get all objects from result set (all rows become built)
-        $data = $result->toArray();
-        $response->ok($data);
-        return $response;
-    }
 }
 

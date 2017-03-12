@@ -19,6 +19,28 @@ class Data extends Component
     }
 
     /**
+     * Get data handled according to content-type.
+     *
+     * @return mixed
+     */
+    public function get()
+    {
+        switch ($this->request->getHeader('CONTENT_TYPE')) {
+            case 'application/json':
+                $data = $this->getJson();
+                break;
+            case 'application/xml':
+            case 'text/xml':
+                $data = $this->getXml();
+                break;
+            default:
+                $data = $this->getRaw();
+                break;
+        }
+        return $data;
+    }
+
+    /**
      * Get raw data.
      *
      * @return string|binary

@@ -89,5 +89,48 @@ class DatabaseController extends Controller
 
         return $response;
     }
+
+    /**
+     * Create new Example model.
+     *
+     * This method takes the request data and creates a new Example model from
+     * this data. If the model can be inserted into the database a 200 OK
+     * response with the models data is returned, otherwise an error
+     * response of a sensible type is returned with more information on what
+     * went wrong.
+     *
+     * @return \Freischutz\Utility\Response
+     */
+    public function postAction()
+    {
+        $response = new Response();
+
+        $example = new Example((array) $this->data->get());
+
+        if ($example->create()) {
+            $response->ok($example);
+        } else {
+            switch ($example->getMessages()[0]->getType()) {
+                // Required field missing
+                case 'PresenceOf':
+                // Invalid value for field
+                case 'InvalidValue':
+                // Custom model validation on timestamp field failed
+                case 'Date':
+                    $response->unprocessableEntity(
+                        implode("\n", $example->getMessages())
+                    );
+                    break;
+                // A row already exists with the same identifier
+                case 'InvalidCreateAttempt':
+                    $response->conflict(implode("\n", $example->getMessages()));
+                default:
+                    $response->internalServerError('Oops, something went wrong.');
+                    break;
+            }
+        }
+
+        return $response;
+    }
 }
 

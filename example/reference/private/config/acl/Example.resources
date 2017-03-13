@@ -1,4 +1,4 @@
 # Controller,Description,Action1;Action2;ActionN
 not-found,Resource missing action,notFound
 example,ExampleController resources,json;xml;hello
-database,DatabaseController resources,get;filterGet
+database,DatabaseController resources,get;filterGet;post

@@ -5,3 +5,4 @@ example,json,/json,post
 database,get,/db/example,get
 database,get,/db/example/{id:[0-9]+},get
 database,filterGet,/db/filter/example,get
+database,post,/db/example,post

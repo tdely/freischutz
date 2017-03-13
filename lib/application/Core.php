@@ -10,6 +10,7 @@ use Phalcon\Cache\Frontend\Data as CacheData;
 use Phalcon\DI;
 use Phalcon\Events\Event;
 use Phalcon\Events\Manager as EventsManager;
+use Phalcon\Filter;
 use Phalcon\Http\Request;
 use Phalcon\Mvc\Application;
 use Phalcon\Mvc\Dispatcher;
@@ -48,6 +49,17 @@ class Core extends Application
         $di->setShared('request', function () use ($request) {
             return $request;
         });
+    }
+
+
+    /**
+     * Set filter service.
+     *
+     * @param \Phalcon\DI $di Dependency Injector.
+     */
+    private function setFilter($di)
+    {
+        $di->setShared('filter', new Filter());
     }
 
     /**
@@ -359,6 +371,7 @@ class Core extends Application
 
         // Load components
         $this->setRequest($di);
+        $this->setFilter($di);
         $this->setDispatcher($di);
         $this->setCache($di);
         $this->setRouter($di);

@@ -66,5 +66,28 @@ class ExampleController extends Controller
         }
         return $response;
     }
+
+    /**
+     * Variable type example.
+     *
+     * Takes POST payload and handles it according to content type,
+     * either attempting to decode it into some data type or using it raw.
+     * If successful responds with 200 OK, sending the (possibly re-serialized)
+     * data back as response payload. If the handler for the content type fails
+     * it will respond with 400 Bad Request.
+     *
+     * @return \Freischutz\Utility\Response
+     */
+    public function varTypeAction()
+    {
+        $response = new Response();
+        $data = $this->data->get();
+        if ($data) {
+            $response->ok($data);
+        } else {
+            $response->badRequest('Data malformed or missing');
+        }
+        return $response;
+    }
 }
 

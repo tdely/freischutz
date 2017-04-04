@@ -3,7 +3,6 @@ namespace Reference\Controllers;
 
 use Freischutz\Utility\Response;
 use Phalcon\Mvc\Controller;
-use Reference\Models\Example;
 
 /**
  * Controller illustrating some basic functionality, also usable for making

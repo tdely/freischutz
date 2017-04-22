@@ -4,7 +4,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-VERSION='0.2.0'
+VERSION='0.3.0'
 
 content_type='text/plain'
 method='GET'
@@ -71,7 +71,7 @@ function hawk_build()
     payload+="${content_type}\n"
     payload+="${data}\n"
 
-    local payload_hash=$(echo -n "${payload}"|${algorithm}sum|sed -e 's/  -//')
+    local payload_hash=$(echo -ne "${payload}"|openssl dgst -${algorithm} -binary|base64 -w0)
 
     # Build Hawk header string for MAC
     local message="hawk.1.header\n"
@@ -84,7 +84,7 @@ function hawk_build()
     message+="${payload_hash}\n"
     message+="${ext}\n"
 
-    local mac=$(echo -n ${message}|openssl dgst -${algorithm} -hmac ${key} -binary|base64 -w0)
+    local mac=$(echo -ne ${message}|openssl dgst -${algorithm} -hmac ${key} -binary|base64 -w0)
 
     if [ ${verbose} = true ]; then
         echo "-------------------------------------------"

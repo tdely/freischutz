@@ -122,24 +122,24 @@ class Hawk extends Component
 
         // Create payload string
         if (isset($this->params->hash)) {
-            $payload = 'hawk.1.payload\n' .
-                       $this->request->getContentType() . '\n' .
-                       $this->data->getRaw() . '\n';
-            $hash = hash($alg, $payload);
+            $payload = "hawk.1.payload\n" .
+                       $this->request->getContentType() . "\n" .
+                       $this->data->getRaw() . "\n";
+            $hash = base64_encode(hash($alg, $payload, true));
         } else {
             $hash = '';
         }
 
         // Create request string
-        $message = 'hawk.1.header\n' .
-                   $this->params->ts . '\n' .
-                   $this->params->nonce . '\n' .
-                   $this->request->getMethod() . '\n' .
-                   $this->request->getURI() . '\n' .
-                   $this->request->getHttpHost() . '\n' .
-                   $this->request->getPort() . '\n' .
-                   $hash . '\n' .
-                   $this->params->ext . '\n';
+        $message = "hawk.1.header\n" .
+                   $this->params->ts . "\n" .
+                   $this->params->nonce . "\n" .
+                   $this->request->getMethod() . "\n" .
+                   $this->request->getURI() . "\n" .
+                   $this->request->getHttpHost() . "\n" .
+                   $this->request->getPort() . "\n" .
+                   $hash . "\n" .
+                   $this->params->ext . "\n";
 
         // Create MAC for comparison
         $serverMac = base64_encode(hash_hmac($alg, $message, $this->key, true));
@@ -196,7 +196,7 @@ class Hawk extends Component
         $payload = "hawk.1.payload\n" .
                    $this->response->getContentType() . "\n" .
                    $this->response->getContent() . "\n";
-        $hash = hash($this->params->alg, $payload);
+        $hash = base64_encode(hash($this->params->alg, $payload, true));
 
         // Create response string
         $message = "hawk.1.header\n" .

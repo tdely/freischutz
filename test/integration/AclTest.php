@@ -48,15 +48,15 @@ class AclTest extends TestCase
         $port = 80;
 
         // Create request string
-        $message = 'hawk.1.header\n' .
-                   $ts . '\n' .
-                   $nonce . '\n' .
-                   $method . '\n' .
-                   $uri . '\n' .
-                   $host . '\n' .
-                   $port . '\n' .
-                   '' . '\n' .
-                   '' . '\n';
+        $message = "hawk.1.header\n" .
+                   $ts . "\n" .
+                   $nonce . "\n" .
+                   $method . "\n" .
+                   $uri . "\n" .
+                   $host . "\n" .
+                   $port . "\n" .
+                   "\n" .
+                   "\n";
 
         $mac = base64_encode(hash_hmac($alg, $message, 'pw', true));
         $header = 'Hawk id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", alg="'.$alg.'"';
@@ -92,15 +92,15 @@ class AclTest extends TestCase
         $port = 80;
 
         // Create request string
-        $message = 'hawk.1.header\n' .
-                   $ts . '\n' .
-                   $nonce . '\n' .
-                   $method . '\n' .
-                   $uri . '\n' .
-                   $host . '\n' .
-                   $port . '\n' .
-                   '' . '\n' .
-                   '' . '\n';
+        $message = "hawk.1.header\n" .
+                   $ts . "\n" .
+                   $nonce . "\n" .
+                   $method . "\n" .
+                   $uri . "\n" .
+                   $host . "\n" .
+                   $port . "\n" .
+                   "\n" .
+                   "\n";
 
         $mac = base64_encode(hash_hmac($alg, $message, 'pass', true));
         $header = 'Hawk id="bob", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", alg="'.$alg.'"';
@@ -136,15 +136,15 @@ class AclTest extends TestCase
         $port = 80;
 
         // Create request string
-        $message = 'hawk.1.header\n' .
-                   $ts . '\n' .
-                   $nonce . '\n' .
-                   $method . '\n' .
-                   $uri . '\n' .
-                   $host . '\n' .
-                   $port . '\n' .
-                   '' . '\n' .
-                   '' . '\n';
+        $message = "hawk.1.header\n" .
+                   $ts . "\n" .
+                   $nonce . "\n" .
+                   $method . "\n" .
+                   $uri . "\n" .
+                   $host . "\n" .
+                   $port . "\n" .
+                   "\n" .
+                   "\n";
 
         $mac = base64_encode(hash_hmac($alg, $message, 'pw', true));
         $header = 'Hawk id="user", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", alg="'.$alg.'"';

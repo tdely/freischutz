@@ -221,7 +221,7 @@ class Core extends Application
     private function authenticateHawk(EventsManager $eventsManager)
     {
         if (!isset($this->config->hawk)) {
-            throw \Exception(
+            throw new \Exception(
                 "Hawk authentication requires hawk section in config file."
             );
         }
@@ -304,7 +304,7 @@ class Core extends Application
                         $this->authenticateHawk($eventsManager);
                         break;
                     default:
-                        throw \Exception('Unknown authentication mechanism: ' . $reqMechanism);
+                        throw new \Exception('Unknown authentication mechanism: ' . $reqMechanism);
                 }
             }
         }

@@ -11,6 +11,9 @@ Required section.
 * users_backend: _(file|config|database)_ users storage backend, **default file**.
 * users_dir: _(string)_ path to users file directory, **required if** `users_backend = file`.
 * users_model: _(string)_ users model class with full namespace including leading backslash (e.g. \Example\Model\User), **required if** `users_backend = database`.
+* log_destination: _(string)_ file path to log to, or 'syslog' to use syslog, **default syslog**.
+* log_name: _(string)_ name to log under (e.g. syslog ident) **default freischutz**.
+* log_level: _(string)_ granularity of log messages (available: debug,info,notice,warning,error,critical,alert,emergency; unknown value defaults to error), **default error**.
 * authenticate: _(string)_ authentication mechanism to allow in CSV (available: hawk), **default false**.
 * metadata_adapter: _(string)_ A \Phalcon\Mvc\Model\Metadata\ to use for storing model metadata (class name only), **default memory**
 * cache_adapter: _(string)_ A \Phalcon\Cache\Backend\ to use for caching (class name only), **default false**.

@@ -2,6 +2,7 @@
 namespace Freischutz\Application;
 
 use Freischutz\Application\Acl;
+use Freischutz\Application\Exception;
 use Freischutz\Application\Router;
 use Freischutz\Application\Users;
 use Freischutz\Security\Hawk;
@@ -12,6 +13,10 @@ use Phalcon\Events\Event;
 use Phalcon\Events\Manager as EventsManager;
 use Phalcon\Filter;
 use Phalcon\Http\Request;
+use Phalcon\Logger;
+use Phalcon\Logger\Adapter\File as FileAdapter;
+use Phalcon\Logger\Adapter\Syslog as SyslogAdapter;
+use Phalcon\Logger\Formatter\Line as LineFormatter;
 use Phalcon\Mvc\Application;
 use Phalcon\Mvc\Dispatcher;
 use Phalcon\Mvc\Model\Manager as ModelsManager;
@@ -22,7 +27,7 @@ use Phalcon\Mvc\View;
  */
 class Core extends Application
 {
-    const VERSION = '0.4.0';
+    const VERSION = '0.4.1';
 
     /**
      * Get Freischutz version.
@@ -32,6 +37,67 @@ class Core extends Application
     public static function getVersion()
     {
         return self::VERSION;
+    }
+
+    /**
+     * Set logger service.
+     *
+     * @param \Phalcon\DI $di Dependency Injector.
+     */
+    public function setLogger($di)
+    {
+        $destination = $this->config->application->get('log_destination', 'syslog');
+        $level = $this->config->application->get('log_level', 'error');
+        $name = $this->config->application->get('log_name', 'freischutz');
+
+        if ($destination === 'syslog') {
+            $logger = new SyslogAdapter(
+                $name,
+                array(
+                    'option' => LOG_CONS | LOG_NDELAY | LOG_PID,
+                    'facility' => LOG_USER,
+            ));
+        } else {
+            $pid = getmypid();
+            $logger = new FileAdapter($destination);
+            $logger->setFormatter(
+                new LineFormatter("[%date%] {$name}[$pid] [%type%] %message%")
+            );
+        }
+
+        switch (strtolower($level)) {
+            case 'debug':
+                $level = Logger::DEBUG;
+                break;
+            case 'info':
+                $level = Logger::INFO;
+                break;
+            case 'notice':
+                $level = Logger::NOTICE;
+                break;
+            case 'warning':
+                $level = Logger::WARNING;
+                break;
+            case 'error':
+                $level = Logger::ERROR;
+                break;
+            case 'alert':
+                $level = Logger::ALERT;
+                break;
+            case 'critical':
+                $level = Logger::CRITICAL;
+                break;
+            case 'emergency':
+                $level = Logger::EMERGENCY;
+                break;
+            default:
+                $level = Logger::ERROR;
+                break;
+        }
+
+        $logger->setLogLevel($level);
+
+        $di->setShared('logger', $logger);
     }
 
     /**
@@ -50,7 +116,6 @@ class Core extends Application
             return $request;
         });
     }
-
 
     /**
      * Set filter service.
@@ -99,7 +164,10 @@ class Core extends Application
         $frontCache = new CacheData(array(
             'lifetime' => $this->config->application->get('cache_lifetime', 300)
         ));
-        $cache = new $adapterClass($frontCache, (array) $this->config->$adapterName);
+        $cache = new $adapterClass(
+            $frontCache,
+            (array) $this->config->$adapterName
+        );
         $di->set('cache', $cache);
     }
 
@@ -119,14 +187,16 @@ class Core extends Application
     /**
      * Set databases.
      *
-     * @throws \Exception if databases_dir not set in config application section.
-     * @throws \Exception on unknown database adapter in loaded database config.
+     * @throws \Freischutz\Application\Exception if databases_dir not set in
+     *   config application section.
+     * @throws \Freischutz\Application\Exception on unknown database adapter in
+     *   loaded database config.
      * @param \Phalcon\DI $di Dependency Injector.
      */
     private function setDatabases($di)
     {
         if (!isset($this->config->application->databases_dir)) {
-            throw new \Exception(
+            throw new\Freischutz\Application\Exception(
                 "Missing 'databases_dir' in config application section."
             );
         }
@@ -147,8 +217,8 @@ class Core extends Application
             unset($config['adapter']);
 
             // Validate adapter
-            if (!in_array($adapter, array('Mysql', 'Postgresql', 'Sqlite', true))) {
-                throw new \Exception(
+            if (!in_array($adapter, ['Mysql', 'Postgresql', 'Sqlite', true])) {
+                throw new\Freischutz\Application\Exception(
                     "Unexpected database adapter in $file: $adapter"
                 );
             }
@@ -215,13 +285,13 @@ class Core extends Application
      * Set authentication through Hawk.
      *
      * @param \Phalcon\Events\Manager $eventsManager Events manager.
-     * @throws \Exception if config hawk section missing.
+     * @throws \Freischutz\Application\Exception if config hawk section missing.
      * @return void
      */
     private function authenticateHawk(EventsManager $eventsManager)
     {
         if (!isset($this->config->hawk)) {
-            throw new \Exception(
+            throw new\Freischutz\Application\Exception(
                 "Hawk authentication requires hawk section in config file."
             );
         }
@@ -270,16 +340,24 @@ class Core extends Application
         /**
          * Authentication
          */
-        if ($authenticate = $this->config->application->get('authenticate', false)) {
+        $authenticate = $this->config->application->get('authenticate', false);
+        if ($authenticate) {
             // Get allowed authentication mechanisms
             $mechanisms = array_map('trim', explode(',', $authenticate));
 
             // Get requested authentication mechanism
             $reqMechanism = array();
-            preg_match('/(.+?)(\s|,)/', $this->request->getHeader('Authorization'), $reqMechanism);
+            preg_match(
+                '/(.+?)(\s|,)/',
+                $this->request->getHeader('Authorization'),
+                $reqMechanism
+            );
             $reqMechanism = isset($reqMechanism[1]) ? $reqMechanism[1] : false;
-
-            if (!$reqMechanism || !in_array(strtolower($reqMechanism), array_map('strtolower', $mechanisms))) {
+            $acceptedMechanism = in_array(
+                strtolower($reqMechanism),
+                array_map('strtolower', $mechanisms)
+            );
+            if (!$reqMechanism || !$acceptedMechanism) {
                 /**
                  * Illegal authentication mechanism
                  */
@@ -288,7 +366,7 @@ class Core extends Application
                     "application:beforeHandleRequest",
                     function (Event $event, $dispatcher) use ($reqMechanism, $header) {
                         $this->response->unauthorized(
-                            'Illegal authentication mechanism: ' . $reqMechanism,
+                            "Illegal authentication mechanism: $reqMechanism",
                             $header
                         );
                         $this->response->send();
@@ -304,7 +382,9 @@ class Core extends Application
                         $this->authenticateHawk($eventsManager);
                         break;
                     default:
-                        throw new \Exception('Unknown authentication mechanism: ' . $reqMechanism);
+                        throw new\Freischutz\Application\Exception(
+                            "Unknown authentication mechanism: $reqMechanism"
+                        );
                 }
             }
         }
@@ -312,7 +392,8 @@ class Core extends Application
         /**
          * ACL
          */
-        if (isset($this->config->acl) && $this->config->acl->get('enable', false)) {
+        if (isset($this->config->acl)
+                && $this->config->acl->get('enable', false)) {
             $eventsManager->attach(
                 "dispatch:beforeExecuteRoute",
                 function (Event $event, $dispatcher) {
@@ -322,7 +403,9 @@ class Core extends Application
                     $client = $this->users->getUser();
 
                     $acl = new Acl;
-                    if (!$access = $acl->isAllowed($client->id, $controller, $action)) {
+                    $access = $acl->isAllowed($client->id, $controller, $action);
+
+                    if (!$access) {
                         $this->response->forbidden('Access denied.');
                         $this->response->send();
                     }
@@ -349,42 +432,49 @@ class Core extends Application
     /**
      * Constructor.
      *
-     * @throws \Exception if $config->application->app_dir not set.
+     * @throws \Freischutz\Application\Exception if
+     *   $config->application->app_dir not set.
      * @param \Phalcon\Config\Ini $config Configuration settings.
      */
     public function __construct($config)
     {
-        if (!isset($config->application->app_dir)) {
-            throw new \Exception(
-                "Missing 'app_dir' to be set in config application section."
-            );
+        try {
+            if (!isset($config->application->app_dir)) {
+                throw new Exception(
+                    "Missing 'app_dir' to be set in config application section."
+                );
+            }
+
+            $di = new DI();
+            parent::__construct($di);
+
+            // Load config
+            $di->set('config', $config);
+
+            // Pre-load response
+            $di->set('response', new Response());
+
+            // Load components
+            $this->setLogger($di);
+            $this->setRequest($di);
+            $this->setFilter($di);
+            $this->setDispatcher($di);
+            $this->setCache($di);
+            $this->setRouter($di);
+            $this->setDatabases($di);
+            $this->setData($di);
+            $this->setModelsManager($di);
+            $this->setModelsMetadata($di);
+            $this->setUsers($di);
+            $this->setEventsManagers($di);
+            $this->setView($di);
+
+            // Enable output without view
+            $this->view->disable();
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage());
+            throw $e;
         }
-
-        $di = new DI();
-        parent::__construct($di);
-
-        // Load config
-        $di->set('config', $config);
-
-        // Pre-load response
-        $di->set('response', new Response());
-
-        // Load components
-        $this->setRequest($di);
-        $this->setFilter($di);
-        $this->setDispatcher($di);
-        $this->setCache($di);
-        $this->setRouter($di);
-        $this->setDatabases($di);
-        $this->setData($di);
-        $this->setModelsManager($di);
-        $this->setModelsMetadata($di);
-        $this->setUsers($di);
-        $this->setEventsManagers($di);
-        $this->setView($di);
-
-        // Enable output without view
-        $this->view->disable();
     }
 
     /**

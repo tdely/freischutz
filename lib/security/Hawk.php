@@ -1,6 +1,7 @@
 <?php
 namespace Freischutz\Security;
 
+use Freischutz\Application\Exception;
 use Phalcon\Mvc\User\Component;
 
 /**
@@ -83,6 +84,9 @@ class Hawk extends Component
     {
         $result = (object) array('state' => false, 'message' => null);
         if (empty($this->key)) {
+            $this->logger->debug(
+                "[Hawk] No key set for user ID {$this->params->id}"
+            );
             $result->message = 'User denied.';
             return $result;
         }
@@ -151,25 +155,34 @@ class Hawk extends Component
         if ($serverMac === $this->params->mac) {
             // Message is authentic
             $expire = $this->config->hawk->get('expire', 60);
-            if (($now - $this->params->ts) <= $expire
-                    && ($this->params->ts - $now) <= $expire) {
+            $timedelta = ($this->params->ts - $now);
+            if ($timedelta <= $expire
+                    && (-1 * $timedelta) <= $expire) {
                 // Message is valid
                 if (isset($this->params->hash) && $hash === $this->params->hash) {
                     // Payload hash is correct
                     $result->state = true;
+                    $this->logger->debug("[Hawk] OK.");
                 } elseif (!isset($this->params->hash)) {
                     // Payload not included in validation
                     $result->state = true;
+                    $this->logger->debug(
+                        "[Hawk] OK (Payload hash omitted by client)."
+                    );
                 } else {
                     $result->message = 'Payload mismatch.';
+                    $this->logger->debug("[Hawk] Payload mismatch: expected $hash, got {$this->params->hash}.");
                 }
             } elseif (($this->params->ts - $now) > $expire) {
                 $result->message = 'Request too far into future.';
+                $this->logger->debug("[Hawk] Timedelta threshold exceeded: $timedelta) (threshold ±$expire).");
             } else {
                 $result->message = 'Request expired.';
+                $this->logger->debug("[Hawk] Timedelta threshold exceeded: $timedelta) (threshold ±$expire).");
             }
         } else {
             $result->message = 'Request not authentic.';
+            $this->logger->debug("[Hawk] MAC mismatch: expected $serverMac, got {$this->params->mac}.");
         }
 
         return $result;
@@ -183,14 +196,14 @@ class Hawk extends Component
      *
      * @param string $ext (optional) Value for ext ('ext="$value"' in
      *   Server-Authorization header.
-     * @throw \Exception if $params or $key properties not set, such as when
-     *   used before calling authenticate().
+     * @throws \Freischutz\Application\Exception if $params or $key properties
+     *   not set, such as when used before calling authenticate().
      * @return string Server-Authorization header string.
      */
     public function validateResponse($ext = false)
     {
         if (empty($this->params) || empty($this->key)) {
-            throw new \Exception("Properties 'params' and 'key' not set");
+            throw new Exception("Properties 'params' and 'key' not set");
         }
 
         $payload = "hawk.1.payload\n" .
@@ -211,7 +224,6 @@ class Hawk extends Component
 
         // Create MAC
         $mac = base64_encode(hash_hmac($this->params->alg, $message, $this->key));
-        syslog(LOG_DEBUG, $mac);
         $extSet = $ext ? ", ext=$ext" : '';
 
         return "Server-Authorization: Hawk mac=$mac, hash=$hash" . $extSet;
@@ -221,7 +233,7 @@ class Hawk extends Component
      * Record used nonce and forget expired nonces.
      *
      * @param string $nonce Nonce to record.
-     * @throw \Exception on unknown backend.
+     * @throws \Freischutz\Application\Exception on unknown backend.
      * @return void
      */
     private function manageNonces($nonce)
@@ -238,7 +250,7 @@ class Hawk extends Component
                 $this->manageNonceCache($nonce);
                 break;
             default:
-                throw new \Exception('Unknown Hawk backend: '. $this->backend);
+                throw new Exception("Unknown Hawk backend: {$this->backend}");
         }
     }
 
@@ -246,7 +258,8 @@ class Hawk extends Component
      * Record used nonce and forget expired nonces in file.
      *
      * @param string $nonce Nonce to record.
-     * @throw \Exception if encountering a malformed line.
+     * @throws \Freischutz\Application\Exception if encountering a malformed
+     *   line.
      * @return void
      */
     private function manageNonceFile($nonce)
@@ -262,7 +275,8 @@ class Hawk extends Component
             foreach ($lines as $line) {
                 $parts = explode(',', $line);
                 if (sizeof($parts) === 2) {
-                    if ($parts[1] + $this->config->hawk->get('expire', 60) < $timestamp) {
+                    if ($parts[1] + $this->config->hawk->get('expire', 60)
+                            < $timestamp) {
                         /**
                          * Forget expired nonces
                          */
@@ -270,7 +284,7 @@ class Hawk extends Component
                     }
                     fwrite($handle, $line . "\n");
                 } else {
-                    throw new \Exception("Malformed row in $file: $line");
+                    throw new Exception("Malformed row in $file: $line");
                 }
             }
         } else {
@@ -286,9 +300,10 @@ class Hawk extends Component
      * Record used nonce and forget expired nonces in database.
      *
      * @param string $nonce Nonce to record.
-     * @throw \Exception if nonce_model not set in config hawk section.
-     * @throw \Exception if model cannot be found.
-     * @throw \Exception if model fails to save.
+     * @throws \Freischutz\Application\Exception if nonce_model not set in
+     *   config hawk section.
+     * @throws \Freischutz\Application\Exception if model cannot be found.
+     * @throws \Freischutz\Application\Exception if model fails to save.
      * @return void
      */
     private function manageNonceDatabase($nonce)
@@ -296,7 +311,7 @@ class Hawk extends Component
         $timestamp = date('U');
         if (!isset($this->config->hawk)
                 || !isset($this->config->hawk->nonce_model)) {
-            throw new \Exception(
+            throw new Exception(
                 "Nonce backend 'database' requires nonce_model set in hawk " .
                 "section in config file."
             );
@@ -305,7 +320,7 @@ class Hawk extends Component
         $modelName = $this->config->hawk->nonce_model;
 
         if (!class_exists($modelName)) {
-            throw new \Exception("Nonce model not found: " . $modelName);
+            throw new Exception("Nonce model not found: " . $modelName);
         }
 
         $model = new $modelName;
@@ -321,20 +336,20 @@ class Hawk extends Component
         $model->nonce = $nonce;
         $model->timestamp = $timestamp;
         if (!$model->save()) {
-            throw new \Exception("Could not save nonce to database");
+            throw new Exception("Could not save nonce to database");
         }
     }
 
     /**
      * Record used nonce in cache.
      *
-     * @throw \Exception if cache service not set.
+     * @throws \Freischutz\Application\Exception if cache service not set.
      * @return void
      */
     private function manageNonceCache()
     {
         if (!$this->di->has('cache')) {
-            throw new \Exception(
+            throw new Exception(
                 "Nonce backend 'cache' requires cache service to be configured."
             );
         }
@@ -345,7 +360,7 @@ class Hawk extends Component
      * Check if nonce has been used previously.
      *
      * @param string $nonce Nonce to lookup.
-     * @throw \Exception on unknown backend.
+     * @throws \Freischutz\Application\Exception on unknown backend.
      * @return bool
      */
     private function lookupNonce($nonce)
@@ -362,7 +377,7 @@ class Hawk extends Component
                 $result = $this->lookupNonceInCache($nonce);
                 break;
             default:
-                throw new \Exception("Unknown nonce backend: " . $this->backend);
+                throw new Exception("Unknown nonce backend: {$this->backend}");
         }
         return $result;
     }
@@ -371,7 +386,8 @@ class Hawk extends Component
      * Check if nonce is recorded in file.
      *
      * @param string $nonce Nonce to lookup.
-     * @throw \Exception if encountering a malformed line.
+     * @throws \Freischutz\Application\Exception if encountering a malformed
+     *   line.
      * @return bool
      */
     private function lookupNonceInFile($nonce)
@@ -389,7 +405,7 @@ class Hawk extends Component
                     return true;
                 }
             } else {
-                throw new \Exception("Malformed row in $file: $line");
+                throw new Exception("Malformed row in $file: $line");
             }
         }
 
@@ -400,16 +416,18 @@ class Hawk extends Component
      * Check if nonce is recorded in database.
      *
      * @param string $nonce Nonce to lookup.
-     * @throw \Exception if nonce_model not set in config hawk section.
-     * @throw \Exception if model cannot be found.
-     * @throw \Exception if model doesn't contain attributes nonce and timestamp.
+     * @throws \Freischutz\Application\Exception if nonce_model not set in
+     *   config hawk section.
+     * @throws \Freischutz\Application\Exception if model cannot be found.
+     * @throws \Freischutz\Application\Exception if model doesn't contain
+     *   attributes nonce and timestamp.
      * @return bool
      */
     private function lookupNonceInDatabase($nonce)
     {
         if (!isset($this->config->hawk)
                 || !isset($this->config->hawk->nonce_model)) {
-            throw new \Exception(
+            throw new Exception(
                 "Nonce backend 'database' requires nonce_model set in hawk " .
                 "section in config file."
             );
@@ -418,7 +436,7 @@ class Hawk extends Component
         $modelName = $this->config->hawk->nonce_model;
 
         if (!class_exists($modelName)) {
-            throw new \Exception("Nonce model not found: " . $modelName);
+            throw new Exception("Nonce model not found: " . $modelName);
         }
 
         $model = new $modelName;
@@ -426,7 +444,7 @@ class Hawk extends Component
 
         if (!$metadata->hasAttribute($model, 'nonce')
                 || !$metadata->hasAttribute($model, 'timestamp')) {
-            throw new \Exception(
+            throw new Exception(
                 "Nonce model must contain columns 'nonce' and 'timestamp'."
             );
         }
@@ -437,13 +455,13 @@ class Hawk extends Component
     /**
      * Check if nonce is recorded in cache.
      *
-     * @throw \Exception if cache service not set.
+     * @throws \Freischutz\Application\Exception if cache service not set.
      * @return bool
      */
     private function lookupNonceInCache()
     {
         if (!$this->di->has('cache')) {
-            throw new \Exception(
+            throw new Exception(
                 "Nonce backend 'cache' requires cache service to be configured."
             );
         }

@@ -27,13 +27,19 @@ class Data extends Component
     {
         switch ($this->request->getHeader('CONTENT_TYPE')) {
             case 'application/json':
+                $this->logger->debug('[Data] Accessing JSON data');
                 $data = $this->getJson();
                 break;
             case 'application/xml':
             case 'text/xml':
+                $this->logger->debug('[Data] Accessing XML data');
                 $data = $this->getXml();
                 break;
             default:
+                $this->logger->debug(
+                    "[Data] Accessing raw data (type: " .
+                    $this->request->getHeader('CONTENT_TYPE') . ")"
+                );
                 $data = $this->getRaw();
                 break;
         }

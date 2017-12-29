@@ -1,6 +1,7 @@
 <?php
 namespace Freischutz\Application;
 
+use Freischutz\Application\Exception;
 use Phalcon\Acl as PhalconAcl;
 use Phalcon\Acl\Adapter\Memory as AclList;
 use Phalcon\Acl\Resource;
@@ -48,7 +49,7 @@ class Acl extends Component
                 $this->buildFromDatabase($acl);
                 break;
             default:
-                throw new \Exception("Unknown ACL backend: $backend");
+                throw new Exception("Unknown ACL backend: $backend");
         }
 
         if ($this->di->has('cache') && $doCache) {
@@ -87,8 +88,9 @@ class Acl extends Component
     /**
      * Build ACL from file definitions.
      *
-     * @throw \Exception if encountering a malformed line.
-     * @throw \Exception if encountering a policy other than allow and deny.
+     * @throws \Freischutz\Application\Exception if encountering a malformed line.
+     * @throws \Freischutz\Application\Exception if encountering a policy other
+     *   than allow and deny.
      * @param \Phalcon\Acl\Adapter\Memory $acl ACL object.
      * @return void
      */
@@ -114,7 +116,7 @@ class Acl extends Component
                 } elseif (sizeof($parts) === 2) {
                     $acl->addRole(new Role($parts[0], $parts[1]));
                 } else {
-                    throw new \Exception("Malformed row in $file: $line");
+                    throw new Exception("Malformed row in $file: $line");
                 }
             }
         }
@@ -132,7 +134,7 @@ class Acl extends Component
                 }
                 $parts = str_getcsv($line);
                 if (sizeof($parts) !== 2) {
-                    throw new \Exception("Malformed row in $file: $line");
+                    throw new Exception("Malformed row in $file: $line");
                 }
                 $acl->addInherit($parts[0], $parts[1]);
             }
@@ -151,7 +153,7 @@ class Acl extends Component
                 }
                 $parts = str_getcsv($line);
                 if (sizeof($parts) !== 3) {
-                    throw new \Exception("Malformed row in $file: $line");
+                    throw new Exception("Malformed row in $file: $line");
                 }
                 $list = str_getcsv($parts[2], ';');
 
@@ -172,11 +174,11 @@ class Acl extends Component
                 }
                 $parts = str_getcsv($line);
                 if (sizeof($parts) !== 4) {
-                    throw new \Exception("Malformed row in $file: $line");
+                    throw new Exception("Malformed row in $file: $line");
                 }
                 $policy = $parts[3];
                 if ($policy !== 'allow' && $policy !== 'deny') {
-                    throw new \Exception("Illegal policy in $file: $policy");
+                    throw new Exception("Illegal policy in $file: $policy");
                 }
 
                 $acl->$policy($parts[0], $parts[1], $parts[2]);
@@ -189,10 +191,13 @@ class Acl extends Component
     /**
      * Build ACL from database definitions.
      *
-     * @throw \Exception if *_model not set in config acl section.
-     * @throw \Exception if any model cannot be found.
-     * @throw \Exception if any model is missing a required attribute.
-     * @throw \Exception if encountering a policy other than allow and deny.
+     * @throws \Freischutz\Application\Exception if *_model not set in config
+     *   acl section.
+     * @throws \Freischutz\Application\Exception if any model cannot be found.
+     * @throws \Freischutz\Application\Exception if any model is missing a
+     *   required attribute.
+     * @throws \Freischutz\Application\Exception if encountering a policy other
+     *   than allow and deny.
      * @param \Phalcon\Acl\Adapter\Memory $acl ACL object.
      * @return void
      */
@@ -209,7 +214,7 @@ class Acl extends Component
         foreach ($models as $item) {
             $var = $item . '_model';
             if (!isset($this->config->acl->$var)) {
-                throw new \Exception(
+                throw new Exception(
                     "ACL backend 'database' requires $var set in acl " .
                     "section in config file."
                 );
@@ -221,7 +226,7 @@ class Acl extends Component
             $var = $item . '_model';
             ${$item . 'ModelName'} = $this->config->acl->$var;
             if (!class_exists(${$item . 'ModelName'})) {
-                throw new \Exception("ACL " . $item . " model not found: " . ${$item . 'ModelName'});
+                throw new Exception("ACL $item model not found: " . ${$item . 'ModelName'});
             }
         }
 
@@ -234,24 +239,24 @@ class Acl extends Component
         $metadata = $roleModel->getModelsMetaData();
 
         if (!$metadata->hasAttribute($roleModel, 'name')) {
-            throw new \Exception(
+            throw new Exception(
                 "Roles model must contain column 'name'."
             );
         } elseif (!$metadata->hasAttribute($inheritModel, 'role_name')
                 || !$metadata->hasAttribute($inheritModel, 'inherit')) {
-            throw new \Exception(
+            throw new Exception(
                 "Inherits model must contain columns 'role_name' and 'inherit'."
             );
         } elseif (!$metadata->hasAttribute($resourceModel, 'controller')
                 || !$metadata->hasAttribute($resourceModel, 'action')) {
-            throw new \Exception(
+            throw new Exception(
                 "Resources model must contain columns 'controller' and 'action'."
             );
         } elseif (!$metadata->hasAttribute($ruleModel, 'role_name')
                 || !$metadata->hasAttribute($ruleModel, 'resource_controller')
                 || !$metadata->hasAttribute($ruleModel, 'resource_action')
                 || !$metadata->hasAttribute($ruleModel, 'policy')) {
-            throw new \Exception(
+            throw new Exception(
                 "Resources model must contain columns 'role_name', " .
                 "'resource_controller', 'resource_action', and 'policy'."
             );
@@ -284,7 +289,7 @@ class Acl extends Component
          */
         foreach ($ruleModel->find() as $rule) {
             if ($rule->policy !== 'allow' && $rule->policy !== 'deny') {
-                throw new \Exception("Illegal ACL policy: " . $rule->policy);
+                throw new Exception("Illegal ACL policy: " . $rule->policy);
             }
             $policy = $rule->policy;
             $acl->$policy(

@@ -1,6 +1,7 @@
 <?php
 namespace Freischutz\Application;
 
+use Freischutz\Application\Exception;
 use Phalcon\Mvc\Router as PhalconRouter;
 use Phalcon\Mvc\Router\Group;
 use Phalcon\Mvc\User\Component;
@@ -65,8 +66,10 @@ class Router extends Component
     /**
      * Load routes from files.
      *
-     * @throws \Exception if routes_dir not set in config application section.
-     * @throws \Exception when no routes loaded or malformed route definition rows.
+     * @throws \Freischutz\Application\Exception if routes_dir not set in config
+     *   application section.
+     * @throws \Freischutz\Application\Exception when no routes loaded or
+     *   malformed route definition rows.
      * @return \Phalcon\Mvc\Router\Group
      */
     private function loadFromFiles()
@@ -76,7 +79,7 @@ class Router extends Component
         $group->setPrefix($this->config->application->get('base_uri', ''));
 
         if (!isset($this->config->application->routes_dir)) {
-            throw new \Exception(
+            throw new Exception(
                 "Missing 'routes_dir' in config application section."
             );
         }
@@ -87,7 +90,10 @@ class Router extends Component
         /**
          * Load routes
          */
+        $routeCount = 0;
+        $fileCount = 0;
         foreach (glob($routesDir . "/*.routes") as $file) {
+            $fileCount++;
             $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             foreach ($lines as $line) {
                 // Allow comments starting with '#', ';', or '//'
@@ -97,8 +103,9 @@ class Router extends Component
                 }
                 $parts = str_getcsv($line);
                 if (sizeof($parts) !== 4) {
-                    throw new \Exception("Malformed row in $file: $line");
+                    throw new Exception("Malformed row in $file: $line");
                 }
+
                 $group->add(
                     $parts[2],
                     array(
@@ -107,11 +114,15 @@ class Router extends Component
                     ),
                     strtoupper($parts[3])
                 );
+                $routeCount++;
             }
         }
+        $this->logger->debug(
+            "[Router] $routeCount routes from $fileCount files loaded."
+        );
 
         if (!$group->getRoutes()) {
-            throw new \Exception("No routes found in $routesDir");
+            throw new Exception("No routes found in $routesDir");
         }
 
         return $group;

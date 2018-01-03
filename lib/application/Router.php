@@ -66,10 +66,7 @@ class Router extends Component
     /**
      * Load routes from files.
      *
-     * @throws \Freischutz\Application\Exception if routes_dir not set in config
-     *   application section.
-     * @throws \Freischutz\Application\Exception when no routes loaded or
-     *   malformed route definition rows.
+     * @throws \Freischutz\Application\Exception
      * @return \Phalcon\Mvc\Router\Group
      */
     private function loadFromFiles()

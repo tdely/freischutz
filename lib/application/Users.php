@@ -18,7 +18,7 @@ class Users extends Component
      * Loads user list from configured backend (default file) into $userList
      * property.
      *
-     * @throws \Freischutz\Application\Exception on unknown backend.
+     * @throws \Freischutz\Application\Exception
      * @return void
      */
     public function __construct()
@@ -92,10 +92,7 @@ class Users extends Component
     /**
      * Load user details from files.
      *
-     * @throws \Freischutz\Application\Exception if users_dir not set in config
-     *   application section.
-     * @throws \Freischutz\Application\Exception if encountering a malformed
-     *   line.
+     * @throws \Freischutz\Application\Exception
      * @return array
      */
     private function loadFromFiles()
@@ -139,8 +136,7 @@ class Users extends Component
     /**
      * Load user details from config.
      *
-     * @throws \Freischutz\Application\Exception if users sections in config is
-     *   missing and/or contains no items.
+     * @throws \Freischutz\Application\Exception
      * @return array
      */
     private function loadFromConfig()
@@ -161,14 +157,7 @@ class Users extends Component
     /**
      * Load user details from database.
      *
-     * @throws \Freischutz\Application\Exception if users_model not set in
-     *   config application section.
-     * @throws \Freischutz\Application\Exception if model cannot be found.
-     * @throws \Freischutz\Application\Exception if model doesn't contain
-     *   attributes id and key.
-     * @throws \Freischutz\Application\Exception if model id is empty.
-     * @throws \Freischutz\Application\Exception if model::getAuthenticationMap
-     *   returns a non-array or malformed array.
+     * @throws \Freischutz\Application\Exception
      * @return array
      */
     private function loadFromDatabase()

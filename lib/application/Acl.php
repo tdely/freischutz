@@ -88,9 +88,7 @@ class Acl extends Component
     /**
      * Build ACL from file definitions.
      *
-     * @throws \Freischutz\Application\Exception if encountering a malformed line.
-     * @throws \Freischutz\Application\Exception if encountering a policy other
-     *   than allow and deny.
+     * @throws \Freischutz\Application\Exception
      * @param \Phalcon\Acl\Adapter\Memory $acl ACL object.
      * @return void
      */
@@ -191,13 +189,7 @@ class Acl extends Component
     /**
      * Build ACL from database definitions.
      *
-     * @throws \Freischutz\Application\Exception if *_model not set in config
-     *   acl section.
-     * @throws \Freischutz\Application\Exception if any model cannot be found.
-     * @throws \Freischutz\Application\Exception if any model is missing a
-     *   required attribute.
-     * @throws \Freischutz\Application\Exception if encountering a policy other
-     *   than allow and deny.
+     * @throws \Freischutz\Application\Exception
      * @param \Phalcon\Acl\Adapter\Memory $acl ACL object.
      * @return void
      */

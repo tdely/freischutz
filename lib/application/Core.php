@@ -27,7 +27,7 @@ use Phalcon\Mvc\View;
  */
 class Core extends Application
 {
-    const VERSION = '0.4.1';
+    const VERSION = '0.5.0';
 
     /**
      * Get Freischutz version.
@@ -187,10 +187,7 @@ class Core extends Application
     /**
      * Set databases.
      *
-     * @throws \Freischutz\Application\Exception if databases_dir not set in
-     *   config application section.
-     * @throws \Freischutz\Application\Exception on unknown database adapter in
-     *   loaded database config.
+     * @throws \Freischutz\Application\Exception
      * @param \Phalcon\DI $di Dependency Injector.
      */
     private function setDatabases($di)
@@ -285,7 +282,7 @@ class Core extends Application
      * Set authentication through Hawk.
      *
      * @param \Phalcon\Events\Manager $eventsManager Events manager.
-     * @throws \Freischutz\Application\Exception if config hawk section missing.
+     * @throws \Freischutz\Application\Exception
      * @return void
      */
     private function authenticateHawk(EventsManager $eventsManager)
@@ -440,8 +437,7 @@ class Core extends Application
     /**
      * Constructor.
      *
-     * @throws \Freischutz\Application\Exception if
-     *   $config->application->app_dir not set.
+     * @throws \Freischutz\Application\Exception
      * @param \Phalcon\Config\Ini $config Configuration settings.
      */
     public function __construct($config)

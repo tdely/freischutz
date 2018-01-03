@@ -196,8 +196,7 @@ class Hawk extends Component
      *
      * @param string $ext (optional) Value for ext ('ext="$value"' in
      *   Server-Authorization header.
-     * @throws \Freischutz\Application\Exception if $params or $key properties
-     *   not set, such as when used before calling authenticate().
+     * @throws \Freischutz\Application\Exception
      * @return string Server-Authorization header string.
      */
     public function validateResponse($ext = false)
@@ -233,7 +232,7 @@ class Hawk extends Component
      * Record used nonce and forget expired nonces.
      *
      * @param string $nonce Nonce to record.
-     * @throws \Freischutz\Application\Exception on unknown backend.
+     * @throws \Freischutz\Application\Exception
      * @return void
      */
     private function manageNonces($nonce)
@@ -258,8 +257,7 @@ class Hawk extends Component
      * Record used nonce and forget expired nonces in file.
      *
      * @param string $nonce Nonce to record.
-     * @throws \Freischutz\Application\Exception if encountering a malformed
-     *   line.
+     * @throws \Freischutz\Application\Exception
      * @return void
      */
     private function manageNonceFile($nonce)
@@ -300,10 +298,7 @@ class Hawk extends Component
      * Record used nonce and forget expired nonces in database.
      *
      * @param string $nonce Nonce to record.
-     * @throws \Freischutz\Application\Exception if nonce_model not set in
-     *   config hawk section.
-     * @throws \Freischutz\Application\Exception if model cannot be found.
-     * @throws \Freischutz\Application\Exception if model fails to save.
+     * @throws \Freischutz\Application\Exception
      * @return void
      */
     private function manageNonceDatabase($nonce)
@@ -343,7 +338,7 @@ class Hawk extends Component
     /**
      * Record used nonce in cache.
      *
-     * @throws \Freischutz\Application\Exception if cache service not set.
+     * @throws \Freischutz\Application\Exception
      * @return void
      */
     private function manageNonceCache()
@@ -360,7 +355,7 @@ class Hawk extends Component
      * Check if nonce has been used previously.
      *
      * @param string $nonce Nonce to lookup.
-     * @throws \Freischutz\Application\Exception on unknown backend.
+     * @throws \Freischutz\Application\Exception
      * @return bool
      */
     private function lookupNonce($nonce)
@@ -386,7 +381,7 @@ class Hawk extends Component
      * Check if nonce is recorded in file.
      *
      * @param string $nonce Nonce to lookup.
-     * @throws \Freischutz\Application\Exception if encountering a malformed
+     * @throws \Freischutz\Application\Exception
      *   line.
      * @return bool
      */
@@ -416,11 +411,7 @@ class Hawk extends Component
      * Check if nonce is recorded in database.
      *
      * @param string $nonce Nonce to lookup.
-     * @throws \Freischutz\Application\Exception if nonce_model not set in
-     *   config hawk section.
-     * @throws \Freischutz\Application\Exception if model cannot be found.
-     * @throws \Freischutz\Application\Exception if model doesn't contain
-     *   attributes nonce and timestamp.
+     * @throws \Freischutz\Application\Exception
      * @return bool
      */
     private function lookupNonceInDatabase($nonce)
@@ -455,7 +446,7 @@ class Hawk extends Component
     /**
      * Check if nonce is recorded in cache.
      *
-     * @throws \Freischutz\Application\Exception if cache service not set.
+     * @throws \Freischutz\Application\Exception
      * @return bool
      */
     private function lookupNonceInCache()

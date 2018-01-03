@@ -47,7 +47,7 @@ class Users extends Component
                 $userList = $this->loadFromDatabase();
                 break;
             default:
-                throw new \Exception("Unknown users backend: $backend");
+                throw new Exception("Unknown users backend: $backend");
         }
 
         if ($this->di->has('cache') && $doCache) {
@@ -101,7 +101,7 @@ class Users extends Component
     private function loadFromFiles()
     {
         if (!isset($this->config->application->users_dir)) {
-            throw new \Exception(
+            throw new Exception(
                 "Users backend 'file' requires users_dir set in application " .
                 "section in config file."
             );
@@ -124,7 +124,7 @@ class Users extends Component
                 $parts = str_getcsv($line);
                 // id,key
                 if (sizeof($parts) !== 2) {
-                    throw new \Exception("Malformed row in $file: $line");
+                    throw new Exception("Malformed row in $file: $line");
                 }
                 $userList[$parts[0]] = (object) array(
                     'id' => $parts[0],
@@ -146,7 +146,7 @@ class Users extends Component
     private function loadFromConfig()
     {
         if (!isset($this->config->users)) {
-            throw new \Exception(
+            throw new Exception(
                 "Users backend 'config' requires section users in config file."
             );
         }
@@ -172,7 +172,7 @@ class Users extends Component
     private function loadFromDatabase()
     {
         if (!isset($this->config->application->users_model)) {
-            throw new \Exception(
+            throw new Exception(
                 "Users backend 'database' requires users_model set in " .
                 "application section in config file."
             );
@@ -180,7 +180,7 @@ class Users extends Component
 
         $modelName = $this->config->application->users_model;
         if (!class_exists($modelName)) {
-            throw new \Exception("Users model not found: " . $modelName);
+            throw new Exception("Users model not found: " . $modelName);
         }
 
         $model = new $this->config->application->users_model(null, $this->di);
@@ -188,7 +188,7 @@ class Users extends Component
 
         if (!$metadata->hasAttribute($model, 'id')
                 || !$metadata->hasAttribute($model, 'key')) {
-            throw new \Exception(
+            throw new Exception(
                 "Users model must contain columns 'id' and 'key'."
             );
         }
@@ -196,7 +196,7 @@ class Users extends Component
         $userList = array();
         foreach ($model->find() as $row) {
             if (empty($row->id)) {
-                throw new \Exception(
+                throw new Exception(
                     "Users model column 'id' cannot be empty."
                 );
             }

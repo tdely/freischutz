@@ -302,7 +302,15 @@ class Core extends Application
                 $hawk = new Hawk();
 
                 if ($this->users->setUser($hawk->getParam('id'))) {
-                    $hawk->setKey($this->users->getUser()->key);
+                    $user = $this->users->getUser();
+                    if (isset($user->keys->hawk_key)) {
+                        $this->logger->debug('[Core] Using user->keys->hawk_key');
+                        $key = $user->keys->hawk_key;
+                    } else {
+                        $this->logger->debug('[Core] Using user->key');
+                        $key = $user->key;
+                    }
+                    $hawk->setKey($key);
                     $result = $hawk->authenticate();
                 } else {
                     $result = (object) array(

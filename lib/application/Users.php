@@ -167,6 +167,8 @@ class Users extends Component
      * @throws \Freischutz\Application\Exception if model doesn't contain
      *   attributes id and key.
      * @throws \Freischutz\Application\Exception if model id is empty.
+     * @throws \Freischutz\Application\Exception if model::getAuthenticationMap
+     *   returns a non-array or malformed array.
      * @return array
      */
     private function loadFromDatabase()
@@ -186,21 +188,70 @@ class Users extends Component
         $model = new $this->config->application->users_model(null, $this->di);
         $metadata = $model->getModelsMetaData();
 
-        if (!$metadata->hasAttribute($model, 'id')
-                || !$metadata->hasAttribute($model, 'key')) {
+        $map = array(
+            'id' => 'id',
+            'keys' => array(
+                'hawk_key' => 'key'
+            )
+        );
+
+        if (method_exists($model, 'getAuthenticationMap')) {
+            $mapLoaded = $model->getAuthenticationMap();
+
+            $mapType = gettype($map);
+            if ($mapType !== 'array') {
+                throw new Exception(
+                    "expected array got $mapType."
+                );
+            } else {
+                $validIdTypes = array('string', 'int');
+                if (isset($map['id'])
+                        && array_search(gettype($map['id']), $validIdTypes)) {
+                    $idType = gettype($map['id']);
+                    throw new Exception(
+                        "element 'id' expected string or int got $idType."
+                    );
+                } elseif (isset($map['keys']) && !is_array($map['keys'])) {
+                    $keysType = gettype($map['keys']);
+                    throw new Exception(
+                        "element 'keys' expected array got $keysType."
+                    );
+                }
+            }
+
+            $map = array_replace_recursive($map, $mapLoaded);
+        }
+
+        foreach (array_values($map['keys']) as $key) {
+            if (!$metadata->hasAttribute($model, $key)) {
+                throw new Exception(
+                    "Users model ('$modelName') missing column '$key'."
+                );
+            }
+        }
+        if (!$metadata->hasAttribute($model, $map['id'])) {
             throw new Exception(
-                "Users model must contain columns 'id' and 'key'."
+                "Users model ('$modelName') missing column '{$map['id']}'."
             );
         }
 
-        $userList = array();
         foreach ($model->find() as $row) {
-            if (empty($row->id)) {
+            if (!isset($row->{$map['id']})) {
                 throw new Exception(
-                    "Users model column 'id' cannot be empty."
+                    "Users model ('$modelName') column '{$map['id']}' cannot be empty."
                 );
             }
-            $userList[$row->id] = (object) array('id'=>$row->id, 'key'=>$row->key);
+
+            $user = array(
+                'id' => $row->{$map['id']},
+            );
+            $keys = array();
+
+            foreach ($map['keys'] as $key => $attribute) {
+                $keys[$key] = $row->$attribute;
+            }
+            $user['keys'] = (object) $keys;
+            $userList[$row->{$map['id']}] = (object) $user;
         }
 
         return $userList;

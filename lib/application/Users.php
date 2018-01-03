@@ -51,10 +51,10 @@ class Users extends Component
         }
 
         if ($this->di->has('cache') && $doCache) {
-            $this->cache->save('_freischutz_users', (object) $userList);
+            $this->cache->save('_freischutz_users', $userList);
         }
 
-        $this->userList = (object) $userList;
+        $this->userList = $userList;
     }
 
     /**
@@ -69,12 +69,12 @@ class Users extends Component
      */
     public function setUser($id)
     {
-        if (!isset($this->userList->$id)) {
+        if (!isset($this->userList[$id])) {
             $this->logger->debug("[Users] User ID '$id' not found.");
             return false;
         }
 
-        $this->user = $this->userList->$id;
+        $this->user = $this->userList[$id];
 
         return true;
     }

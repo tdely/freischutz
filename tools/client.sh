@@ -13,6 +13,7 @@ id=''
 key=''
 data=''
 ext=''
+basic_auth=false
 hawk=false
 extra_header=''
 verbose=false
@@ -24,6 +25,7 @@ function display_help()
 {
     echo "$(basename ${BASH_SOURCE[0]}) -m <STR> [-d <JSON>][-t] <STR> TARGET"
     echo "    -a STR    hash algorithm to use, default sha256"
+    echo "    -B        use basic authentication"
     echo "    -c STR    content-type, default text/plain"
     echo "    -d STR    data/payload to send"
     echo "    -e STR    optional ext value for Hawk"
@@ -101,10 +103,14 @@ function hawk_build()
 
 # getopt index variable
 OPTIND=1
-while getopts ":a:c:d:e:Hhi:k:m:tVv" opt; do
+while getopts ":a:Bc:d:e:Hhi:k:m:tVv" opt; do
     case ${opt} in
         a)
             algorithm="${OPTARG}"
+            ;;
+        B)
+            basic_auth=true
+            hawk=false
             ;;
         c)
             content_type="${OPTARG}"
@@ -117,6 +123,7 @@ while getopts ":a:c:d:e:Hhi:k:m:tVv" opt; do
             ;;
         H)
             hawk=true
+            basic_auth=false
             ;;
         h)
             display_help
@@ -180,6 +187,12 @@ target="${1}"
 
 echo -e "\n--REQUEST DETAILS"
 
+if [ ${basic_auth} = true ]; then
+    if [ -z "${id}" ] || [ -z "${key}" ]; then
+        echo "Basic authentication requires -i and -k to be set"
+    fi
+fi
+
 if [ ${hawk} = true ]; then
     if [ -z "${id}" ] || [ -z "${key}" ]; then
         echo "Hawk requires -i and -k to be set"
@@ -198,6 +211,8 @@ echo "${timing:-}" > ${TMP_FORMAT}
 echo "--BEGIN CURL"
 if [ "${extra_header}" ]; then
     curl -i -w @${TMP_FORMAT} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" -H "${extra_header}" $target
+elif [ "${basic_auth}" ]; then
+    curl -i -w @${TMP_FORMAT} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" -u "${id}:${key}" $target
 else
     curl -i -w @${TMP_FORMAT} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" $target
 fi

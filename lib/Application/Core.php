@@ -5,6 +5,7 @@ use Freischutz\Application\Acl;
 use Freischutz\Application\Exception;
 use Freischutz\Application\Router;
 use Freischutz\Application\Users;
+use Freischutz\Security\Basic;
 use Freischutz\Security\Hawk;
 use Freischutz\Utility\Response;
 use Phalcon\Cache\Frontend\Data as CacheData;
@@ -333,6 +334,61 @@ class Core extends Application
     }
 
     /**
+     * Set basic authentication.
+     *
+     * @param \Phalcon\Events\Manager $eventsManager Events manager.
+     * @throws \Freischutz\Application\Exception
+     * @return void
+     */
+    private function authenticateBasic(EventsManager $eventsManager)
+    {
+        if (!isset($this->config->basic_auth)) {
+            throw new\Freischutz\Application\Exception(
+                "Basic authentication requires basic_auth section in config file."
+            );
+        }
+
+        $eventsManager->attach(
+            "application:beforeHandleRequest",
+            function (Event $event, $dispatcher) {
+                $basic = new Basic();
+
+                if ($this->users->setUser($basic->getUser())) {
+                    $user = $this->users->getUser();
+                    if (isset($user->keys->basic_key)) {
+                        $this->logger->debug('[Core] Using user->keys->basic_key');
+                        $key = $user->keys->basic_key;
+                    } else {
+                        $this->logger->debug('[Core] Using user->key');
+                        $key = $user->key;
+                    }
+                    $basic->setKey($key);
+                    $result = $basic->authenticate();
+                } else {
+                    $result = (object) array(
+                        'message' => 'Request not authentic.',
+                        'state' => false
+                    );
+                }
+
+                $message = $this->config->basic_auth->get('disclose', false)
+                    ? $result->message
+                    : 'Authentication failed.';
+
+                $realm = $this->config->basic_auth->get('realm', 'freischutz');
+
+                if (!$result->state) {
+                    $header = 'Basic realm="' . $realm . '"';
+                    $this->response->unauthorized($message, $header);
+                    $this->response->send();
+                }
+
+                return $result->state;
+            }
+        );
+    }
+
+    /**
      * Set events managers.
      *
      * Attaches event listeners to events manager, and sets the event manager
@@ -385,6 +441,9 @@ class Core extends Application
                 switch (strtolower($reqMechanism)) {
                     case 'hawk':
                         $this->authenticateHawk($eventsManager);
+                        break;
+                    case 'basic':
+                        $this->authenticateBasic($eventsManager);
                         break;
                     default:
                         throw new\Freischutz\Application\Exception(

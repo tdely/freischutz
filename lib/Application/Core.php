@@ -157,17 +157,15 @@ class Core extends Application
             return;
         }
 
-        $adapterClass = '\\Phalcon\\Cache\\Backend\\' .
-            $this->config->application->cache_adapter;
-
         $adapterName = $this->config->application->cache_adapter;
+        $adapterClass = '\\Phalcon\\Cache\\Backend\\' . $adapterName;
 
         $frontCache = new CacheData(array(
             'lifetime' => $this->config->application->get('cache_lifetime', 300)
         ));
         $cache = new $adapterClass(
             $frontCache,
-            (array) $this->config->$adapterName
+            (array) $this->config->{strtolower($adapterName)}
         );
         $di->set('cache', $cache);
     }
@@ -194,7 +192,7 @@ class Core extends Application
     private function setDatabases($di)
     {
         if (!isset($this->config->application->databases_dir)) {
-            throw new\Freischutz\Application\Exception(
+            throw new \Freischutz\Application\Exception(
                 "Missing 'databases_dir' in config application section."
             );
         }
@@ -215,15 +213,16 @@ class Core extends Application
             unset($config['adapter']);
 
             // Validate adapter
-            if (!in_array($adapter, ['Mysql', 'Postgresql', 'Sqlite', true])) {
-                throw new\Freischutz\Application\Exception(
+            if (!in_array($adapter, ['Mysql', 'Postgresql', 'Sqlite'])) {
+                throw new \Freischutz\Application\Exception(
                     "Unexpected database adapter in $file: $adapter"
                 );
             }
             $adapter = "\\Phalcon\\Db\\Adapter\\Pdo\\$adapter";
+            $connection = new $adapter($config);
 
             // Set database service
-            $di->set($alias, new $adapter($config));
+            $di->set($alias, $connection);
         }
     }
 
@@ -289,7 +288,7 @@ class Core extends Application
     private function authenticateHawk(EventsManager $eventsManager)
     {
         if (!isset($this->config->hawk)) {
-            throw new\Freischutz\Application\Exception(
+            throw new \Freischutz\Application\Exception(
                 "Hawk authentication requires hawk section in config file."
             );
         }
@@ -343,7 +342,7 @@ class Core extends Application
     private function authenticateBasic(EventsManager $eventsManager)
     {
         if (!isset($this->config->basic_auth)) {
-            throw new\Freischutz\Application\Exception(
+            throw new \Freischutz\Application\Exception(
                 "Basic authentication requires basic_auth section in config file."
             );
         }
@@ -446,7 +445,7 @@ class Core extends Application
                         $this->authenticateBasic($eventsManager);
                         break;
                     default:
-                        throw new\Freischutz\Application\Exception(
+                        throw new \Freischutz\Application\Exception(
                             "Unknown authentication mechanism: $reqMechanism"
                         );
                 }

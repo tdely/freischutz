@@ -1,6 +1,5 @@
 Freischutz
 ==========
-[![build](https://gitlab.com/tdely/freischutz/badges/master/build.svg)](https://gitlab.com/tdely/freischutz/commits/master)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/f6cd23de-3b8f-4a48-a2d1-59aeee13f036/mini.png)](https://insight.sensiolabs.com/projects/f6cd23de-3b8f-4a48-a2d1-59aeee13f036)
 
 PHP framework for RESTful APIs, built using Phalcon.

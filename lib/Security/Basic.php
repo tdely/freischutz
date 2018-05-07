@@ -11,8 +11,6 @@ use Phalcon\Mvc\User\Component;
  */
 class Basic extends Component
 {
-    private $backend;
-    private $header;
     private $user;
     private $key;
     private $keyHashed;

@@ -6,7 +6,7 @@ before_script:
 - echo "date.timezone = UTC" > /usr/local/etc/php/php.ini
 
 services:
-- mysql
+- mysql:latest
 
 variables:
   # Configure mysql service (https://hub.docker.com/_/mysql/)

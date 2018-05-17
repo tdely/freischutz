@@ -222,7 +222,7 @@ class Hawk extends Component
                    $ext . "\n";
 
         // Create MAC
-        $mac = base64_encode(hash_hmac($this->params->alg, $message, $this->key));
+        $mac = base64_encode(hash_hmac($this->params->alg, $message, $this->key, true));
         $extSet = $ext ? ", \"ext=$ext\"" : '';
 
         return "Hawk mac=\"$mac\", hash=\"$hash\"" . $extSet;

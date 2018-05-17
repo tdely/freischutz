@@ -296,9 +296,9 @@ class Core extends Application
         $eventsManager->attach(
             "application:beforeHandleRequest",
             function (Event $event, $dispatcher) {
-                $hawk = new Hawk();
+                $this->hawk = new Hawk();
 
-                if ($this->users->setUser($hawk->getParam('id'))) {
+                if ($this->users->setUser($this->hawk->getParam('id'))) {
                     $user = $this->users->getUser();
                     if (isset($user->keys->hawk_key)) {
                         $this->logger->debug('[Core] Using user->keys->hawk_key');
@@ -307,8 +307,8 @@ class Core extends Application
                         $this->logger->debug('[Core] Using user->key');
                         $key = $user->key;
                     }
-                    $hawk->setKey($key);
-                    $result = $hawk->authenticate();
+                    $this->hawk->setKey($key);
+                    $result = $this->hawk->authenticate();
                 } else {
                     $result = (object) array(
                         'message' => 'Request not authentic.',
@@ -546,7 +546,11 @@ class Core extends Application
     {
         $response = $this->handle();
         if (gettype($response) === 'object') {
-            echo $response->getContent();
+            if (isset($this->hawk) && method_exists($response, 'getContentType')) {
+                $header = $this->hawk->validateResponse();
+                $response->setHeader('Server-Authorization', $header);
+            }
+            $response->send();
         }
     }
 }

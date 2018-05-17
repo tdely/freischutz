@@ -8,6 +8,17 @@ use Phalcon\Http\Response as PhalconResponse;
  */
 class Response extends PhalconResponse
 {
+    private $contentType;
+
+    /**
+     * Get response content type.
+     *
+     * @return string
+     */
+    public function getContentType()
+    {
+        return $this->contentType;
+    }
 
     /**
      * Set content and automatically select content type.
@@ -48,6 +59,7 @@ class Response extends PhalconResponse
                 break;
         }
 
+        $this->contentType = $type;
         $this->setContentType($type, $charset);
         $this->setContent($content);
     }

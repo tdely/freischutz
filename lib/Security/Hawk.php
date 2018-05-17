@@ -223,9 +223,9 @@ class Hawk extends Component
 
         // Create MAC
         $mac = base64_encode(hash_hmac($this->params->alg, $message, $this->key));
-        $extSet = $ext ? ", ext=$ext" : '';
+        $extSet = $ext ? ", \"ext=$ext\"" : '';
 
-        return "Server-Authorization: Hawk mac=$mac, hash=$hash" . $extSet;
+        return "Hawk mac=\"$mac\", hash=\"$hash\"" . $extSet;
     }
 
     /**

@@ -489,8 +489,8 @@ class Core extends Application
                     $access = $acl->isAllowed($client->id, $controller, $action);
 
                     if (!$access) {
+                        // Response content set here doesn't show, workaround in self::run()
                         $this->response->forbidden('Access denied.');
-                        $this->response->send();
                     }
 
                     return $access;
@@ -570,6 +570,10 @@ class Core extends Application
     {
         $response = $this->handle();
         if (gettype($response) === 'object') {
+            // Handle odd ACL event behavior
+            if ($response->getStatusCode() === 403 && !$response->getContent()) {
+                $response->forbidden('Access denied.');
+            }
             if (isset($this->hawk) && method_exists($response, 'getContentType')) {
                 $header = $this->hawk->validateResponse();
                 $response->setHeader('Server-Authorization', $header);

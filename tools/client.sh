@@ -209,9 +209,9 @@ echo "${timing:-}" > ${TMP_FORMAT}
 
 # Send HTTP request
 echo "--BEGIN CURL"
-if [ "${extra_header}" ]; then
+if [ ${hawk} = true ]; then
     curl -i -w @${TMP_FORMAT} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" -H "${extra_header}" $target
-elif [ "${basic_auth}" ]; then
+elif [ ${basic_auth} = true ]; then
     curl -i -w @${TMP_FORMAT} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" -u "${id}:${key}" $target
 else
     curl -i -w @${TMP_FORMAT} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" $target

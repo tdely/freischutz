@@ -82,7 +82,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function cont($content, $type = false, $charset = false)
     {
@@ -97,7 +97,7 @@ class Response extends PhalconResponse
      * @param string $protocol New protocol.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function switchingProtocols($content, $protocol, $type = false, $charset = false)
     {
@@ -112,7 +112,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function processing($content, $type = false, $charset = false)
     {
@@ -130,7 +130,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function ok($content, $type = false, $charset = false)
     {
@@ -145,7 +145,7 @@ class Response extends PhalconResponse
      * @param string $location (optional) URI locator for created resource.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function created($content, $location = false, $type = false, $charset = false)
     {
@@ -162,7 +162,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function accepted($content, $type = false, $charset = false)
     {
@@ -176,7 +176,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function nonAuthoritativeInformation($content, $type = false, $charset = false)
     {
@@ -187,7 +187,7 @@ class Response extends PhalconResponse
     /**
      * 204 No Content.
      *
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function noContent()
     {
@@ -198,7 +198,7 @@ class Response extends PhalconResponse
     /**
      * 205 Reset Content.
      *
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function resetContent()
     {
@@ -214,7 +214,7 @@ class Response extends PhalconResponse
      * @param string $rangeUnit Content-Range header field unit.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function partialContent($content, $range, $rangeUnit, $type = false, $charset = false)
     {
@@ -229,7 +229,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function multiStatus($content, $type = false, $charset = false)
     {
@@ -243,7 +243,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function imUsed($content, $type = false, $charset = false)
     {
@@ -262,7 +262,7 @@ class Response extends PhalconResponse
      * @param string $location (optional) Preferred URI locator for resource.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function multipleChoices($content, $location = false, $type = false, $charset = false)
     {
@@ -280,7 +280,7 @@ class Response extends PhalconResponse
      * @param string $location (optional) URI locator for resource.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function movedPermanently($content, $location = false, $type = false, $charset = false)
     {
@@ -298,7 +298,7 @@ class Response extends PhalconResponse
      * @param string $location (optional) URI locator for resource.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function found($content, $location = false, $type = false, $charset = false)
     {
@@ -316,7 +316,7 @@ class Response extends PhalconResponse
      * @param string $location (optional) URI locator for resource.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function seeOther($content, $location = false, $type = false, $charset = false)
     {
@@ -339,7 +339,7 @@ class Response extends PhalconResponse
      * @param array $headers Associative array with header fields to set.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function notModified($content, $headers, $type = false, $charset = false)
     {
@@ -360,7 +360,7 @@ class Response extends PhalconResponse
      * @param string $location (optional) URI locator for resource.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function temporaryRedirect($content, $location = false, $type = false, $charset = false)
     {
@@ -378,7 +378,7 @@ class Response extends PhalconResponse
      * @param string $location (optional) URI locator for resource.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function permanentRedirect($content, $location = false, $type = false, $charset = false)
     {
@@ -399,7 +399,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function badRequest($content, $type = false, $charset = false)
     {
@@ -414,7 +414,7 @@ class Response extends PhalconResponse
      * @param string $authenticate Authentication challenge hint.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function unauthorized($content, $authenticate, $type = false, $charset = false)
     {
@@ -429,7 +429,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function forbidden($content, $type = false, $charset = false)
     {
@@ -443,7 +443,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function notFound($content, $type = false, $charset = false)
     {
@@ -458,7 +458,7 @@ class Response extends PhalconResponse
      * @param string $methods Supported methods.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function methodNotAllowed($content, $methods, $type = false, $charset = false)
     {
@@ -473,7 +473,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function notAcceptable($content, $type = false, $charset = false)
     {
@@ -488,7 +488,7 @@ class Response extends PhalconResponse
      * @param string $authenticate Authentication challenge hint.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function proxyAuthenticationRequired($content, $authenticate, $type = false, $charset = false)
     {
@@ -503,7 +503,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function requestTimeout($content, $type = false, $charset = false)
     {
@@ -517,7 +517,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function conflict($content, $type = false, $charset = false)
     {
@@ -531,7 +531,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function gone($content, $type = false, $charset = false)
     {
@@ -545,7 +545,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function lengthRequired($content, $type = false, $charset = false)
     {
@@ -559,7 +559,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function preconditionFailed($content, $type = false, $charset = false)
     {
@@ -575,7 +575,7 @@ class Response extends PhalconResponse
      *   situation is temporary.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function payloadTooLarge($content, $retry = false, $type = false, $charset = false)
     {
@@ -592,7 +592,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function requestUriTooLong($content, $type = false, $charset = false)
     {
@@ -606,7 +606,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function unsupportedMediaType($content, $type = false, $charset = false)
     {
@@ -621,7 +621,7 @@ class Response extends PhalconResponse
      * @param string $range (optional) Length of the selected representation.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function requestedRangeNotSatisfiable($content, $range = false, $type = false, $charset = false)
     {
@@ -638,7 +638,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function expectationFailed($content, $type = false, $charset = false)
     {
@@ -652,7 +652,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function misdirectedRequest($content, $type = false, $charset = false)
     {
@@ -666,7 +666,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function unprocessableEntity($content, $type = false, $charset = false)
     {
@@ -680,7 +680,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function locked($content, $type = false, $charset = false)
     {
@@ -694,7 +694,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function failedDependency($content, $type = false, $charset = false)
     {
@@ -709,7 +709,7 @@ class Response extends PhalconResponse
      * @param string $protocol New protocol.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function upgradeRequired($content, $protocol, $type = false, $charset = false)
     {
@@ -724,7 +724,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function preconditionRequired($content, $type = false, $charset = false)
     {
@@ -739,7 +739,7 @@ class Response extends PhalconResponse
      * @param string $retry (optional) Seconds or timestamp after to retry.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function tooManyRequests($content, $retry = false, $type = false, $charset = false)
     {
@@ -756,7 +756,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function requestHeaderFieldsTooLarge($content, $type = false, $charset = false)
     {
@@ -769,7 +769,7 @@ class Response extends PhalconResponse
      *
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function nginxConnectionClosedWithoutResponse()
     {
@@ -782,7 +782,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function unavailableForLegalReasons($content, $type = false, $charset = false)
     {
@@ -795,7 +795,7 @@ class Response extends PhalconResponse
      *
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function nginxClientClosedRequest()
     {
@@ -812,7 +812,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function internalServerError($content, $type = false, $charset = false)
     {
@@ -826,7 +826,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function notImplemented($content, $type = false, $charset = false)
     {
@@ -840,7 +840,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function badGateway($content, $type = false, $charset = false)
     {
@@ -855,7 +855,7 @@ class Response extends PhalconResponse
      * @param string $retry (optional) Seconds or timestamp after to retry.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function serviceUnavailable($content, $retry = false, $type = false, $charset = false)
     {
@@ -872,7 +872,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function gatewayTimeout($content, $type = false, $charset = false)
     {
@@ -886,7 +886,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function httpVersionNotSupported($content, $type = false, $charset = false)
     {
@@ -900,7 +900,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function variantAlsoNegotiates($content, $type = false, $charset = false)
     {
@@ -914,7 +914,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function insufficientStorage($content, $type = false, $charset = false)
     {
@@ -928,7 +928,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function loopDetected($content, $type = false, $charset = false)
     {
@@ -942,7 +942,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function notExtended($content, $type = false, $charset = false)
     {
@@ -956,7 +956,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function networkAuthenticationRequired($content, $type = false, $charset = false)
     {
@@ -970,7 +970,7 @@ class Response extends PhalconResponse
      * @param mixed $content Response content.
      * @param string $type (optional) Explicitly set content type.
      * @param string $charset (optional) Override default charset.
-     * @return \Phalcon\Http\Response
+     * @return void
      */
     public function networkConnectTimeoutError($content, $type = false, $charset = false)
     {

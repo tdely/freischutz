@@ -3,6 +3,14 @@ namespace Freischutz\Utility;
 
 /**
  * Freischutz\Utility\Stopwatch
+ *
+ * Stopwatch utility.
+ *
+ * @see       https://gitlab.com/tdely/freischutz/ Freischutz on GitLab
+ *
+ * @author    Tobias Dély (tdely) <cleverhatcamouflage@gmail.com>
+ * @copyright 2017-present Tobias Dély
+ * @license   https://directory.fsf.org/wiki/License:BSD-3-Clause BSD 3-clause "New" or "Revised" License
  */
 class Stopwatch
 {
@@ -21,6 +29,8 @@ class Stopwatch
 
     /**
      * Reset start time to now, clear marks and clear stop time.
+     *
+     * @return void
      */
     public function reset()
     {
@@ -45,7 +55,7 @@ class Stopwatch
     /**
      * Get marks.
      *
-     * @return array
+     * @return float[]
      */
     public function getMarks()
     {

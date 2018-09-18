@@ -8,6 +8,12 @@ use Phalcon\Mvc\User\Component;
  * Freischutz\Security\Basic
  *
  * Basic authentication.
+ *
+ * @see       https://gitlab.com/tdely/freischutz/ Freischutz on GitLab
+ *
+ * @author    Tobias Dély (tdely) <cleverhatcamouflage@gmail.com>
+ * @copyright 2017-present Tobias Dély
+ * @license   https://directory.fsf.org/wiki/License:BSD-3-Clause BSD 3-clause "New" or "Revised" License
  */
 class Basic extends Component
 {
@@ -32,7 +38,7 @@ class Basic extends Component
     /**
      * Get user provided in request.
      *
-     * @return mixed
+     * @return string|int
      */
     public function getUser()
     {
@@ -53,7 +59,7 @@ class Basic extends Component
      * Authenticate client request.
      *
      * @internal
-     * @return object
+     * @return \stdClass
      */
     public function authenticate()
     {

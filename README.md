@@ -18,18 +18,11 @@ Features
   * Able to set caching of ACL, routes, and users through config.
 
 
-Planned
--------
-
-* More automated integration tests
-* More/improved documentation
-
-
 Requirements
 ------------
 
-* PHP 5.6, PHP 7
-* Phalcon 3.0.1 (possibly 2.0.x if using PHP 5.6)
+* PHP >= 7.0.0
+* Phalcon >= 3.0.1
 * Webserver
 
 If you are going to use a database:

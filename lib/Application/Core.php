@@ -25,6 +25,12 @@ use Phalcon\Mvc\View;
 
 /**
  * Freischutz\Application\Core
+ *
+ * @see       https://gitlab.com/tdely/freischutz/ Freischutz on GitLab
+ *
+ * @author    Tobias Dély (tdely) <cleverhatcamouflage@gmail.com>
+ * @copyright 2017-present Tobias Dély
+ * @license   https://directory.fsf.org/wiki/License:BSD-3-Clause BSD 3-clause "New" or "Revised" License
  */
 class Core extends Application
 {
@@ -44,6 +50,7 @@ class Core extends Application
      * Set logger service.
      *
      * @param \Phalcon\DI $di Dependency Injector.
+     * @return void
      */
     public function setLogger($di)
     {
@@ -105,6 +112,7 @@ class Core extends Application
      * Set request service.
      *
      * @param \Phalcon\DI $di Dependency Injector.
+     * @return void
      */
     private function setRequest($di)
     {
@@ -122,6 +130,7 @@ class Core extends Application
      * Set filter service.
      *
      * @param \Phalcon\DI $di Dependency Injector.
+     * @return void
      */
     private function setFilter($di)
     {
@@ -132,6 +141,7 @@ class Core extends Application
      * Set dispatcher service.
      *
      * @param \Phalcon\DI $di Dependency Injector.
+     * @return void
      */
     private function setDispatcher($di)
     {
@@ -149,6 +159,7 @@ class Core extends Application
      * Set cache service.
      *
      * @param \Phalcon\DI $di Dependency Injector.
+     * @return void
      */
     private function setCache($di)
     {
@@ -174,6 +185,7 @@ class Core extends Application
      * Set router service.
      *
      * @param \Phalcon\DI $di Dependency Injector.
+     * @return void
      */
     private function setRouter($di)
     {
@@ -188,6 +200,7 @@ class Core extends Application
      *
      * @throws \Freischutz\Application\Exception
      * @param \Phalcon\DI $di Dependency Injector.
+     * @return void
      */
     private function setDatabases($di)
     {
@@ -230,6 +243,7 @@ class Core extends Application
      * Set data container with request data.
      *
      * @param \Phalcon\DI $di Dependency Injector.
+     * @return void
      */
     private function setData($di)
     {
@@ -240,6 +254,7 @@ class Core extends Application
      * Set models manager.
      *
      * @param \Phalcon\DI $di Dependency Injector.
+     * @return void
      */
     private function setModelsManager($di)
     {
@@ -250,6 +265,7 @@ class Core extends Application
      * Set models metadata.
      *
      * @param \Phalcon\DI $di Dependency Injector.
+     * @return void
      */
     private function setModelsMetadata($di)
     {
@@ -272,6 +288,7 @@ class Core extends Application
      * Set users.
      *
      * @param \Phalcon\DI $di Dependency Injector.
+     * @return void
      */
     private function setUsers($di)
     {
@@ -392,6 +409,8 @@ class Core extends Application
      *
      * Attaches event listeners to events manager, and sets the event manager
      * to be used by certain components.
+     *
+     * @return void
      */
     private function setEventsManagers()
     {
@@ -486,6 +505,7 @@ class Core extends Application
      * Set dummy view.
      *
      * @param \Phalcon\DI $di Dependency Injector.
+     * @return void
      */
     private function setView($di)
     {
@@ -497,6 +517,7 @@ class Core extends Application
      *
      * @throws \Freischutz\Application\Exception
      * @param \Phalcon\Config\Ini $config Configuration settings.
+     * @return void
      */
     public function __construct($config)
     {
@@ -541,6 +562,8 @@ class Core extends Application
 
     /**
      * Run application and display output.
+     *
+     * @return void
      */
     public function run()
     {

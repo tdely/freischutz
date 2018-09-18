@@ -11,6 +11,13 @@ use Phalcon\Mvc\User\Component;
  * HTTP HMAC authentication with partial cryptographic verification of request,
  * which covers method, URI, host and port, various other authentication
  * details, and payload. Optionally allows for verification of response.
+ *
+ * @see       https://gitlab.com/tdely/freischutz/ Freischutz on GitLab
+ * @see       https://github.com/hueniverse/hawk The original Hawk on GitHub
+ *
+ * @author    Tobias Dély (tdely) <cleverhatcamouflage@gmail.com>
+ * @copyright 2017-present Tobias Dély
+ * @license   https://directory.fsf.org/wiki/License:BSD-3-Clause BSD 3-clause "New" or "Revised" License
  */
 class Hawk extends Component
 {
@@ -49,7 +56,7 @@ class Hawk extends Component
      * Get a single parameter $param, or all parameters if $param not given.
      *
      * @param string $param (optional) Parameter name.
-     * @return mixed
+     * @return \stdClass|null
      */
     public function getParam($param = false)
     {
@@ -67,7 +74,8 @@ class Hawk extends Component
     /**
      * Set client key.
      *
-     * @return string
+     * @param string $key Client key.
+     * @return void
      */
     public function setKey($key)
     {
@@ -78,7 +86,7 @@ class Hawk extends Component
      * Authenticate client request.
      *
      * @internal
-     * @return object
+     * @return \stdClass
      */
     public function authenticate()
     {
@@ -382,7 +390,6 @@ class Hawk extends Component
      *
      * @param string $nonce Nonce to lookup.
      * @throws \Freischutz\Application\Exception
-     *   line.
      * @return bool
      */
     private function lookupNonceInFile($nonce)

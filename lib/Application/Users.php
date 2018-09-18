@@ -6,6 +6,12 @@ use Phalcon\Mvc\User\Component;
 
 /**
  * Freischutz\Application\Users
+ *
+ * @see       https://gitlab.com/tdely/freischutz/ Freischutz on GitLab
+ *
+ * @author    Tobias Dély (tdely) <cleverhatcamouflage@gmail.com>
+ * @copyright 2017-present Tobias Dély
+ * @license   https://directory.fsf.org/wiki/License:BSD-3-Clause BSD 3-clause "New" or "Revised" License
  */
 class Users extends Component
 {
@@ -82,7 +88,7 @@ class Users extends Component
     /**
      * Get user.
      *
-     * @return object
+     * @return \stdClass
      */
     public function getUser()
     {
@@ -93,7 +99,7 @@ class Users extends Component
      * Load user details from files.
      *
      * @throws \Freischutz\Application\Exception
-     * @return array
+     * @return \stdClass[string]
      */
     private function loadFromFiles()
     {
@@ -137,7 +143,7 @@ class Users extends Component
      * Load user details from config.
      *
      * @throws \Freischutz\Application\Exception
-     * @return array
+     * @return \stdClass[string]
      */
     private function loadFromConfig()
     {
@@ -158,7 +164,7 @@ class Users extends Component
      * Load user details from database.
      *
      * @throws \Freischutz\Application\Exception
-     * @return array
+     * @return \stdClass[string]
      */
     private function loadFromDatabase()
     {

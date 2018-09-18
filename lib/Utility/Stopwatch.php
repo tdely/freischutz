@@ -44,7 +44,7 @@ class Stopwatch
      *
      * @return float
      */
-    public function mark()
+    public function mark():float
     {
         $mark =  microtime(true) - $this->timeStart;
         $this->timeMarks[] = $mark;
@@ -57,7 +57,7 @@ class Stopwatch
      *
      * @return float[]
      */
-    public function getMarks()
+    public function getMarks():array
     {
         return $this->timeMarks;
     }
@@ -67,7 +67,7 @@ class Stopwatch
      *
      * @return float
      */
-    public function elapsed()
+    public function elapsed():float
     {
         $end = !empty($this->timeStop) ? $this->timeStop : microtime(true);
 
@@ -79,7 +79,7 @@ class Stopwatch
      *
      * @return float
      */
-    public function stop()
+    public function stop():float
     {
         $this->timeStop = microtime(true);
 

@@ -3,6 +3,7 @@ namespace Freischutz\Security;
 
 use Freischutz\Application\Exception;
 use Phalcon\Mvc\User\Component;
+use stdClass;
 
 /**
  * Freischutz\Security\Basic
@@ -50,7 +51,7 @@ class Basic extends Component
      *
      * @return string
      */
-    public function setKey($key)
+    public function setKey(string $key):string
     {
         $this->keyHashed = $key;
     }
@@ -61,7 +62,7 @@ class Basic extends Component
      * @internal
      * @return \stdClass
      */
-    public function authenticate()
+    public function authenticate():stdClass
     {
         $result = (object) array('state' => false, 'message' => null);
         if (empty($this->key)) {

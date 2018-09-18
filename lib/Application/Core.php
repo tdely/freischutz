@@ -9,6 +9,7 @@ use Freischutz\Security\Basic;
 use Freischutz\Security\Hawk;
 use Freischutz\Utility\Response;
 use Phalcon\Cache\Frontend\Data as CacheData;
+use Phalcon\Config\Adapter\Ini;
 use Phalcon\DI;
 use Phalcon\Events\Event;
 use Phalcon\Events\Manager as EventsManager;
@@ -41,7 +42,7 @@ class Core extends Application
      *
      * @return string
      */
-    public static function getVersion()
+    public static function getVersion():string
     {
         return self::VERSION;
     }
@@ -52,7 +53,7 @@ class Core extends Application
      * @param \Phalcon\DI $di Dependency Injector.
      * @return void
      */
-    public function setLogger($di)
+    public function setLogger(DI $di)
     {
         $destination = $this->config->application->get('log_destination', 'syslog');
         $level = $this->config->application->get('log_level', 'error');
@@ -114,7 +115,7 @@ class Core extends Application
      * @param \Phalcon\DI $di Dependency Injector.
      * @return void
      */
-    private function setRequest($di)
+    private function setRequest(DI $di)
     {
         $request = new Request();
         if ($this->config->application->get('strict_host_check', false)) {
@@ -132,7 +133,7 @@ class Core extends Application
      * @param \Phalcon\DI $di Dependency Injector.
      * @return void
      */
-    private function setFilter($di)
+    private function setFilter(DI $di)
     {
         $di->setShared('filter', new Filter());
     }
@@ -143,7 +144,7 @@ class Core extends Application
      * @param \Phalcon\DI $di Dependency Injector.
      * @return void
      */
-    private function setDispatcher($di)
+    private function setDispatcher(DI $di)
     {
         $dispatcher = new Dispatcher();
         $namespace = $this->config->application->get(
@@ -161,7 +162,7 @@ class Core extends Application
      * @param \Phalcon\DI $di Dependency Injector.
      * @return void
      */
-    private function setCache($di)
+    private function setCache(DI $di)
     {
         if (!isset($this->config->application->cache_adapter)
                 || !$this->config->application->cache_adapter) {
@@ -187,7 +188,7 @@ class Core extends Application
      * @param \Phalcon\DI $di Dependency Injector.
      * @return void
      */
-    private function setRouter($di)
+    private function setRouter(DI $di)
     {
         $router = new Router(false);
 
@@ -202,7 +203,7 @@ class Core extends Application
      * @param \Phalcon\DI $di Dependency Injector.
      * @return void
      */
-    private function setDatabases($di)
+    private function setDatabases(DI $di)
     {
         if (!isset($this->config->application->databases_dir)) {
             throw new \Freischutz\Application\Exception(
@@ -245,7 +246,7 @@ class Core extends Application
      * @param \Phalcon\DI $di Dependency Injector.
      * @return void
      */
-    private function setData($di)
+    private function setData(DI $di)
     {
         $di->set('data', new Data(file_get_contents('php://input')));
     }
@@ -256,7 +257,7 @@ class Core extends Application
      * @param \Phalcon\DI $di Dependency Injector.
      * @return void
      */
-    private function setModelsManager($di)
+    private function setModelsManager(DI $di)
     {
         $di->set('modelsManager', new ModelsManager());
     }
@@ -267,7 +268,7 @@ class Core extends Application
      * @param \Phalcon\DI $di Dependency Injector.
      * @return void
      */
-    private function setModelsMetadata($di)
+    private function setModelsMetadata(DI $di)
     {
         $adapterClass = '\\Phalcon\\Mvc\\Model\\MetaData\\' .
             $this->config->application->get('metadata_adapter', 'Memory');
@@ -290,7 +291,7 @@ class Core extends Application
      * @param \Phalcon\DI $di Dependency Injector.
      * @return void
      */
-    private function setUsers($di)
+    private function setUsers(DI $di)
     {
         $di->set('users', new Users());
     }
@@ -507,7 +508,7 @@ class Core extends Application
      * @param \Phalcon\DI $di Dependency Injector.
      * @return void
      */
-    private function setView($di)
+    private function setView(DI $di)
     {
         $di->setShared('view', new View());
     }
@@ -516,10 +517,10 @@ class Core extends Application
      * Constructor.
      *
      * @throws \Freischutz\Application\Exception
-     * @param \Phalcon\Config\Ini $config Configuration settings.
+     * @param \Phalcon\Config\Adapter\Ini $config Configuration settings.
      * @return void
      */
-    public function __construct($config)
+    public function __construct(Ini $config)
     {
         try {
             if (!isset($config->application->app_dir)) {

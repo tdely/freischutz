@@ -3,6 +3,7 @@ namespace Freischutz\Security;
 
 use Freischutz\Application\Exception;
 use Phalcon\Mvc\User\Component;
+use stdClass;
 
 /**
  * Freischutz\Security\Hawk
@@ -77,7 +78,7 @@ class Hawk extends Component
      * @param string $key Client key.
      * @return void
      */
-    public function setKey($key)
+    public function setKey(string $key)
     {
         $this->key = $key;
     }
@@ -88,7 +89,7 @@ class Hawk extends Component
      * @internal
      * @return \stdClass
      */
-    public function authenticate()
+    public function authenticate():stdClass
     {
         $result = (object) array('state' => false, 'message' => null);
         if (empty($this->key)) {
@@ -207,7 +208,7 @@ class Hawk extends Component
      * @throws \Freischutz\Application\Exception
      * @return string Server-Authorization header string.
      */
-    public function validateResponse($ext = false)
+    public function validateResponse($ext = false):string
     {
         if (empty($this->params) || empty($this->key)) {
             throw new Exception("Properties 'params' and 'key' not set");
@@ -243,7 +244,7 @@ class Hawk extends Component
      * @throws \Freischutz\Application\Exception
      * @return void
      */
-    private function manageNonces($nonce)
+    private function manageNonces(string $nonce)
     {
         switch ($this->backend) {
             case 'file':
@@ -268,7 +269,7 @@ class Hawk extends Component
      * @throws \Freischutz\Application\Exception
      * @return void
      */
-    private function manageNonceFile($nonce)
+    private function manageNonceFile(string $nonce)
     {
         $timestamp = date('U');
         $file = $this->config->hawk->get('nonce_file', '/tmp') . '/' . $this->nonceFile;
@@ -309,7 +310,7 @@ class Hawk extends Component
      * @throws \Freischutz\Application\Exception
      * @return void
      */
-    private function manageNonceDatabase($nonce)
+    private function manageNonceDatabase(string $nonce)
     {
         $timestamp = date('U');
         if (!isset($this->config->hawk)
@@ -366,7 +367,7 @@ class Hawk extends Component
      * @throws \Freischutz\Application\Exception
      * @return bool
      */
-    private function lookupNonce($nonce)
+    private function lookupNonce(string $nonce):bool
     {
         switch ($this->backend) {
             case 'file':
@@ -392,7 +393,7 @@ class Hawk extends Component
      * @throws \Freischutz\Application\Exception
      * @return bool
      */
-    private function lookupNonceInFile($nonce)
+    private function lookupNonceInFile(string $nonce):bool
     {
         $file = $this->config->hawk->get('nonce_file', '/tmp') . '/' . $this->nonceFile;
         if (!file_exists($file)) {
@@ -421,7 +422,7 @@ class Hawk extends Component
      * @throws \Freischutz\Application\Exception
      * @return bool
      */
-    private function lookupNonceInDatabase($nonce)
+    private function lookupNonceInDatabase(string $nonce):bool
     {
         if (!isset($this->config->hawk)
                 || !isset($this->config->hawk->nonce_model)) {
@@ -456,7 +457,7 @@ class Hawk extends Component
      * @throws \Freischutz\Application\Exception
      * @return bool
      */
-    private function lookupNonceInCache()
+    private function lookupNonceInCache():bool
     {
         if (!$this->di->has('cache')) {
             throw new Exception(

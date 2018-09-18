@@ -68,7 +68,7 @@ class Acl extends Component
      *
      * @return \Phalcon\Acl\Adapter\Memory
      */
-    private function getAcl()
+    private function getAcl():AclList
     {
         if (is_object($this->acl)) {
             return $this->acl;
@@ -86,7 +86,7 @@ class Acl extends Component
      * @param string $action Action being targeted.
      * @return bool
      */
-    public function isAllowed($role, $controller, $action)
+    public function isAllowed(string $role, string $controller, string $action):bool
     {
         return $this->getAcl()->isAllowed($role, $controller, $action);
     }
@@ -98,7 +98,7 @@ class Acl extends Component
      * @param \Phalcon\Acl\Adapter\Memory $acl ACL object.
      * @return void
      */
-    private function buildFromFiles($acl)
+    private function buildFromFiles(AclList $acl)
     {
         $aclDir = $this->config->application->app_dir .
             $this->config->acl->dir;
@@ -199,7 +199,7 @@ class Acl extends Component
      * @param \Phalcon\Acl\Adapter\Memory $acl ACL object.
      * @return void
      */
-    private function buildFromDatabase($acl)
+    private function buildFromDatabase(AclList $acl)
     {
         $models = array(
             'role',

@@ -3,6 +3,7 @@ namespace Freischutz\Application;
 
 use Freischutz\Application\Exception;
 use Phalcon\Mvc\User\Component;
+use stdClass;
 
 /**
  * Freischutz\Application\Users
@@ -73,7 +74,7 @@ class Users extends Component
      * @param string $id Identifier of user to set.
      * @return bool
      */
-    public function setUser($id)
+    public function setUser(string $id):bool
     {
         if (!isset($this->userList[$id])) {
             $this->logger->debug("[Users] User ID '$id' not found.");
@@ -90,7 +91,7 @@ class Users extends Component
      *
      * @return \stdClass
      */
-    public function getUser()
+    public function getUser():stdClass
     {
         return $this->user;
     }
@@ -101,7 +102,7 @@ class Users extends Component
      * @throws \Freischutz\Application\Exception
      * @return \stdClass[string]
      */
-    private function loadFromFiles()
+    private function loadFromFiles():array
     {
         if (!isset($this->config->application->users_dir)) {
             throw new Exception(
@@ -145,7 +146,7 @@ class Users extends Component
      * @throws \Freischutz\Application\Exception
      * @return \stdClass[string]
      */
-    private function loadFromConfig()
+    private function loadFromConfig():array
     {
         if (!isset($this->config->users)) {
             throw new Exception(
@@ -166,7 +167,7 @@ class Users extends Component
      * @throws \Freischutz\Application\Exception
      * @return \stdClass[string]
      */
-    private function loadFromDatabase()
+    private function loadFromDatabase():array
     {
         if (!isset($this->config->application->users_model)) {
             throw new Exception(

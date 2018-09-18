@@ -64,7 +64,7 @@ class Router extends Component
      * @internal
      * @return \Phalcon\Mvc\Router
      */
-    public function getRouter()
+    public function getRouter():PhalconRouter
     {
         return $this->router;
     }
@@ -75,7 +75,7 @@ class Router extends Component
      * @throws \Freischutz\Application\Exception
      * @return \Phalcon\Mvc\Router\Group
      */
-    private function loadFromFiles()
+    private function loadFromFiles():Group
     {
         // Group routes for simplicity
         $group = new Group();

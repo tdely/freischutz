@@ -49,9 +49,9 @@ class Basic extends Component
     /**
      * Set hashed key.
      *
-     * @return string
+     * @return void
      */
-    public function setKey(string $key):string
+    public function setKey(string $key)
     {
         $this->keyHashed = $key;
     }

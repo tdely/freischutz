@@ -34,8 +34,17 @@ class Json extends Validator
             return true;
         }
 
+        $error = json_last_error();
+        $messages = array(
+            JSON_ERROR_DEPTH => 'maximum stack depth exceeded',
+            JSON_ERROR_STATE_MISMATCH => 'state mismatch',
+            JSON_ERROR_CTRL_CHAR => 'unexpected control character',
+            JSON_ERROR_SYNTAX => 'syntax error',
+            JSON_ERROR_UTF8 => 'malformed UTF-8 characters'
+        );
+
         $validation->appendMessage(new Message(
-            "$attribute contains invalid JSON",
+            "Invalid JSON in $attribute: {$messages[$error]}",
             $attribute,
             'JsonDecode'
         ));

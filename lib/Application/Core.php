@@ -410,6 +410,59 @@ class Core extends Application
     }
 
     /**
+     * Set JWT authentication.
+     *
+     * @param \Phalcon\Events\Manager $eventsManager Events manager.
+     * @throws \Freischutz\Application\Exception
+     * @return void
+     */
+    private function authenticateJwt(EventsManager $eventsManager)
+    {
+        if (!isset($this->config->basic_auth)) {
+            throw new \Freischutz\Application\Exception(
+                "JWT authentication requires jwt section in config file."
+            );
+        }
+
+        $eventsManager->attach(
+            "application:beforeHandleRequest",
+            function (Event $event, $dispatcher) {
+                $jwt = new Jwt();
+
+                if ($this->users->setUser($jwt->getUser())) {
+                    $user = $this->users->getUser();
+                    if (isset($user->keys->jwt_key)) {
+                        $this->logger->debug('[Core] Using user->keys->jwt_key');
+                        $key = $user->keys->jwt_key;
+                    } else {
+                        $this->logger->debug('[Core] Using user->key');
+                        $key = $user->key;
+                    }
+                    $jwt->setKey($key);
+                    $result = $jwt->authenticate();
+                } else {
+                    $result = (object) array(
+                        'message' => 'Request not authentic.',
+                        'state' => false
+                    );
+                }
+
+                $message = $this->config->jwt->get('disclose', false)
+                    ? $result->message
+                    : 'Authentication failed.';
+
+                if (!$result->state) {
+                    $header = 'Bearer';
+                    $this->response->unauthorized($message, $header);
+                    $this->response->send();
+                }
+
+                return $result->state;
+            }
+        );
+    }
+
+    /**
      * Set events managers.
      *
      * Attaches event listeners to events manager, and sets the event manager
@@ -467,6 +520,9 @@ class Core extends Application
                         break;
                     case 'basic':
                         $this->authenticateBasic($eventsManager);
+                        break;
+                    case 'bearer':
+                        $this->authenticateJwt($eventsManager);
                         break;
                     default:
                         throw new Exception(

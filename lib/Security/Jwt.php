@@ -26,7 +26,7 @@ class Jwt extends Component
     private $payload;
     private $signature;
 
-    private $algorithms = array(
+    private static $algorithms = array(
         'HS256' => 'sha256',
         'HS384' => 'sha384',
         'HS512' => 'sha512',
@@ -118,8 +118,8 @@ class Jwt extends Component
             return false;
         }
 
-        $header = json_decode(self::base64url_decode($parts[0]);
-        $payload = json_decode(self::base64url_decode($parts[1]);
+        $header = json_decode(self::base64url_decode($parts[0]));
+        $payload = json_decode(self::base64url_decode($parts[1]));
         $signature = $parts[2];
 
         if (!$header || ! $payload) {
@@ -132,11 +132,16 @@ class Jwt extends Component
             return false;
         }
 
-        $message = substr($token, 0, strrpos($token,'.'));
-        $hash = hash_hmac(self::algorithms[$algorithm], $message, $secret, true);
+        $hash = self::base64url_encode(hash_hmac(
+            self::algorithms[$algorithm],
+            substr($token, 0, strrpos($token,'.')),
+            $secret,
+            true
+        ));
         if ($hash === $signature) {
             return true;
         }
+
         return false;
     }
 
@@ -149,7 +154,7 @@ class Jwt extends Component
     public function authenticate():stdClass
     {
         $result = (object) array('state' => false, 'message' => null);
-        
+
         $time = time();
         $grace = $this->config->jwt->get('grace', 0);
         if (!is_int($grace)) {
@@ -159,11 +164,11 @@ class Jwt extends Component
 
         $allowedAudiences = array_map(
             'trim',
-            split(',', $this->config->jwt->get('aud', ''))
+            split(',', $this->config->jwt->get('aud', 'freischutz'))
         );
         $allowedIssuers = array_map(
             'trim',
-            split(',', $this->config->jwt->get('iss', ''))
+            split(',', $this->config->jwt->get('iss', 'freischutz'))
         );
         $missing = array_diff(
             ['exp', 'iat', 'aud', 'iss', 'sub'],
@@ -181,11 +186,11 @@ class Jwt extends Component
             $this->logger->debug("[Jwt] Token not yet valid");
             $result->message = "Token not yet valid (nbf).";
         } elseif (!empty($allowedAudiences) && (!isset($this->payload->aud)
-                || in_array($this->payload->aud, $allowedAudiences))) {
+                || !in_array($this->payload->aud, $allowedAudiences))) {
             $this->logger->debug("[Jwt] Token audience mismatch");
             $result->message = "Token audience mismatch (aud).";
         } elseif (!empty($allowedIssuers) && (!isset($this->payload->iss)
-                || in_array($this->payload->iss, $allowedIssuers))) {
+                || !in_array($this->payload->iss, $allowedIssuers))) {
             $this->logger->debug("[Jwt] Token issuer mismatch");
             $result->message = "Token issuer mismatch (iss).";
         } elseif (empty($this->key)) {
@@ -201,7 +206,6 @@ class Jwt extends Component
         } else {
             $result->state = true;
         }
-
 
         return $result;
     }

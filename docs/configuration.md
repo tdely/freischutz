@@ -14,11 +14,11 @@ Required section.
 * log_destination: _(string)_ file path to log to, or 'syslog' to use syslog, **default syslog**.
 * log_name: _(string)_ name to log under (e.g. syslog ident) **default freischutz**.
 * log_level: _(string)_ granularity of log messages (available: debug,info,notice,warning,error,critical,alert,emergency; unknown value defaults to error), **default error**.
-* authenticate: _(string)_ authentication mechanism to allow in CSV (available: basic, hawk), **default false**.
+* authenticate: _(string)_ authentication mechanism to allow in CSV (available: basic,hawk,jwt), **default false**.
 * metadata_adapter: _(string)_ A \Phalcon\Mvc\Model\Metadata\ to use for storing model metadata (class name only), **default memory**
 * cache_adapter: _(string)_ A \Phalcon\Cache\Backend\ to use for caching (class name only), **default false**.
 * cache_lifetime: _(int)_ time in seconds that cached data is kept, **default 60**.
-* cache_parts: _(string)_ one or more parts to cache in CSV (available: users,acl,routes), default **false**.
+* cache_parts: _(string)_ one or more parts to cache in CSV (available: users,acl,routes), **default false**.
 
 ### basic_auth
 Required section **if** Basic authentication is enabled through application->authenticate.
@@ -32,6 +32,12 @@ Required section **if** Hawk is enabled through application->authenticate.
 * disclose: _(boolean)_ disclose issue in response when validation fails, **default false**.
 * nonce_dir: _(string)_ path to nonce file directory, **default tmp**.
 * nonce_model: _(string)_ nonce model class with full namespace including leading backslash (e.g. \Example\Model\Nonce), **required if** `storage = database`.
+
+### jwt
+Required section **if** JWT is enabled through application->authenticate.
+* grace: _(int)_ grace period in seconds for expire (exp) and not before (nbf) checks, **default 0**.
+* aud: _(string)_ allowed audiences in CSV, **default freischutz**.
+* iss: _(string)_ allowed issuers in CSV, **default freischutz**.
 
 ### acl
 Optional section.

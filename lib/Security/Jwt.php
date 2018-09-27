@@ -105,6 +105,29 @@ class Jwt extends Component
     }
 
     /**
+     * Create JSON Web Token.
+     *
+     * @param stdClass|array $header JWT header data.
+     * @param stdClass|array $payload JWT payload data.
+     * @param string $secret Secret used to sign JWT token.
+     * @return string
+     */
+    public static function create($header, $payload, string $secret):string
+    {
+        $encodedHeader = self::base64url_encode(json_encode($header));
+        $encodedPayload = self::base64url_encode(json_encode($payload));
+
+        $signature = self::base64url_encode(hash_hmac(
+            self::algorithms[$algorithm],
+            "$encodedHeader.$encodedPayload",
+            $secret,
+            true
+        ));
+
+        return "$encodedHeader.$encodedPayload.$signature";
+    }
+
+    /**
      * Validate token signature.
      *
      * @param string $token JWT token to validate.

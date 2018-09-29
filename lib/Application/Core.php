@@ -206,7 +206,7 @@ class Core extends Application
     private function setDatabases(DI $di)
     {
         if (!isset($this->config->application->databases_dir)) {
-            throw new \Freischutz\Application\Exception(
+            throw new Exception(
                 "Missing 'databases_dir' in config application section."
             );
         }
@@ -228,7 +228,7 @@ class Core extends Application
 
             // Validate adapter
             if (!in_array($adapter, ['Mysql', 'Postgresql', 'Sqlite'])) {
-                throw new \Freischutz\Application\Exception(
+                throw new Exception(
                     "Unexpected database adapter in $file: $adapter"
                 );
             }
@@ -306,7 +306,7 @@ class Core extends Application
     private function authenticateHawk(EventsManager $eventsManager)
     {
         if (!isset($this->config->hawk)) {
-            throw new \Freischutz\Application\Exception(
+            throw new Exception(
                 "Hawk authentication requires hawk section in config file."
             );
         }
@@ -360,7 +360,7 @@ class Core extends Application
     private function authenticateBasic(EventsManager $eventsManager)
     {
         if (!isset($this->config->basic_auth)) {
-            throw new \Freischutz\Application\Exception(
+            throw new Exception(
                 "Basic authentication requires basic_auth section in config file."
             );
         }
@@ -465,7 +465,7 @@ class Core extends Application
                         $this->authenticateBasic($eventsManager);
                         break;
                     default:
-                        throw new \Freischutz\Application\Exception(
+                        throw new Exception(
                             "Unknown authentication mechanism: $reqMechanism"
                         );
                 }

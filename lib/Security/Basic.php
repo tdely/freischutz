@@ -1,7 +1,6 @@
 <?php
 namespace Freischutz\Security;
 
-use Freischutz\Application\Exception;
 use Phalcon\Mvc\User\Component;
 use stdClass;
 

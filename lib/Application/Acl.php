@@ -41,7 +41,14 @@ class Acl extends Component
         }
 
         $acl = new AclList();
-        $acl->setDefaultAction(PhalconAcl::DENY);
+        $defaultPolicy = $this->config->acl->get('default_policy', 'deny');
+        if ($defaultPolicy === 'deny') {
+            $acl->setDefaultAction(PhalconAcl::DENY);
+        } elseif ($defaultPolicy === 'allow') {
+            $acl->setDefaultAction(PhalconAcl::ALLOW);
+        } else {
+            throw new Exception("Unknown ACL default policy: $defaultPolicy");
+        }
 
         /**
          * Build ACL

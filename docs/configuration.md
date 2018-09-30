@@ -36,6 +36,7 @@ Required section **if** Hawk is enabled through application->authenticate.
 ### acl
 Optional section.
 * enable: _(boolean)_ use ACL, **default false**.
+* default_policy: _(allow|deny)_ default ACL policy, **default deny**.
 * backend: _(file|database)_ ACL backend, **default file**.
 * dir: _(string)_ path to ACL file directory, **required**.
 * role_model: _(string)_ role model class with full namespace including leading backslash (e.g. \Example\Model\AclRole), **required if** `backend = database`.

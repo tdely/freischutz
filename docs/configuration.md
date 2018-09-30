@@ -25,7 +25,7 @@ Required section **if** Basic authentication is enabled through application->aut
 * realm: _(string)_ Authentication realm, **default freischutz**.
 
 ### hawk
-Required section **if** Hawk is enabled through application->authenticate.
+Required section **if** Hawk authentication is enabled through application->authenticate.
 * algorithms: _(string)_ one or more algorithms to allow in CSV, **default sha256**.
 * expire: _(int)_ time in seconds from request creation until considered expired, **default 60**.
 * storage: _(file|database|cache)_ nonce storage backend, **default file**.
@@ -33,8 +33,14 @@ Required section **if** Hawk is enabled through application->authenticate.
 * nonce_dir: _(string)_ path to nonce file directory, **default tmp**.
 * nonce_model: _(string)_ nonce model class with full namespace including leading backslash (e.g. \Example\Model\Nonce), **required if** `storage = database`.
 
+### bearer
+Required section **if** Bearer token authentication is enabled through application->authenticate.
+* disclose: _(boolean)_ disclose issue in response when validation fails, **default false**.
+* types: _(string)_ allow bearer token types in CSV, **default jwt**.
+
 ### jwt
-Required section **if** JWT is enabled through application->authenticate.
+Required section **if** JWT is enabled through bearer->.
+* claims: _(string)_ required claims in CSV, exp and iat are always required.
 * grace: _(int)_ grace period in seconds for expire (exp) and not before (nbf) checks, **default 0**.
 * aud: _(string)_ allowed audiences in CSV, **default freischutz**.
 * iss: _(string)_ allowed issuers in CSV, **default freischutz**.

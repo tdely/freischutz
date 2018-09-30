@@ -40,7 +40,7 @@ class Jwt extends Component
         }
 
         // Strip 'Bearer ' from authorization header
-        $token = substr($this->request->getHeader('Authorization'), 8);
+        $token = substr($this->request->getHeader('Authorization'), 7);
 
         $this->token = $token;
         $parts = explode('.', $token);
@@ -59,7 +59,7 @@ class Jwt extends Component
             }
         }
 
-        $this->user = isset($payload->sub) ? $payload->sub : '';
+        $this->user = isset($this->payload->sub) ? $this->payload->sub : '';
     }
 
     /**
@@ -108,29 +108,40 @@ class Jwt extends Component
             'trim',
             explode(',', $this->config->jwt->get('iss', 'freischutz'))
         );
-        $missing = array_diff(
-            ['exp', 'iat', 'aud', 'iss', 'sub'],
-            (array) $this->payload
+
+        $requiredClaims = array();
+        if ($this->config->jwt->get('claims', null)) {
+            $requiredClaims = array_map(
+                'trim',
+                explode(',', $this->config->jwt->get('claims', null))
+            );
+        }
+        $missingClaims = array_diff(
+            array_merge($requiredClaims, ['exp', 'iat']),
+            array_keys((array) $this->payload)
         );
 
-        if ($missing) {
-            $claims = join(', ', $missing);
+        if ($missingClaims) {
+            $claims = join(', ', $missingClaims);
             $this->logger->debug("[Jwt] Missing claims: $claims");
             $result->message = "Missing claims: $claims.";
-        } elseif ($this->payload->exp - $grace >= $time) {
-            $this->logger->debug("[Jwt] Token expired");
-            $result->message = "Token expired (exp).";
-        } elseif (isset($this->payload->nbf) && $this->payload->nbf + $grace < $time) {
-            $this->logger->debug("[Jwt] Token not yet valid");
-            $result->message = "Token not yet valid (nbf).";
+        } elseif ($this->payload->exp + $grace <= $time) {
+            $this->logger->debug("[Jwt] Token expired (exp)");
+            $result->message = "Token expired.";
+        } elseif (isset($this->payload->nbf) && $this->payload->nbf - $grace > $time) {
+            $this->logger->debug("[Jwt] Token not yet valid (nbf)");
+            $result->message = "Token not yet valid.";
         } elseif (!empty($allowedAudiences) && (!isset($this->payload->aud)
                 || !in_array($this->payload->aud, $allowedAudiences))) {
-            $this->logger->debug("[Jwt] Token audience mismatch");
-            $result->message = "Token audience mismatch (aud).";
+            $this->logger->debug("[Jwt] Token audience mismatch (aud)");
+            $result->message = "Token audience mismatch.";
         } elseif (!empty($allowedIssuers) && (!isset($this->payload->iss)
                 || !in_array($this->payload->iss, $allowedIssuers))) {
-            $this->logger->debug("[Jwt] Token issuer mismatch");
-            $result->message = "Token issuer mismatch (iss).";
+            $this->logger->debug("[Jwt] Token issuer mismatch (iss)");
+            $result->message = "Token issuer mismatch.";
+        } elseif (!empty($this->payload->iat) && $this->payload->iat >= $time) {
+            $this->logger->debug("[Jwt] Token issued at a future time (iat)");
+            $result->message = "Token issued at a future time.";
         } elseif (empty($this->key)) {
             $this->logger->debug(
                 "[Jwt] No key set for user ID {$this->payload->sub}"

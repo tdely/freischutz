@@ -105,7 +105,7 @@ class Jwt
             return false;
         }
 
-        $algorithm = strtoupper(isset($payload->alg) ? $payload->alg : false);
+        $algorithm = strtoupper(isset($header->alg) ? $header->alg : false);
 
         $createdSignature = self::createSignature(
             $algorithm,

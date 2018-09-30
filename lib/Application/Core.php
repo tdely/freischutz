@@ -430,12 +430,7 @@ class Core extends Application
             "application:beforeHandleRequest",
             function (Event $event, $dispatcher) {
 
-                $token = array();
-                preg_match(
-                    '/Bearer (\S+)/',
-                    $this->request->getHeader('Authorization'),
-                    $token
-                );
+                $token = substr($this->request->getHeader('Authorization'), 7);
 
                 $result = (object) array(
                     'message' => '',
@@ -444,9 +439,9 @@ class Core extends Application
 
                 $types = explode(',', $this->config->bearer->get('types', 'jwt'));
 
-                if (!isset($token[1])) {
+                if (!isset($token)) {
                     $result->message = 'Missing bearer token.';
-                } elseif (!$header = substr($token[1], 0, strpos($token[1], '.'))) {
+                } elseif (!$header = substr($token, 0, strpos($token, '.'))) {
                     $result->message = 'Bearer token is malformed.';
                 } elseif (!$header = json_decode(Base64url::decode($header))) {
                     $result->message = 'Bearer token header is malformed.';
@@ -483,7 +478,9 @@ class Core extends Application
                         $this->logger->debug('[Core] Using user->key');
                         $key = $user->key;
                     }
-                    $bearer->setKey($key);
+                    if ($key) {
+                        $bearer->setKey($key);
+                    }
                     $result = $bearer->authenticate();
                 } else {
                     $result = (object) array(

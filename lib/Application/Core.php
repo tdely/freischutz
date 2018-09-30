@@ -329,7 +329,7 @@ class Core extends Application
                     $result = $this->hawk->authenticate();
                 } else {
                     $result = (object) array(
-                        'message' => 'Request not authentic.',
+                        'message' => 'User does not exist.',
                         'state' => false
                     );
                 }

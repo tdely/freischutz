@@ -96,7 +96,7 @@ class Hawk extends Component
             $this->logger->debug(
                 "[Hawk] No key set for user ID {$this->params->id}"
             );
-            $result->message = 'User denied.';
+            $result->message = 'User has no key.';
             return $result;
         }
 

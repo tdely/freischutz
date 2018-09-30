@@ -43,7 +43,7 @@ class Jwt extends Component
         $token = substr($this->request->getHeader('Authorization'), 8);
 
         $this->token = $token;
-        $parts = split('.', $token);
+        $parts = explode('.', $token);
         if (count($parts) !== 3) {
             $this->logger->debug("[Jwt] Malformed token");
         } else {
@@ -102,11 +102,11 @@ class Jwt extends Component
 
         $allowedAudiences = array_map(
             'trim',
-            split(',', $this->config->jwt->get('aud', 'freischutz'))
+            explode(',', $this->config->jwt->get('aud', 'freischutz'))
         );
         $allowedIssuers = array_map(
             'trim',
-            split(',', $this->config->jwt->get('iss', 'freischutz'))
+            explode(',', $this->config->jwt->get('iss', 'freischutz'))
         );
         $missing = array_diff(
             ['exp', 'iat', 'aud', 'iss', 'sub'],

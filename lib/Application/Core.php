@@ -432,7 +432,7 @@ class Core extends Application
 
                 $token = array();
                 preg_match(
-                    '/Bearer (\w+)/',
+                    '/Bearer (\S+)/',
                     $this->request->getHeader('Authorization'),
                     $token
                 );
@@ -442,7 +442,7 @@ class Core extends Application
                     'state' => false
                 );
 
-                $types = split(',', $this->config->bearer->get('types', 'jwt'));
+                $types = explode(',', $this->config->bearer->get('types', 'jwt'));
 
                 if (!isset($token[1])) {
                     $result->message = 'Missing bearer token.';
@@ -458,7 +458,7 @@ class Core extends Application
                     switch (strtolower($header->typ)) {
                         case 'jwt':
                             $bearer = new Jwt();
-                            $bearerName = 'jwt';
+                            $bearerKeyName = 'jwt_key';
                             break;
                         default:
                             $result->message = 'Unsupported bearer type.';
@@ -467,18 +467,18 @@ class Core extends Application
                 }
 
                 if (!empty($result->message)) {
-                    $this->response->unauthorized($message, 'Bearer');
+                    $this->response->unauthorized($result->message, 'Bearer');
                     $this->response->send();
                     return false;
                 }
 
                 if ($this->users->setUser($bearer->getUser())) {
                     $user = $this->users->getUser();
-                    if (isset($user->keys->{$bearerName}_key)) {
+                    if (isset($user->keys->$bearerKeyName)) {
                         $this->logger->debug(
-                            "[Core] Using user->keys->{$bearerName}_key"
+                            "[Core] Using user->keys->$bearerKeyName"
                         );
-                        $key = $user->keys->{$bearerName}_key;
+                        $key = $user->keys->$bearerKeyName;
                     } else {
                         $this->logger->debug('[Core] Using user->key');
                         $key = $user->key;

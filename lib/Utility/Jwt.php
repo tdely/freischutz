@@ -92,7 +92,7 @@ class Jwt
      */
     public static function validate(string $token, string $secret):bool
     {
-        $parts = split('.', $token);
+        $parts = explode('.', $token);
         if (count($parts) !== 3) {
             return false;
         }

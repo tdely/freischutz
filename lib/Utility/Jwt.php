@@ -3,6 +3,7 @@ namespace Freischutz\Utility;
 
 use Freischutz\Application\Exception;
 use Freischutz\Utility\Base64url;
+use stdClass;
 
 /**
  * Freischutz\Utility\Jwt
@@ -38,7 +39,7 @@ class Jwt
 
         switch ($type) {
             case 'HS':
-                $hash = hash_hmac(self::mapSha[$bits], $token, $secret, true);
+                $hash = hash_hmac('sha' . $bits, $token, $secret, true);
                 break;
             case 'RS':
             case 'PS':
@@ -59,18 +60,22 @@ class Jwt
     /**
      * Create JSON Web Token.
      *
-     * @param stdClass|array $header JWT header data.
-     * @param stdClass|array $payload JWT payload data.
+     * @param stdClass $header JWT header data.
+     * @param stdClass $payload JWT payload data.
      * @param string $secret Secret used to sign JWT token.
      * @return string|false
      */
-    public static function create($header, $payload, string $secret)
+    public static function create(stdClass $header, stdClass $payload, string $secret)
     {
         $encodedHeader = Base64url::encode(json_encode($header));
         $encodedPayload = Base64url::encode(json_encode($payload));
 
+        if (!isset($header->alg)) {
+            throw new Exception("'alg' not set in header");
+        }
+
         $signature = self::createSignature(
-            $algorithm,
+            $header->alg,
             "$encodedHeader.$encodedPayload",
             $secret
         );

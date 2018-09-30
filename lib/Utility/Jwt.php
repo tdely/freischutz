@@ -1,6 +1,7 @@
 <?php
 namespace Freischutz\Utility;
 
+use Freischutz\Application\Exception;
 use Freischutz\Utility\Base64url;
 
 /**
@@ -19,10 +20,11 @@ class Jwt
     /**
      * Create signature from token.
      *
+     * @throws \Freischutz\Application\Exception
      * @param string $algorithm Algorithm as defined in JWT standard.
      * @param string $token Token to derive signature from.
      * @param string $secret Secret used in cryptographic function.
-     * @return string|false
+     * @return string
      */
     private static function createSignature(string $algorithm, string $token, $secret):string
     {
@@ -31,30 +33,28 @@ class Jwt
 
         if (!preg_match('/^[0-9]+$/', $bits)
                 || !in_array('sha' . $bits, hash_algos())) {
-            $this->logger->debug('Unknown hash algorithm: sha' . $bits);
-            return false;
+            throw new Exception("Unknown cryptographic algorithm: $algorithm");
         }
 
-        $hash = false;
         switch ($type) {
             case 'HS':
                 $hash = hash_hmac(self::mapSha[$bits], $token, $secret, true);
                 break;
             case 'RS':
             case 'PS':
-                $this->logger->debug('Unimplemented standard: ' . $algorithm);
+                throw new Exception(
+                    "Unimplemented cryptographic algorithm: $algorithm"
+                );
                 break;
             default:
-                $this->logger->debug('Unrecognized standard: ' . $algorithm);
+                throw new Exception(
+                    "Unknown cryptographic algorithm: $algorithm"
+                );
                 break;
         }
 
-        $signature = $hash ? Base64url::encode($hash) : $hash;
-
-        return $signature;
+        return Base64url::encode($hash);
     }
-
-    private static function 
 
     /**
      * Create JSON Web Token.

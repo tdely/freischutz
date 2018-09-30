@@ -2,6 +2,8 @@
 namespace Freischutz\Security;
 
 use Freischutz\Application\Exception;
+use Freischutz\Utility\Base64url;
+use Freischutz\Utility\Jwt as JwtUtility;
 use Phalcon\Mvc\User\Component;
 use stdClass;
 
@@ -26,36 +28,6 @@ class Jwt extends Component
     private $payload;
     private $signature;
 
-    private static $algorithms = array(
-        'HS256' => 'sha256',
-        'HS384' => 'sha384',
-        'HS512' => 'sha512',
-    );
-
-    /**
-     * Encode to base64url.
-     *
-     * @param string $input Data to base64url encode.
-     * @return string
-     */
-    public static function base64url_encode(string $input):string
-    {
-        return rtrim(strtr(base64_encode($input), '+/', '-_'), '=');
-    }
-
-    /**
-     * Decode from base64url.
-     *
-     * @param string $input Base64url string to decode.
-     * @return string
-     */
-    public static function base64url_decode(string $input):string
-    {
-        $remainder = strlen($input)) % 4;
-        $padding = $remainder ? str_repeat('=', 4 - $remainder) : '';
-        return base64_decode(strtr($input, '-_', '+/') . $padding);
-    }
-
     /**
      * Constructor.
      */
@@ -72,11 +44,11 @@ class Jwt extends Component
             $header = $parts[0];
             $payload = $parts[1];
             $signature = $parts[2];
-            if (!$this->header = json_decode($this->base64url_decode($header))) {
+            if (!$this->header = json_decode(Base64url::decode($header))) {
                 $this->logger->debug("[Jwt] Token header failed to decode");
-            } elseif (!$this->payload = json_decode($this->base64url_decode($payload))) {
+            } elseif (!$this->payload = json_decode(Base64url::decode($payload))) {
                 $this->logger->debug("[Jwt] Token payload failed to decode");
-            } elseif (!$this->signature = $this->base64url_decode($signature)) {
+            } elseif (!$this->signature = Base64url::decode($signature)) {
                 $this->logger->debug("[Jwt] Token signature failed to decode");
             }
         }
@@ -104,69 +76,6 @@ class Jwt extends Component
         $this->key = $key;
     }
 
-    /**
-     * Create JSON Web Token.
-     *
-     * @param stdClass|array $header JWT header data.
-     * @param stdClass|array $payload JWT payload data.
-     * @param string $secret Secret used to sign JWT token.
-     * @return string
-     */
-    public static function create($header, $payload, string $secret):string
-    {
-        $encodedHeader = self::base64url_encode(json_encode($header));
-        $encodedPayload = self::base64url_encode(json_encode($payload));
-
-        $signature = self::base64url_encode(hash_hmac(
-            self::algorithms[$algorithm],
-            "$encodedHeader.$encodedPayload",
-            $secret,
-            true
-        ));
-
-        return "$encodedHeader.$encodedPayload.$signature";
-    }
-
-    /**
-     * Validate token signature.
-     *
-     * @param string $token JWT token to validate.
-     * @param string $secret Secret used to sign JWT token.
-     * @return bool
-     */
-    public static function validate(string $token, string $secret):bool
-    {
-        $parts = split('.', $token);
-        if (count($parts) !== 3) {
-            return false;
-        }
-
-        $header = json_decode(self::base64url_decode($parts[0]));
-        $payload = json_decode(self::base64url_decode($parts[1]));
-        $signature = $parts[2];
-
-        if (!$header || ! $payload) {
-            return false;
-        }
-
-        $algorithm = strtoupper(isset($payload->alg) ? $payload->alg : false);
-
-        if (!$algorithm || !array_keys(self::algorithms, $algorithm, true)) {
-            return false;
-        }
-
-        $hash = self::base64url_encode(hash_hmac(
-            self::algorithms[$algorithm],
-            substr($token, 0, strrpos($token,'.')),
-            $secret,
-            true
-        ));
-        if ($hash === $signature) {
-            return true;
-        }
-
-        return false;
-    }
 
     /**
      * Authenticate client request.
@@ -221,7 +130,7 @@ class Jwt extends Component
                 "[Jwt] No key set for user ID {$this->payload->sub}"
             );
             $result->message = 'User denied.';
-        } elseif (!$this->validate($this->token, $this->key)) {
+        } elseif (!JwtUtility::validate($this->token, $this->key)) {
             $this->logger->debug(
                 "[Jwt] Failed to validate signature"
             );

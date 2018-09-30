@@ -20,7 +20,7 @@ class Base64url
      * @param string $input Data to base64url encode.
      * @return string
      */
-    public static function base64url_encode(string $input):string
+    public static function encode(string $input):string
     {
         return rtrim(strtr(base64_encode($input), '+/', '-_'), '=');
     }
@@ -31,9 +31,9 @@ class Base64url
      * @param string $input Base64url string to decode.
      * @return string
      */
-    public static function base64url_decode(string $input):string
+    public static function decode(string $input):string
     {
-        $remainder = strlen($input)) % 4;
+        $remainder = strlen($input) % 4;
         $padding = $remainder ? str_repeat('=', 4 - $remainder) : '';
         return base64_decode(strtr($input, '-_', '+/') . $padding);
     }

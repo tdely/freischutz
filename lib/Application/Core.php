@@ -389,7 +389,7 @@ class Core extends Application
                     $result = $basic->authenticate();
                 } else {
                     $result = (object) array(
-                        'message' => 'Request not authentic.',
+                        'message' => 'User does not exist.',
                         'state' => false
                     );
                 }
@@ -487,7 +487,7 @@ class Core extends Application
                     $result = $bearer->authenticate();
                 } else {
                     $result = (object) array(
-                        'message' => 'Request not authentic.',
+                        'message' => 'User does not exist.',
                         'state' => false
                     );
                 }

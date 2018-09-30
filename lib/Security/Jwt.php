@@ -33,6 +33,12 @@ class Jwt extends Component
      */
     public function __construct()
     {
+        if (!isset($this->config->jwt)) {
+            throw new Exception(
+                'JWT authentication requires jwt section in config file.'
+            );
+        }
+
         // Strip 'Bearer ' from authorization header
         $token = substr($this->request->getHeader('Authorization'), 8);
 

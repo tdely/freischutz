@@ -7,6 +7,8 @@ use Freischutz\Application\Router;
 use Freischutz\Application\Users;
 use Freischutz\Security\Basic;
 use Freischutz\Security\Hawk;
+use Freischutz\Security\Jwt;
+use Freischutz\Utility\Base64url;
 use Freischutz\Utility\Response;
 use Phalcon\Cache\Frontend\Data as CacheData;
 use Phalcon\Config\Adapter\Ini;
@@ -410,36 +412,79 @@ class Core extends Application
     }
 
     /**
-     * Set JWT authentication.
+     * Set Bearer authentication.
      *
      * @param \Phalcon\Events\Manager $eventsManager Events manager.
      * @throws \Freischutz\Application\Exception
      * @return void
      */
-    private function authenticateJwt(EventsManager $eventsManager)
+    private function authenticateBearer(EventsManager $eventsManager)
     {
-        if (!isset($this->config->basic_auth)) {
-            throw new \Freischutz\Application\Exception(
-                "JWT authentication requires jwt section in config file."
+        if (!isset($this->config->bearer)) {
+            throw new Exception(
+                'Bearer token authentication requires bearer section in config file.'
             );
         }
 
         $eventsManager->attach(
             "application:beforeHandleRequest",
             function (Event $event, $dispatcher) {
-                $jwt = new Jwt();
 
-                if ($this->users->setUser($jwt->getUser())) {
+                $token = array();
+                preg_match(
+                    '/Bearer (\w+)/',
+                    $this->request->getHeader('Authorization'),
+                    $token
+                );
+
+                $result = (object) array(
+                    'message' => '',
+                    'state' => false
+                );
+
+                $types = split(',', $this->config->bearer->get('types', 'jwt'));
+
+                if (!isset($token[1])) {
+                    $result->message = 'Missing bearer token.';
+                } elseif (!$header = substr($token[1], 0, strpos($token[1], '.'))) {
+                    $result->message = 'Bearer token is malformed.';
+                } elseif (!$header = json_decode(Base64url::decode($header))) {
+                    $result->message = 'Bearer token header is malformed.';
+                } elseif (!isset($header->typ)) {
+                    $result->message = 'Bearer token header has no type.';
+                } elseif (!in_array(strtolower($header->typ), $types)) {
+                    $result->message = 'Bearer type not allowed.';
+                } else {
+                    switch (strtolower($header->typ)) {
+                        case 'jwt':
+                            $bearer = new Jwt();
+                            $bearerName = 'jwt';
+                            break;
+                        default:
+                            $result->message = 'Unsupported bearer type.';
+                            break;
+                    }
+                }
+
+                if (!empty($result->message)) {
+                    $this->response->unauthorized($message, 'Bearer');
+                    $this->response->send();
+                    return false;
+                }
+
+                if ($this->users->setUser($bearer->getUser())) {
                     $user = $this->users->getUser();
-                    if (isset($user->keys->jwt_key)) {
-                        $this->logger->debug('[Core] Using user->keys->jwt_key');
-                        $key = $user->keys->jwt_key;
+                    if (isset($user->keys->{$bearerName}_key)) {
+                        $this->logger->debug(
+                            "[Core] Using user->keys->{$bearerName}_key"
+                        );
+                        $key = $user->keys->{$bearerName}_key;
                     } else {
                         $this->logger->debug('[Core] Using user->key');
                         $key = $user->key;
                     }
-                    $jwt->setKey($key);
-                    $result = $jwt->authenticate();
+                    $bearer->setKey($key);
+                    $result = $bearer->authenticate();
                 } else {
                     $result = (object) array(
                         'message' => 'Request not authentic.',
@@ -447,13 +492,12 @@ class Core extends Application
                     );
                 }
 
-                $message = $this->config->jwt->get('disclose', false)
+                $message = $this->config->bearer->get('disclose', false)
                     ? $result->message
                     : 'Authentication failed.';
 
                 if (!$result->state) {
-                    $header = 'Bearer';
-                    $this->response->unauthorized($message, $header);
+                    $this->response->unauthorized($message, 'Bearer');
                     $this->response->send();
                 }
 
@@ -522,7 +566,7 @@ class Core extends Application
                         $this->authenticateBasic($eventsManager);
                         break;
                     case 'bearer':
-                        $this->authenticateJwt($eventsManager);
+                        $this->authenticateBearer($eventsManager);
                         break;
                     default:
                         throw new Exception(

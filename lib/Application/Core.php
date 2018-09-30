@@ -325,7 +325,9 @@ class Core extends Application
                         $this->logger->debug('[Core] Using user->key');
                         $key = $user->key;
                     }
-                    $this->hawk->setKey($key);
+                    if ($key) {
+                        $this->hawk->setKey($key);
+                    }
                     $result = $this->hawk->authenticate();
                 } else {
                     $result = (object) array(
@@ -379,7 +381,9 @@ class Core extends Application
                         $this->logger->debug('[Core] Using user->key');
                         $key = $user->key;
                     }
-                    $basic->setKey($key);
+                    if ($key) {
+                        $basic->setKey($key);
+                    }
                     $result = $basic->authenticate();
                 } else {
                     $result = (object) array(

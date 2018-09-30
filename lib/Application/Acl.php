@@ -24,6 +24,7 @@ class Acl extends Component
     /**
      * Rebuild ACL.
      *
+     * @throws \Freischutz\Application\Exception
      * @return void
      */
     private function rebuild()
@@ -35,7 +36,7 @@ class Acl extends Component
 
         if ($this->di->has('cache') && $doCache) {
             if ($acl = $this->cache->get('_freischutz_acl')) {
-                return $acl;
+                $this->acl = $acl;
             }
         }
 

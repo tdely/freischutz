@@ -117,6 +117,7 @@ class Users extends Component
         /**
          * Read user definitions
          */
+        $userList = array();
         foreach (glob($userListDir . '/' . '*.users') as $file) {
             $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             foreach ($lines as $line) {
@@ -154,6 +155,7 @@ class Users extends Component
             );
         }
 
+        $userList = array();
         foreach ($this->config->users as $id => $key) {
             $userList[$id] = (object) array('id' => $id, 'key' => $key);
         }
@@ -231,6 +233,7 @@ class Users extends Component
             );
         }
 
+        $userList = array();
         foreach ($model->find() as $row) {
             if (!isset($row->{$map['id']})) {
                 throw new Exception(

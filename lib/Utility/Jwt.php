@@ -27,7 +27,7 @@ class Jwt
      * @param string $secret Secret used in cryptographic function.
      * @return string
      */
-    private static function createSignature(string $algorithm, string $token, $secret):string
+    public static function createSignature(string $algorithm, string $token, $secret):string
     {
         $type = substr($algorithm, 0, 2);
         $bits = substr($algorithm, 2);
@@ -71,7 +71,7 @@ class Jwt
         $encodedPayload = Base64url::encode(json_encode($payload));
 
         if (!isset($header->alg)) {
-            throw new Exception("'alg' not set in header");
+            throw new Exception("Token header missing 'alg'");
         }
 
         $signature = self::createSignature(

@@ -48,7 +48,7 @@ class Jwt extends Component
         $parts = explode('.', $token);
 
         if (count($parts) !== 3) {
-            $this->logger->debug("[Jwt] Malformed token");
+            $this->logger->debug("[Jwt] Malformed token.");
         } else {
             /**
              * Decode token pieces
@@ -57,11 +57,11 @@ class Jwt extends Component
             $payload = $parts[1];
             $signature = $parts[2];
             if (!$this->header = json_decode(Base64url::decode($header))) {
-                $this->logger->debug("[Jwt] Token header failed to decode");
+                $this->logger->debug("[Jwt] Token header failed to decode.");
             } elseif (!$this->payload = json_decode(Base64url::decode($payload))) {
-                $this->logger->debug("[Jwt] Token payload failed to decode");
+                $this->logger->debug("[Jwt] Token payload failed to decode.");
             } elseif (!$this->signature = Base64url::decode($signature)) {
-                $this->logger->debug("[Jwt] Token signature failed to decode");
+                $this->logger->debug("[Jwt] Token signature failed to decode.");
             }
         }
 
@@ -100,7 +100,7 @@ class Jwt extends Component
         $result = (object) array('state' => false, 'message' => null);
         if (empty($this->key)) {
             $this->logger->debug(
-                "[Jwt] No key set for user ID {$this->payload->sub}"
+                "[Jwt] No key set for user ID {$this->payload->sub}."
             );
             $result->message = 'User denied.';
             return $result;
@@ -109,7 +109,7 @@ class Jwt extends Component
         // Get grace time
         $grace = $this->config->jwt->get('grace', 0);
         if (!is_int($grace)) {
-            $this->logger->warning("[Jwt] grace is not integer, using 0");
+            $this->logger->warning("[Jwt] grace is not integer, using 0.");
             $grace = 0;
         }
 
@@ -122,7 +122,7 @@ class Jwt extends Component
             );
         }
         $missingClaims = array_diff(
-            array_merge($requiredClaims, ['exp', 'iat']),
+            array_merge($requiredClaims, ['sub', 'exp', 'iat']),
             array_keys((array) $this->payload)
         );
 
@@ -180,7 +180,7 @@ class Jwt extends Component
                         // Token signature is correct
                         $result->message = 'Signature invalid.';
                         $this->logger->debug(
-                            "[Jwt] Failed to validate signature"
+                            "[Jwt] Failed to validate signature."
                         );
                     } else {
                         $result->state = true;
@@ -189,7 +189,7 @@ class Jwt extends Component
                 } catch(Exception $e) {
                     // Token algorithm problem
                     $result->message = $e->getMessage();
-                    $this->logger->debug("[Jwt] {$e->getMessage()}");
+                    $this->logger->debug("[Jwt] {$e->getMessage()}.");
                 }
             } elseif ($notBefore >= $now) {
                 $timedelta = $notBefore - $now;
@@ -206,7 +206,7 @@ class Jwt extends Component
                     "$timedelta (threshold ±$grace)."
                 );
             } else {
-                $timedelta = $this->payload->exp - $now;
+                $timedelta = $now - $this->payload->exp;
                 $result->message = "Token expired.";
                 $this->logger->debug(
                     "[Jwt] Token exp timedelta threshold exceeded: " .
@@ -216,7 +216,7 @@ class Jwt extends Component
         } else {
             $claims = join(', ', $missingClaims);
             $result->message = "Missing claims: $claims.";
-            $this->logger->debug("[Jwt] Missing claims: $claims");
+            $this->logger->debug("[Jwt] Missing claims: $claims.");
         }
 
         return $result;

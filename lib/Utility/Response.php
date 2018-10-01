@@ -343,7 +343,14 @@ class Response extends PhalconResponse
      */
     public function notModified($content, $headers, $type = false, $charset = false)
     {
-        $setable = array('Cache-Control', 'Content-Location', 'Date', 'ETag', 'Expires', 'Vary');
+        $setable = array(
+            'Cache-Control',
+            'Content-Location',
+            'Date',
+            'ETag',
+            'Expires',
+            'Vary'
+        );
         $this->setStatusCode(304);
         foreach ($headers as $header => $value) {
             if (in_array($header, $setable)) {

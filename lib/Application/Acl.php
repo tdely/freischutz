@@ -232,7 +232,9 @@ class Acl extends Component
             $var = $item . '_model';
             ${$item . 'ModelName'} = $this->config->acl->$var;
             if (!class_exists(${$item . 'ModelName'})) {
-                throw new Exception("ACL $item model not found: " . ${$item . 'ModelName'});
+                throw new Exception(
+                    "ACL $item model not found: " . ${$item . 'ModelName'}
+                );
             }
         }
 

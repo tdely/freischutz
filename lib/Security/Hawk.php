@@ -107,21 +107,15 @@ class Hawk extends Component
         );
 
         if (!isset($this->params->alg) || empty($this->params->alg)) {
-            /**
-             * No algorithm requested, use default algorithm
-             */
-             $alg = $algorithms[0];
+            // No algorithm requested, use default algorithm
+            $alg = $algorithms[0];
         } elseif (!in_array($this->params->alg, $algorithms, true)) {
-            /**
-             * Requested algorithm not allowed
-             */
+            // Requested algorithm not allowed
             $result->message = 'Algorithm not allowed.';
             return $result;
         } else {
-            /**
-             * Use requested algorithm
-             */
-             $alg = $this->params->alg;
+            // Use requested algorithm
+            $alg = $this->params->alg;
         }
 
         // Check nonce
@@ -180,18 +174,30 @@ class Hawk extends Component
                     );
                 } else {
                     $result->message = 'Payload mismatch.';
-                    $this->logger->debug("[Hawk] Payload mismatch: expected $hash, got {$this->params->hash}.");
+                    $this->logger->debug(
+                        "[Hawk] Payload mismatch: expected $hash, got " .
+                        "{$this->params->hash}."
+                    );
                 }
             } elseif (($this->params->ts - $now) > $expire) {
                 $result->message = 'Request too far into future.';
-                $this->logger->debug("[Hawk] Timedelta threshold exceeded: $timedelta) (threshold ±$expire).");
+                $this->logger->debug(
+                    "[Hawk] Timedelta threshold exceeded: $timedelta " .
+                    "(threshold ±$expire)."
+                );
             } else {
                 $result->message = 'Request expired.';
-                $this->logger->debug("[Hawk] Timedelta threshold exceeded: $timedelta) (threshold ±$expire).");
+                $this->logger->debug(
+                    "[Hawk] Timedelta threshold exceeded: $timedelta " .
+                    "(threshold ±$expire)."
+                );
             }
         } else {
             $result->message = 'Request not authentic.';
-            $this->logger->debug("[Hawk] MAC mismatch: expected $serverMac, got {$this->params->mac}.");
+            $this->logger->debug(
+                "[Hawk] MAC mismatch: expected $serverMac, got " .
+                "{$this->params->mac}."
+            );
         }
 
         return $result;
@@ -272,7 +278,7 @@ class Hawk extends Component
     private function manageNonceFile(string $nonce)
     {
         $timestamp = date('U');
-        $file = $this->config->hawk->get('nonce_file', '/tmp') . '/' . $this->nonceFile;
+        $file = $this->config->hawk->get('nonce_dir', '/tmp') . '/' . $this->nonceFile;
         if (file_exists($file)) {
             /**
              * Manage recorded nonces
@@ -395,7 +401,7 @@ class Hawk extends Component
      */
     private function lookupNonceInFile(string $nonce):bool
     {
-        $file = $this->config->hawk->get('nonce_file', '/tmp') . '/' . $this->nonceFile;
+        $file = $this->config->hawk->get('nonce_dir', '/tmp') . '/' . $this->nonceFile;
         if (!file_exists($file)) {
             return false;
         }

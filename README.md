@@ -7,8 +7,10 @@ PHP framework for RESTful APIs, built using Phalcon.
 Features
 --------
 
-* Hawk validation/authentication
-  * Stores nonces in file, database, or cache.
+* Several authentication schemes
+  * Hawk, supports storing nonces in file, database, or cache.
+  * Basic authentication.
+  * Bearer token, supports JWT type.
 * Access control through ACL
   * Read from files or database.
 * User system decoupled from validation/ACL schemes

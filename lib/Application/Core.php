@@ -7,6 +7,8 @@ use Freischutz\Application\Router;
 use Freischutz\Application\Users;
 use Freischutz\Security\Basic;
 use Freischutz\Security\Hawk;
+use Freischutz\Security\Jwt;
+use Freischutz\Utility\Base64url;
 use Freischutz\Utility\Response;
 use Phalcon\Cache\Frontend\Data as CacheData;
 use Phalcon\Config\Adapter\Ini;
@@ -387,7 +389,7 @@ class Core extends Application
                     $result = $basic->authenticate();
                 } else {
                     $result = (object) array(
-                        'message' => 'Request not authentic.',
+                        'message' => 'User does not exist.',
                         'state' => false
                     );
                 }
@@ -401,6 +403,98 @@ class Core extends Application
                 if (!$result->state) {
                     $header = 'Basic realm="' . $realm . '"';
                     $this->response->unauthorized($message, $header);
+                    $this->response->send();
+                }
+
+                return $result->state;
+            }
+        );
+    }
+
+    /**
+     * Set Bearer authentication.
+     *
+     * @param \Phalcon\Events\Manager $eventsManager Events manager.
+     * @throws \Freischutz\Application\Exception
+     * @return void
+     */
+    private function authenticateBearer(EventsManager $eventsManager)
+    {
+        if (!isset($this->config->bearer)) {
+            throw new Exception(
+                'Bearer token authentication requires bearer section in config file.'
+            );
+        }
+
+        $eventsManager->attach(
+            "application:beforeHandleRequest",
+            function (Event $event, $dispatcher) {
+
+                $token = substr($this->request->getHeader('Authorization'), 7);
+
+                $result = (object) array(
+                    'message' => '',
+                    'state' => false
+                );
+
+                $types = explode(',', $this->config->bearer->get('types', 'jwt'));
+
+                if (!isset($token)) {
+                    $result->message = 'Missing bearer token.';
+                } elseif (!$header = substr($token, 0, strpos($token, '.'))) {
+                    $result->message = 'Bearer token is malformed.';
+                } elseif (!$header = json_decode(Base64url::decode($header))) {
+                    $result->message = 'Bearer token header is malformed.';
+                } elseif (!isset($header->typ)) {
+                    $result->message = 'Bearer token header has no type.';
+                } elseif (!in_array(strtolower($header->typ), $types)) {
+                    $result->message = 'Bearer type not allowed.';
+                } else {
+                    switch (strtolower($header->typ)) {
+                        case 'jwt':
+                            $bearer = new Jwt();
+                            $bearerKeyName = 'jwt_key';
+                            break;
+                        default:
+                            $result->message = 'Unsupported bearer type.';
+                            break;
+                    }
+                }
+
+                if (!empty($result->message)) {
+                    $this->response->unauthorized($result->message, 'Bearer');
+                    $this->response->send();
+                    return false;
+                }
+
+                if ($this->users->setUser($bearer->getUser())) {
+                    $user = $this->users->getUser();
+                    if (isset($user->keys->$bearerKeyName)) {
+                        $this->logger->debug(
+                            "[Core] Using user->keys->$bearerKeyName"
+                        );
+                        $key = $user->keys->$bearerKeyName;
+                    } else {
+                        $this->logger->debug('[Core] Using user->key');
+                        $key = $user->key;
+                    }
+                    if ($key) {
+                        $bearer->setKey($key);
+                    }
+                    $result = $bearer->authenticate();
+                } else {
+                    $result = (object) array(
+                        'message' => 'User does not exist.',
+                        'state' => false
+                    );
+                }
+
+                $message = $this->config->bearer->get('disclose', false)
+                    ? $result->message
+                    : 'Authentication failed.';
+
+                if (!$result->state) {
+                    $this->response->unauthorized($message, 'Bearer');
                     $this->response->send();
                 }
 
@@ -467,6 +561,9 @@ class Core extends Application
                         break;
                     case 'basic':
                         $this->authenticateBasic($eventsManager);
+                        break;
+                    case 'bearer':
+                        $this->authenticateBearer($eventsManager);
                         break;
                     default:
                         throw new Exception(

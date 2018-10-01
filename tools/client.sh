@@ -23,8 +23,10 @@ id=''
 key=''
 data=''
 ext=''
+token=''
 basic_auth=false
 hawk=false
+bearer=false
 extra_header=''
 verbose=false
 target=''
@@ -42,11 +44,12 @@ function display_help()
     echo "    -H        use Hawk authentication"
     echo "    -h        print this help message and exit"
     echo "    -i INT    user id to use with request"
-    echo "    -k STR    key for creating MAC"
+    echo "    -k STR    key/password for authentication"
     echo "    -m STR    http request method to use"
     echo "    -t        display timing info:"
     echo "               - response time: time from request until first HTTP response byte received"
     echo "               - operation time: time from request until last HTTP response byte received"
+    echo "    -T STR    use bearer token authentication"
     echo "    -V        verbose output"
     echo "    -v        print version and exit"
 }
@@ -113,7 +116,7 @@ function hawk_build()
 
 # getopt index variable
 OPTIND=1
-while getopts ":a:Bc:d:e:Hhi:k:m:tVv" opt; do
+while getopts ":a:Bc:d:e:Hhi:k:m:tT:Vv" opt; do
     case ${opt} in
         a)
             algorithm="${OPTARG}"
@@ -121,6 +124,7 @@ while getopts ":a:Bc:d:e:Hhi:k:m:tVv" opt; do
         B)
             basic_auth=true
             hawk=false
+            bearer=false
             ;;
         c)
             content_type="${OPTARG}"
@@ -134,6 +138,7 @@ while getopts ":a:Bc:d:e:Hhi:k:m:tVv" opt; do
         H)
             hawk=true
             basic_auth=false
+            bearer=false
             ;;
         h)
             display_help
@@ -150,6 +155,12 @@ while getopts ":a:Bc:d:e:Hhi:k:m:tVv" opt; do
             ;;
         t)
             timing="\n\n--TIMING DETAILS\nResponse time:  %{time_starttransfer}\nOperation time:  %{time_total}\n"
+            ;;
+        T)
+            basic_auth=false
+            hawk=false
+            bearer=true
+            token="${OPTARG}"
             ;;
         V)
             verbose=true
@@ -223,6 +234,8 @@ if [ ${hawk} = true ]; then
     curl -i -w @${TMP_FORMAT} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" -H "${extra_header}" $target
 elif [ ${basic_auth} = true ]; then
     curl -i -w @${TMP_FORMAT} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" -u "${id}:${key}" $target
+elif [ ${bearer} = true ]; then
+    curl -i -w @${TMP_FORMAT} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" -H "Authorization: Bearer ${token}" $target
 else
     curl -i -w @${TMP_FORMAT} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" $target
 fi

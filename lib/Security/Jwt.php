@@ -24,9 +24,7 @@ class Jwt extends Component
     private $key;
 
     private $token;
-    private $header;
     private $payload;
-    private $signature;
 
     /**
      * Constructor.
@@ -56,11 +54,11 @@ class Jwt extends Component
             $header = $parts[0];
             $payload = $parts[1];
             $signature = $parts[2];
-            if (!$this->header = json_decode(Base64url::decode($header))) {
+            if (!json_decode(Base64url::decode($header))) {
                 $this->logger->debug("[Jwt] Token header failed to decode.");
             } elseif (!$this->payload = json_decode(Base64url::decode($payload))) {
                 $this->logger->debug("[Jwt] Token payload failed to decode.");
-            } elseif (!$this->signature = Base64url::decode($signature)) {
+            } elseif (!Base64url::decode($signature)) {
                 $this->logger->debug("[Jwt] Token signature failed to decode.");
             }
         }

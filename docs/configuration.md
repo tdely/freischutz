@@ -39,8 +39,8 @@ Required section **if** Bearer token authentication is enabled through applicati
 * types: _(string)_ allow bearer token types in CSV, **default jwt**.
 
 ### jwt
-Required section **if** JWT is enabled through bearer->.
-* claims: _(string)_ required claims in CSV, exp and iat are always required.
+Required section **if** JWT is enabled through bearer->types.
+* claims: _(string)_ required claims in CSV, exp and iat are always required, **default aud,iss**.
 * grace: _(int)_ grace period in seconds for expire (exp) and not before (nbf) checks, **default 0**.
 * aud: _(string)_ allowed audiences in CSV, **default freischutz**.
 * iss: _(string)_ allowed issuers in CSV, **default freischutz**.

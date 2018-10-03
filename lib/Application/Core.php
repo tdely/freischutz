@@ -33,7 +33,7 @@ use Phalcon\Mvc\View;
  *
  * @author    Tobias Dély (tdely) <cleverhatcamouflage@gmail.com>
  * @copyright 2017-present Tobias Dély
- * @license   https://directory.fsf.org/wiki/License:BSD-3-Clause BSD 3-clause "New" or "Revised" License
+ * @license   https://directory.fsf.org/wiki/License:BSD-3-Clause BSD-3-Clause
  */
 class Core extends Application
 {

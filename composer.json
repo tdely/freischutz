@@ -1,0 +1,32 @@
+{
+  "name": "freischutz/freischutz",
+  "description": "RESTful API framework built on Phalcon.",
+  "keywords": ["rest", "restful", "api", "phalcon", "framework"],
+  "homepage": "https://gitlab.com/tdely/freischutz",
+  "license": "BSD-3-Clause",
+  "type": "project",
+  "version": "0.9.0",
+  "authors": [
+    {
+      "name": "Tobias Dély",
+      "email": "cleverhatcamouflage@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Freischutz\\": "lib/"
+    }
+  },
+  "require": {
+    "php": "^7.0",
+    "ext-phalcon": "^3.0",
+    "ext-json": "*"
+  },
+  "suggest": {
+      "ext-pdo": "Needed to support databases",
+      "ext-pdo_mysql": "For MySQL/MariaDB",
+      "ext-pdo_pgsql": "For PostgreSQL",
+      "ext-pdo_sqlite": "For SQLite",
+      "ext-simplexml": "Needed to support the application/xml content type"
+    }
+}

@@ -14,7 +14,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-VERSION='0.3.0'
+VERSION='0.9.0'
 
 content_type='text/plain'
 method='GET'

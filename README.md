@@ -23,8 +23,8 @@ Features
 Requirements
 ------------
 
-* PHP >= 7.0.0
-* Phalcon >= 3.0.1
+* PHP >= 7.0
+* Phalcon >= 3.0
 * Webserver
 
 If you are going to use a database:

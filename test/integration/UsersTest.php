@@ -12,10 +12,12 @@ class UsersTest extends TestCase
     {
         $appDir = __DIR__ . '/_shared';
         $libDir = __DIR__ . '/../../lib';
-        $this->config = new Config($appDir . '/../_config/config_users_config.ini');
+        $this->config = new Config($appDir . '/../_shared/config/config.ini');
         $this->config->application->offsetSet('app_dir', $appDir);
-        $this->configFile = new Config($appDir . '/../_config/config_users_file.ini');
+        $this->configFile = new Config($appDir . '/../_shared/config/config.ini');
         $this->configFile->application->offsetSet('app_dir', $appDir);
+        $this->configFile->application->offsetSet('users_dir', '/config/users');
+        $this->configFile->application->offsetSet('users_backend', 'file');
         require $appDir . '/config/autoloader.php';
     }
 

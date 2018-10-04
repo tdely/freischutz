@@ -2,10 +2,10 @@
 
 <phpunit colors="true">
     <php>
-        <var name="db_dsn" value="mysql:dbname=freischutz_test;host=mysql"/>
+        <var name="db_dsn" value="mysql:dbname=freischutz_example;host=localhost"/>
         <var name="db_username" value="root"/>
-        <var name="db_password" value="mysql"/>
-        <var name="db_dbname" value="freischutz_test"/>
+        <var name="db_password" value=""/>
+        <var name="db_dbname" value="freischutz_example"/>
     </php>
 
     <testsuites>
@@ -18,7 +18,7 @@
         <whitelist>
             <directory>./</directory>
             <exclude>
-                <directory>./Test</directory>
+                <directory>./test</directory>
             </exclude>
         </whitelist>
     </filter>

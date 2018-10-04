@@ -22,11 +22,16 @@
     "ext-phalcon": "^3.0",
     "ext-json": "*"
   },
+  "require-dev": {
+    "phpunit/phpunit": "*",
+    "ext-pdo": "*",
+    "ext-pdo_mysql": "*"
+  },
   "suggest": {
-      "ext-pdo": "Needed to support databases",
-      "ext-pdo_mysql": "For MySQL/MariaDB",
-      "ext-pdo_pgsql": "For PostgreSQL",
-      "ext-pdo_sqlite": "For SQLite",
-      "ext-simplexml": "Needed to support the application/xml content type"
-    }
+    "ext-pdo": "Needed to support databases",
+    "ext-pdo_mysql": "For MySQL/MariaDB",
+    "ext-pdo_pgsql": "For PostgreSQL",
+    "ext-pdo_sqlite": "For SQLite",
+    "ext-simplexml": "Needed to support the application/xml content type"
+  }
 }

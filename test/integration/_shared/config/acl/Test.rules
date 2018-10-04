@@ -3,3 +3,4 @@
 // Role,Controller,Action,Policy
 *,not-found,notFound,allow
 user,test,hello,allow
+userb,test,hello,allow

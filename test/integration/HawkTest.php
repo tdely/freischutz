@@ -13,7 +13,7 @@ class HawkTest extends TestCase
     {
         $appDir = __DIR__ . '/_shared';
         $libDir = __DIR__ . '/../../lib';
-        $this->configFile = new Config($appDir . '/../_config/config_hawk.ini');
+        $this->configFile = new Config($appDir . '/../_shared/config/config.ini');
         $this->configFile->application->offsetSet('app_dir', $appDir);
         require $appDir . '/config/autoloader.php';
 
@@ -121,6 +121,7 @@ class HawkTest extends TestCase
         $result = $app->run();
         $out = ob_get_contents();
         ob_end_clean();
+        ob_get_clean();
 
         $this->assertSame('Algorithm not allowed.', $out);
     }
@@ -170,9 +171,9 @@ class HawkTest extends TestCase
     }
 
     /**
-     * Test wrong user credentials denied.
+     * Test wrong key denied.
      */
-    public function testWrongUserCredentials()
+    public function testWrongKey()
     {
         $alg = 'sha256';
 
@@ -209,6 +210,7 @@ class HawkTest extends TestCase
         $result = $app->run();
         $out = ob_get_contents();
         ob_end_clean();
+        ob_get_clean();
 
         $this->assertSame('Request not authentic.', $out);
     }
@@ -255,6 +257,7 @@ class HawkTest extends TestCase
         $result = $app->run();
         $out = ob_get_contents();
         ob_end_clean();
+        ob_get_clean();
 
         $this->assertSame('Payload mismatch.', $out);
     }
@@ -301,6 +304,7 @@ class HawkTest extends TestCase
         $result = $app->run();
         $out = ob_get_contents();
         ob_end_clean();
+        ob_get_clean();
 
         $this->assertSame('Request expired.', $out);
     }
@@ -347,14 +351,60 @@ class HawkTest extends TestCase
         $result = $app->run();
         $out = ob_get_contents();
         ob_end_clean();
+        ob_get_clean();
 
         $this->assertSame('Request too far into future.', $out);
     }
 
     /**
-     * Test no user given.
+     * Test invalid user given.
      */
     public function testMissingUserCredentials()
+    {
+        $alg = 'sha256';
+
+        $ts = date('U');
+        $nonce = bin2hex(openssl_random_pseudo_bytes(3));
+        $method = 'GET';
+        $uri = '/hello';
+        $host = 'localhost';
+        $port = 80;
+
+        // Create request string
+        $message = "hawk.1.header\n" .
+                   $ts . "\n" .
+                   $nonce . "\n" .
+                   $method . "\n" .
+                   $uri . "\n" .
+                   $host . "\n" .
+                   $port . "\n" .
+                   '' . "\n" .
+                   '' . "\n";
+
+        $mac = base64_encode(hash_hmac($alg, $message, 'pw', true));
+        $header = 'Hawk id="wrong", ts="'.$ts.'", nonce="'.$nonce.'", mac="'.$mac.'", alg="'.$alg.'"';
+
+        $this->fakeRequest($header);
+
+        // Set up application
+        $app = new Freischutz\Application\Core($this->configFile);
+        // Force reading URI from $_SERVER['REQUEST_URI']
+        $app->router->setUriSource(Router::URI_SOURCE_SERVER_REQUEST_URI);
+
+        // Catch output
+        ob_start();
+        $result = $app->run();
+        $out = ob_get_contents();
+        ob_end_clean();
+        ob_get_clean();
+
+        $this->assertSame('User does not exist.', $out);
+    }
+
+    /**
+     * Test no user given.
+     */
+    public function testNoUserGiven()
     {
         $alg = 'sha256';
 
@@ -391,8 +441,9 @@ class HawkTest extends TestCase
         $result = $app->run();
         $out = ob_get_contents();
         ob_end_clean();
+        ob_get_clean();
 
-        $this->assertSame('Request not authentic.', $out);
+        $this->assertSame('No user provided in request.', $out);
     }
 
     /**
@@ -461,6 +512,7 @@ class HawkTest extends TestCase
         $resultDeny = $app->run();
         $outDeny = ob_get_contents();
         ob_end_clean();
+        ob_get_clean();
 
         $this->assertSame('Hello world!', $outOk);
         $this->assertSame('Duplicate nonce.', $outDeny);

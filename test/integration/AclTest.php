@@ -13,7 +13,7 @@ class AclTest extends TestCase
     {
         $appDir = __DIR__ . '/_shared';
         $libDir = __DIR__ . '/../../lib';
-        $this->configFile = new Config($appDir . '/../_config/config_acl.ini');
+        $this->configFile = new Config($appDir . '/../_shared/config/config.ini');
         $this->configFile->application->offsetSet('app_dir', $appDir);
         require $appDir . '/config/autoloader.php';
 

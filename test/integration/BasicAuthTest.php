@@ -4,7 +4,7 @@ use Phalcon\Config\Adapter\Ini as Config;
 use Phalcon\Mvc\Router;
 use PHPUnit\Framework\TestCase;
 
-class CoreTest extends TestCase
+class BasicAuthTest extends TestCase
 {
     private $configFile;
     private $configDb;
@@ -15,8 +15,6 @@ class CoreTest extends TestCase
         $libDir = __DIR__ . '/../../lib';
         $this->configFile = new Config($appDir . '/../_shared/config/config.ini');
         $this->configFile->application->offsetSet('app_dir', $appDir);
-        $this->configFile->application->offsetSet('authenticate', null);
-        $this->configFile->acl->offsetSet('enable', false);
         require $appDir . '/config/autoloader.php';
 
     }
@@ -24,8 +22,10 @@ class CoreTest extends TestCase
     /**
      * Fake some request stuff.
      */
-    public function fakeRequest()
+    public function fakeRequest($header)
     {
+        // Fake some request stuff
+        $_SERVER['HTTP_AUTHORIZATION'] = $header;
         $_SERVER['CONTENT_TYPE'] = 'text/plain';
         $_SERVER['REQUEST_URI'] = '/hello';
         $_SERVER['REQUEST_METHOD'] = 'GET';
@@ -34,11 +34,16 @@ class CoreTest extends TestCase
     }
 
     /**
-     * Test the simple 'Hello world!' action.
+     * Test correct request passes validation.
+     * @preserveGlobalState disabled
+     * @runInSeparateProcess
      */
-    public function testCoreOk()
+    public function testOk()
     {
-        $this->fakeRequest();
+        $auth = base64_encode('userb:pw');
+        $header = "Basic $auth";
+
+        $this->fakeRequest($header);
 
         // Set up application
         $app = new Freischutz\Application\Core($this->configFile);
@@ -55,18 +60,17 @@ class CoreTest extends TestCase
     }
 
     /**
-     * Test that the base_uri option works by setting URI to just '/hello'
-     * and use base_uri to prefix '/test/'.
+     * Test wrong key denied.
      */
-    public function testCoreBaseUriOk()
+    public function testWrongKey()
     {
-        $this->fakeRequest();
-        $_SERVER['REQUEST_URI'] = '/hello';
+        $auth = base64_encode('userb:wp');
+        $header = "Basic $auth";
 
-        $config = $this->configFile;
-        $config->application->offsetSet('base_uri', '/test');
+        $this->fakeRequest($header);
+
         // Set up application
-        $app = new Freischutz\Application\Core($config);
+        $app = new Freischutz\Application\Core($this->configFile);
         // Force reading URI from $_SERVER['REQUEST_URI']
         $app->router->setUriSource(Router::URI_SOURCE_SERVER_REQUEST_URI);
 
@@ -75,22 +79,23 @@ class CoreTest extends TestCase
         $result = $app->run();
         $out = ob_get_contents();
         ob_end_clean();
+        ob_get_clean();
 
-        $this->assertSame('Hello world!', $out);
+        $this->assertSame('Password did not verify.', $out);
     }
 
     /**
-    * Test that request without matching routes return missing resource message
-    * correctly.
-    */
-    public function testCoreMissingRoute()
+     * Test invalid user given.
+     */
+    public function testMissingUserCredentials()
     {
-        $this->fakeRequest();
-        $_SERVER['REQUEST_URI'] = '/fail';
+        $auth = base64_encode('wrong:pw');
+        $header = "Basic $auth";
 
-        $config = $this->configFile;
+        $this->fakeRequest($header);
+
         // Set up application
-        $app = new Freischutz\Application\Core($config);
+        $app = new Freischutz\Application\Core($this->configFile);
         // Force reading URI from $_SERVER['REQUEST_URI']
         $app->router->setUriSource(Router::URI_SOURCE_SERVER_REQUEST_URI);
 
@@ -99,7 +104,33 @@ class CoreTest extends TestCase
         $result = $app->run();
         $out = ob_get_contents();
         ob_end_clean();
+        ob_get_clean();
 
-        $this->assertSame('Resource not found.', $out);
+        $this->assertSame('User does not exist.', $out);
+    }
+
+    /**
+     * Test no user given.
+     */
+    public function testNoUserGiven()
+    {
+        $auth = base64_encode(':pw');
+        $header = "Basic $auth";
+
+        $this->fakeRequest($header);
+
+        // Set up application
+        $app = new Freischutz\Application\Core($this->configFile);
+        // Force reading URI from $_SERVER['REQUEST_URI']
+        $app->router->setUriSource(Router::URI_SOURCE_SERVER_REQUEST_URI);
+
+        // Catch output
+        ob_start();
+        $result = $app->run();
+        $out = ob_get_contents();
+        ob_end_clean();
+        ob_get_clean();
+
+        $this->assertSame('No user provided in request.', $out);
     }
 }

@@ -5,7 +5,7 @@
   "homepage": "https://gitlab.com/tdely/freischutz",
   "license": "BSD-3-Clause",
   "type": "project",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "authors": [
     {
       "name": "Tobias Dély",

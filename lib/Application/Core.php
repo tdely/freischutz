@@ -318,7 +318,12 @@ class Core extends Application
             function (Event $event, $dispatcher) {
                 $this->hawk = new Hawk();
 
-                if ($this->users->setUser($this->hawk->getParam('id'))) {
+                if (!$this->hawk->getParam('id')) {
+                    $result = (object) array(
+                        'message' => 'No user provided in request.',
+                        'state' => false
+                    );
+                } elseif ($this->users->setUser($this->hawk->getParam('id'))) {
                     $user = $this->users->getUser();
                     if (isset($user->keys->hawk_key)) {
                         $this->logger->debug('[Core] Using user->keys->hawk_key');
@@ -374,7 +379,12 @@ class Core extends Application
             function (Event $event, $dispatcher) {
                 $basic = new Basic();
 
-                if ($this->users->setUser($basic->getUser())) {
+                if (!$basic->getUser()) {
+                    $result = (object) array(
+                        'message' => 'No user provided in request.',
+                        'state' => false
+                    );
+                } elseif ($this->users->setUser($basic->getUser())) {
                     $user = $this->users->getUser();
                     if (isset($user->keys->basic_key)) {
                         $this->logger->debug('[Core] Using user->keys->basic_key');
@@ -467,7 +477,12 @@ class Core extends Application
                     return false;
                 }
 
-                if ($this->users->setUser($bearer->getUser())) {
+                if (!$bearer->getUser()) {
+                    $result = (object) array(
+                        'message' => 'Token subject empty.',
+                        'state' => false
+                    );
+                } elseif ($this->users->setUser($bearer->getUser())) {
                     $user = $this->users->getUser();
                     if (isset($user->keys->$bearerKeyName)) {
                         $this->logger->debug(

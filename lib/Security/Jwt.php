@@ -126,51 +126,61 @@ class Jwt extends Component
 
         // Evaluate audience if required
         $audienceOk = true;
-        if ($this->config->jwt->get('claims', null)) {
+        if (in_array('aud', $requiredClaims)) {
             $audiences = array_map(
                 'trim',
                 explode(',', $this->config->jwt->get('aud', 'freischutz'))
             );
-            $audienceOk = in_array($this->payload->aud, $audiences);
+            $audienceOk = isset($this->payload->aud)
+                ? in_array($this->payload->aud, $audiences)
+                : false;
         }
 
         // Evaluate issuer if required
         $issuerOk = true;
-        if ($this->config->jwt->get('claims', null)) {
+        if (in_array('iss', $requiredClaims)) {
             $issuers = array_map(
                 'trim',
                 explode(',', $this->config->jwt->get('iss', 'freischutz'))
             );
-            $issuerOk = in_array($this->payload->aud, $issuers);
+            $issuerOk = isset($this->payload->iss)
+                ? in_array($this->payload->iss, $issuers)
+                : false;
         }
 
         /**
          * Authenticate
          */
         $now = time();
-        if (!$audienceOk) {
+        if ($missingClaims) {
+            $claims = join(', ', $missingClaims);
+            $result->message = "Missing claims: $claims.";
+            $this->logger->debug("[Jwt] Missing claims: $claims.");
+        } elseif (!$audienceOk) {
             $audString = implode(', ', $audiences);
+            $aud = isset($this->payload->aud) ? $this->payload->aud : false;
             $result->message = "Token audience mismatch.";
             $this->logger->debug(
                 "[Jwt] Token audience (aud) mismatch: expected (one of) " .
-                "$audString; got {$this->payload->aud}."
+                "$audString; got $aud."
             );
         } elseif (!$issuerOk) {
             $issString = implode(', ', $issuers);
+            $iss = isset($this->payload->iss) ? $this->payload->iss : false;
             $result->message = "Token issuer mismatch.";
             $this->logger->debug(
                 "[Jwt] Token issuer (iss) mismatch: expected (one of) " .
-                "$issString; got {$this->payload->iss}."
+                "$issString; got $iss."
             );
-        } elseif (!$missingClaims) {
-            // Required claims are present
+        } else {
+            // Required claims are present (and aud/iss matches settings)
             $notBefore = isset($this->payload->nbf)
                 ? $this->payload->nbf - $grace
                 : 0;
             $issuedAt = $this->payload->iat - $grace;
 
-            if ($this->payload->exp + $grace > $now && $notBefore < $now
-                    && $issuedAt < $now) {
+            if ($this->payload->exp + $grace > $now && $notBefore <= $now
+                    && $issuedAt <= $now) {
                 // Token is valid
                 try {
                     $valid = JwtUtility::validate($this->token, $this->key);
@@ -189,14 +199,14 @@ class Jwt extends Component
                     $result->message = $e->getMessage();
                     $this->logger->debug("[Jwt] {$e->getMessage()}.");
                 }
-            } elseif ($notBefore >= $now) {
+            } elseif ($notBefore > $now) {
                 $timedelta = $notBefore - $now;
                 $result->message = "Token not yet valid.";
                 $this->logger->debug(
                     "[Jwt] Token nbf timedelta threshold exceeded: " .
                     "$timedelta (threshold ±$grace)."
                 );
-            } elseif ($issuedAt >= $now) {
+            } elseif ($issuedAt > $now) {
                 $timedelta = $issuedAt - $now;
                 $result->message = "Token issued at a future time.";
                 $this->logger->debug(
@@ -211,10 +221,6 @@ class Jwt extends Component
                     "$timedelta (threshold ±$grace)."
                 );
             }
-        } else {
-            $claims = join(', ', $missingClaims);
-            $result->message = "Missing claims: $claims.";
-            $this->logger->debug("[Jwt] Missing claims: $claims.");
         }
 
         return $result;

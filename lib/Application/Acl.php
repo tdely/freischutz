@@ -265,7 +265,7 @@ class Acl extends Component
                 || !$metadata->hasAttribute($ruleModel, 'resource_action')
                 || !$metadata->hasAttribute($ruleModel, 'policy')) {
             throw new Exception(
-                "Resources model must contain columns 'role_name', " .
+                "Rules model must contain columns 'role_name', " .
                 "'resource_controller', 'resource_action', and 'policy'."
             );
         }
@@ -289,6 +289,9 @@ class Acl extends Component
          * Read resource definitions
          */
         foreach ($resourceModel->find() as $resource) {
+            if ($resource->controller === '*' || $resource->action === '*') {
+                continue;
+            }
             $acl->addResource($resource->controller, $resource->action);
         }
 

@@ -315,7 +315,7 @@ class Core extends Application
 
         $eventsManager->attach(
             "application:beforeHandleRequest",
-            function (Event $event, $dispatcher) {
+            function (Event $event) {
                 $this->hawk = new Hawk();
 
                 if (!$this->hawk->getParam('id')) {
@@ -376,7 +376,7 @@ class Core extends Application
 
         $eventsManager->attach(
             "application:beforeHandleRequest",
-            function (Event $event, $dispatcher) {
+            function (Event $event) {
                 $basic = new Basic();
 
                 if (!$basic->getUser()) {
@@ -438,7 +438,7 @@ class Core extends Application
 
         $eventsManager->attach(
             "application:beforeHandleRequest",
-            function (Event $event, $dispatcher) {
+            function (Event $event) {
 
                 $token = substr($this->request->getHeader('Authorization'), 7);
 
@@ -557,7 +557,7 @@ class Core extends Application
                 $header = implode(', ', $mechanisms);
                 $eventsManager->attach(
                     "application:beforeHandleRequest",
-                    function (Event $event, $dispatcher) use ($reqMechanism, $header) {
+                    function (Event $event) use ($reqMechanism, $header) {
                         $this->response->unauthorized(
                             "Illegal authentication mechanism: $reqMechanism",
                             $header
@@ -595,7 +595,7 @@ class Core extends Application
                 && $this->config->acl->get('enable', false)) {
             $eventsManager->attach(
                 "dispatch:beforeExecuteRoute",
-                function (Event $event, $dispatcher) {
+                function (Event $event) {
                     $controller = $this->dispatcher->getControllerName();
                     $action = $this->dispatcher->getActionName();
 

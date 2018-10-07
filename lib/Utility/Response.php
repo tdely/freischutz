@@ -16,6 +16,7 @@ use Phalcon\Http\Response as PhalconResponse;
  */
 class Response extends PhalconResponse
 {
+    /** @var string|null Response content type. */
     private $contentType;
 
     /**

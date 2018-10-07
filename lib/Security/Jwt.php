@@ -20,10 +20,13 @@ use stdClass;
  */
 class Jwt extends Component
 {
+    /** @var string Token payload subject (sub). */
     private $user;
+    /** @var string|null Secret used in token signing. */
     private $key;
-
+    /** @var string Bearer token in its entirety. */
     private $token;
+    /** @var stdClass|null Decoded token payload. */
     private $payload;
 
     /**
@@ -69,9 +72,10 @@ class Jwt extends Component
     /**
      * Get user (sub) provided in token payload.
      *
-     * @return string|int
+     * @internal
+     * @return string
      */
-    public function getUser()
+    public function getUser():string
     {
         return $this->user;
     }
@@ -79,6 +83,7 @@ class Jwt extends Component
     /**
      * Set key.
      *
+     * @internal
      * @return void
      */
     public function setKey(string $key)
@@ -91,7 +96,7 @@ class Jwt extends Component
      * Authenticate client request.
      *
      * @internal
-     * @return \stdClass
+     * @return stdClass
      */
     public function authenticate():stdClass
     {

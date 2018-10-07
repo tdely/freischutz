@@ -14,6 +14,7 @@ use Phalcon\Mvc\User\Component;
  */
 class Data extends Component
 {
+    /** @var mixed Data. */
     private $data;
 
     /**
@@ -66,7 +67,7 @@ class Data extends Component
      * Handle JSON data.
      *
      * @param bool $assoc (optional) Return associative array instead of object.
-     * @return \stdClass|(string|int)[string]|false
+     * @return stdClass|(string|int)[string]|false
      */
     public function getJson($assoc = false)
     {

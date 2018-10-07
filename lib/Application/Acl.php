@@ -19,6 +19,7 @@ use Phalcon\Mvc\User\Component;
  */
 class Acl extends Component
 {
+    /** @var Phalcon\Acl\Adapter\Memory Access control list. */
     private $acl;
 
     /**

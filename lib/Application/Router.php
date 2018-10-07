@@ -19,6 +19,7 @@ use Phalcon\Mvc\User\Component;
  */
 class Router extends Component
 {
+    /** @var Phalcon\Mvc\Router Phalcon router. */
     private $router;
 
     /**

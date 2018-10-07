@@ -22,10 +22,15 @@ use stdClass;
  */
 class Hawk extends Component
 {
+    /** @var string Backend type to use for storing nonces. */
     private $backend;
+    /** @var string File name to store nonces in when using file backend. */
     private $nonceFile = 'freischutz.hawk.nonce';
+    /** @var string Key name to store nonce under in cache. */
     private $nonceCacheKey;
+    /** @var stdClass Hawk parameters from request. */
     private $params;
+    /** @var string HMAC key. */
     private $key;
 
     /**
@@ -56,8 +61,9 @@ class Hawk extends Component
      *
      * Get a single parameter $param, or all parameters if $param not given.
      *
+     * @internal
      * @param string $param (optional) Parameter name.
-     * @return \stdClass|null
+     * @return stdClass|null
      */
     public function getParam($param = false)
     {
@@ -75,6 +81,7 @@ class Hawk extends Component
     /**
      * Set client key.
      *
+     * @internal
      * @param string $key Client key.
      * @return void
      */
@@ -87,7 +94,7 @@ class Hawk extends Component
      * Authenticate client request.
      *
      * @internal
-     * @return \stdClass
+     * @return stdClass
      */
     public function authenticate():stdClass
     {
@@ -209,6 +216,7 @@ class Hawk extends Component
      * Only usable in response to a request successfully validated by
      * Freischutz\Event\hawk::authenticate().
      *
+     * @internal
      * @param string $ext (optional) Value for ext ('ext="$value"' in
      *   Server-Authorization header.
      * @throws \Freischutz\Application\Exception

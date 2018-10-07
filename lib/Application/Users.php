@@ -16,17 +16,13 @@ use stdClass;
  */
 class Users extends Component
 {
+    /** @var stdClass[string] Users loaded from backend. */
     private $userList;
+    /** @var stdClass Current user as set from $userList. */
     private $user;
 
     /**
      * Constructor.
-     *
-     * Loads user list from configured backend (default file) into $userList
-     * property.
-     *
-     * @throws \Freischutz\Application\Exception
-     * @return void
      */
     public function __construct()
     {
@@ -89,7 +85,7 @@ class Users extends Component
     /**
      * Get user.
      *
-     * @return \stdClass
+     * @return stdClass
      */
     public function getUser():stdClass
     {
@@ -100,7 +96,7 @@ class Users extends Component
      * Load user details from files.
      *
      * @throws \Freischutz\Application\Exception
-     * @return \stdClass[string]
+     * @return stdClass[string]
      */
     private function loadFromFiles():array
     {
@@ -145,7 +141,7 @@ class Users extends Component
      * Load user details from config.
      *
      * @throws \Freischutz\Application\Exception
-     * @return \stdClass[string]
+     * @return stdClass[string]
      */
     private function loadFromConfig():array
     {
@@ -167,7 +163,7 @@ class Users extends Component
      * Load user details from database.
      *
      * @throws \Freischutz\Application\Exception
-     * @return \stdClass[string]
+     * @return stdClass[string]
      */
     private function loadFromDatabase():array
     {

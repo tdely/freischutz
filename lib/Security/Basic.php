@@ -17,8 +17,11 @@ use stdClass;
  */
 class Basic extends Component
 {
+    /** @var string User provided in request. */
     private $user;
+    /** @var string Password provided in request. */
     private $key;
+    /** @var string Hashed password to validate against. */
     private $keyHashed;
 
     /**
@@ -38,16 +41,19 @@ class Basic extends Component
     /**
      * Get user provided in request.
      *
-     * @return string|int
+     * @internal
+     * @return string
      */
-    public function getUser()
+    public function getUser():string
     {
         return $this->user;
     }
 
     /**
-     * Set hashed key.
+     * Set hashed password to validate against.
      *
+     * @internal
+     * @param string $key Hashed key
      * @return void
      */
     public function setKey(string $key)
@@ -59,7 +65,7 @@ class Basic extends Component
      * Authenticate client request.
      *
      * @internal
-     * @return \stdClass
+     * @return stdClass
      */
     public function authenticate():stdClass
     {

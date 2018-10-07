@@ -14,8 +14,11 @@ namespace Freischutz\Utility;
  */
 class Stopwatch
 {
+    /** @var float Starting timestamp. */
     private $timeStart;
+    /** @var float[]|null Marked timestamps. */
     private $timeMarks;
+    /** @var float|null Stopped timestamp. */
     private $timeStop;
 
     /**

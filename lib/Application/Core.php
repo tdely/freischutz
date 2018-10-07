@@ -37,6 +37,7 @@ use Phalcon\Mvc\View;
  */
 class Core extends Application
 {
+    /** @var string Freischutz version number. */
     const VERSION = '0.9.1';
 
     /**
@@ -55,7 +56,7 @@ class Core extends Application
      * @param \Phalcon\DI $di Dependency Injector.
      * @return void
      */
-    public function setLogger(DI $di)
+    private function setLogger(DI $di)
     {
         $destination = $this->config->application->get('log_destination', 'syslog');
         $level = $this->config->application->get('log_level', 'error');

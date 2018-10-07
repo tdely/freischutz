@@ -524,9 +524,10 @@ class Core extends Application
      * Attaches event listeners to events manager, and sets the event manager
      * to be used by certain components.
      *
+     * @param \Phalcon\DI $di Dependency Injector.
      * @return void
      */
-    private function setEventsManagers()
+    private function setEventsManagers(DI $di)
     {
         $eventsManager = new EventsManager();
 
@@ -593,15 +594,18 @@ class Core extends Application
          */
         if (isset($this->config->acl)
                 && $this->config->acl->get('enable', false)) {
+            $acl = new Acl();
+            if ($this->config->acl->get('di_share', false)) {
+                $di->setShared('acl', $acl);
+            }
             $eventsManager->attach(
                 "dispatch:beforeExecuteRoute",
-                function (Event $event) {
+                function (Event $event) use ($acl) {
                     $controller = $this->dispatcher->getControllerName();
                     $action = $this->dispatcher->getActionName();
 
                     $client = $this->users->getUser();
 
-                    $acl = new Acl;
                     $access = $acl->isAllowed($client->id, $controller, $action);
 
                     if (!$access) {

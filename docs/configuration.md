@@ -51,6 +51,7 @@ Optional section.
 * default_policy: _(allow|deny)_ default ACL policy, **default deny**.
 * backend: _(file|database)_ ACL backend, **default file**.
 * dir: _(string)_ path to ACL file directory, **required**.
+* di_share: _(boolean)_ enable ACL as a shared service in the dependency injector, **default false**.
 * role_model: _(string)_ role model class with full namespace including leading backslash (e.g. \Example\Model\AclRole), **required if** `backend = database`.
 * inherit_model: _(string)_ role inheritance model class with full namespace including leading backslash (e.g. \Example\Model\AclInherit), **required if** `backend = database`.
 * resource_model: _(string)_ resource model class with full namespace including leading backslash (e.g. \Example\Model\AclResource), **required if** `backend = database`.

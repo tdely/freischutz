@@ -6,7 +6,7 @@ use Phalcon\Mvc\User\Component;
 use stdClass;
 
 /**
- * Freischutz\Security\Hawk
+ * Hawk authentication.
  *
  * Implementation of the Hawk protocol.
  * HTTP HMAC authentication with partial cryptographic verification of request,
@@ -33,9 +33,6 @@ class Hawk extends Component
     /** @var string HMAC key. */
     private $key;
 
-    /**
-     * Constructor.
-     */
     public function __construct()
     {
         // Strip 'Hawk ' from header
@@ -62,8 +59,8 @@ class Hawk extends Component
      * Get a single parameter $param, or all parameters if $param not given.
      *
      * @internal
-     * @param string $param (optional) Parameter name.
-     * @return stdClass|null
+     * @param string|false $param (optional) Parameter name.
+     * @return \stdClass|null
      */
     public function getParam($param = false)
     {
@@ -94,7 +91,8 @@ class Hawk extends Component
      * Authenticate client request.
      *
      * @internal
-     * @return stdClass
+     * @throws \Freischutz\Application\Exception
+     * @return \stdClass
      */
     public function authenticate():stdClass
     {
@@ -126,7 +124,7 @@ class Hawk extends Component
         }
 
         // Check nonce
-        if ($this->lookupNonce($this->params->nonce)) {
+        if ($this->lookUpNonce($this->params->nonce)) {
             $result->message = 'Duplicate nonce.';
             return $result;
         }
@@ -217,9 +215,9 @@ class Hawk extends Component
      * Freischutz\Event\hawk::authenticate().
      *
      * @internal
-     * @param string $ext (optional) Value for ext ('ext="$value"' in
-     *   Server-Authorization header.
      * @throws \Freischutz\Application\Exception
+     * @param string|false $ext (optional) Value for ext ('ext="$value"' in
+     *   Server-Authorization header.
      * @return string Server-Authorization header string.
      */
     public function validateResponse($ext = false):string
@@ -254,8 +252,8 @@ class Hawk extends Component
     /**
      * Record used nonce and forget expired nonces.
      *
-     * @param string $nonce Nonce to record.
      * @throws \Freischutz\Application\Exception
+     * @param string $nonce Nonce to record.
      * @return void
      */
     private function manageNonces(string $nonce)
@@ -279,8 +277,8 @@ class Hawk extends Component
     /**
      * Record used nonce and forget expired nonces in file.
      *
-     * @param string $nonce Nonce to record.
      * @throws \Freischutz\Application\Exception
+     * @param string $nonce Nonce to record.
      * @return void
      */
     private function manageNonceFile(string $nonce)
@@ -320,8 +318,8 @@ class Hawk extends Component
     /**
      * Record used nonce and forget expired nonces in database.
      *
-     * @param string $nonce Nonce to record.
      * @throws \Freischutz\Application\Exception
+     * @param string $nonce Nonce to record.
      * @return void
      */
     private function manageNonceDatabase(string $nonce)
@@ -377,22 +375,22 @@ class Hawk extends Component
     /**
      * Check if nonce has been used previously.
      *
-     * @param string $nonce Nonce to lookup.
      * @throws \Freischutz\Application\Exception
+     * @param string $nonce Nonce to look up.
      * @return bool
      */
-    private function lookupNonce(string $nonce):bool
+    private function lookUpNonce(string $nonce):bool
     {
         switch ($this->backend) {
             case 'file':
-                $result = $this->lookupNonceInFile($nonce);
+                $result = $this->lookUpNonceInFile($nonce);
                 break;
             case 'database':
             case 'db':
-                $result = $this->lookupNonceInDatabase($nonce);
+                $result = $this->lookUpNonceInDatabase($nonce);
                 break;
             case 'cache':
-                $result = $this->lookupNonceInCache($nonce);
+                $result = $this->lookUpNonceInCache();
                 break;
             default:
                 throw new Exception("Unknown nonce backend: {$this->backend}");
@@ -403,11 +401,11 @@ class Hawk extends Component
     /**
      * Check if nonce is recorded in file.
      *
-     * @param string $nonce Nonce to lookup.
      * @throws \Freischutz\Application\Exception
+     * @param string $nonce Nonce to look up.
      * @return bool
      */
-    private function lookupNonceInFile(string $nonce):bool
+    private function lookUpNonceInFile(string $nonce):bool
     {
         $file = $this->config->hawk->get('nonce_dir', '/tmp') . '/' . $this->nonceFile;
         if (!file_exists($file)) {
@@ -432,11 +430,11 @@ class Hawk extends Component
     /**
      * Check if nonce is recorded in database.
      *
-     * @param string $nonce Nonce to lookup.
      * @throws \Freischutz\Application\Exception
+     * @param string $nonce Nonce to look up.
      * @return bool
      */
-    private function lookupNonceInDatabase(string $nonce):bool
+    private function lookUpNonceInDatabase(string $nonce):bool
     {
         if (!isset($this->config->hawk)
                 || !isset($this->config->hawk->nonce_model)) {
@@ -471,7 +469,7 @@ class Hawk extends Component
      * @throws \Freischutz\Application\Exception
      * @return bool
      */
-    private function lookupNonceInCache():bool
+    private function lookUpNonceInCache():bool
     {
         if (!$this->di->has('cache')) {
             throw new Exception(

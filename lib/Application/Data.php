@@ -4,7 +4,7 @@ namespace Freischutz\Application;
 use Phalcon\Mvc\User\Component;
 
 /**
- * Freischutz\Application\Data
+ * Freischutz data handling component.
  *
  * @see       https://gitlab.com/tdely/freischutz/ Freischutz on GitLab
  *
@@ -18,7 +18,7 @@ class Data extends Component
     private $data;
 
     /**
-     * Constructor.
+     * @param mixed $data
      */
     public function __construct($data)
     {
@@ -56,7 +56,7 @@ class Data extends Component
     /**
      * Get raw data.
      *
-     * @return string|binary
+     * @return mixed
      */
     public function getRaw()
     {
@@ -67,7 +67,7 @@ class Data extends Component
      * Handle JSON data.
      *
      * @param bool $assoc (optional) Return associative array instead of object.
-     * @return stdClass|(string|int)[string]|false
+     * @return \stdClass|(string|int)[string]|false
      */
     public function getJson($assoc = false)
     {

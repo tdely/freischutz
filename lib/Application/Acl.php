@@ -1,7 +1,6 @@
 <?php
 namespace Freischutz\Application;
 
-use Freischutz\Application\Exception;
 use Phalcon\Acl as PhalconAcl;
 use Phalcon\Acl\Adapter\Memory as AclList;
 use Phalcon\Acl\Resource;
@@ -9,7 +8,7 @@ use Phalcon\Acl\Role;
 use Phalcon\Mvc\User\Component;
 
 /**
- * Freischutz\Application\Acl
+ * Freischutz Access Control List component.
  *
  * @see       https://gitlab.com/tdely/freischutz/ Freischutz on GitLab
  *
@@ -19,7 +18,7 @@ use Phalcon\Mvc\User\Component;
  */
 class Acl extends Component
 {
-    /** @var Phalcon\Acl\Adapter\Memory Access control list. */
+    /** @var \Phalcon\Acl\Adapter\Memory Access control list. */
     private $acl;
 
     /**
@@ -75,6 +74,7 @@ class Acl extends Component
     /**
      * Get ACL.
      *
+     * @throws \Freischutz\Application\Exception
      * @return \Phalcon\Acl\Adapter\Memory
      */
     private function getAcl():AclList
@@ -90,6 +90,7 @@ class Acl extends Component
     /**
      * Check if role is allowed to access resource.
      *
+     * @throws \Freischutz\Application\Exception
      * @param string $role Role requesting access.
      * @param string $controller Controller being targeted.
      * @param string $action Action being targeted.

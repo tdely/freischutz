@@ -1,13 +1,12 @@
 <?php
 namespace Freischutz\Application;
 
-use Freischutz\Application\Exception;
 use Phalcon\Mvc\Router as PhalconRouter;
 use Phalcon\Mvc\Router\Group;
 use Phalcon\Mvc\User\Component;
 
 /**
- * Freischutz\Application\Router
+ * Freischutz router component.
  *
  * @see       https://gitlab.com/tdely/freischutz/ Freischutz on GitLab
  *
@@ -19,11 +18,11 @@ use Phalcon\Mvc\User\Component;
  */
 class Router extends Component
 {
-    /** @var Phalcon\Mvc\Router Phalcon router. */
+    /** @var \Phalcon\Mvc\Router Phalcon router. */
     private $router;
 
     /**
-     * Constructor.
+     * @throws \Freischutz\Application\Exception
      */
     public function __construct()
     {

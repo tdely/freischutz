@@ -4,7 +4,7 @@ namespace Freischutz\Application;
 use Exception as PhpException;
 
 /**
- * Freischutz\Application\Exception
+ * Freischutz exception.
  *
  * @see       https://gitlab.com/tdely/freischutz/ Freischutz on GitLab
  *

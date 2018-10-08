@@ -2,8 +2,6 @@
 namespace Freischutz\Utility;
 
 /**
- * Freischutz\Utility\Base64url
- *
  * Base64url functions.
  *
  * @see       https://gitlab.com/tdely/freischutz/ Freischutz on GitLab

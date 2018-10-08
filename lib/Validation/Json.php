@@ -6,8 +6,6 @@ use Phalcon\Validation\Message;
 use Phalcon\Validation\Validator;
 
 /**
- * Freischutz\Validation\Json
- *
  * JSON attribute validation.
  *
  * @see       https://gitlab.com/tdely/freischutz/ Freischutz on GitLab
@@ -22,8 +20,7 @@ class Json extends Validator
      * Execute validation.
      *
      * @param Validation $validation
-     * @param string $attribute
-     *
+     * @param mixed $attribute
      * @return bool
      */
     public function validate(Validation $validation, $attribute):bool

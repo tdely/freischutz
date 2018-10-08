@@ -1,10 +1,6 @@
 <?php
 namespace Freischutz\Application;
 
-use Freischutz\Application\Acl;
-use Freischutz\Application\Exception;
-use Freischutz\Application\Router;
-use Freischutz\Application\Users;
 use Freischutz\Security\Basic;
 use Freischutz\Security\Hawk;
 use Freischutz\Security\Jwt;
@@ -27,7 +23,7 @@ use Phalcon\Mvc\Model\Manager as ModelsManager;
 use Phalcon\Mvc\View;
 
 /**
- * Freischutz\Application\Core
+ * Freischutz application core.
  *
  * @see       https://gitlab.com/tdely/freischutz/ Freischutz on GitLab
  *
@@ -188,12 +184,13 @@ class Core extends Application
     /**
      * Set router service.
      *
+     * @throws \Freischutz\Application\Exception
      * @param \Phalcon\DI $di Dependency Injector.
      * @return void
      */
     private function setRouter(DI $di)
     {
-        $router = new Router(false);
+        $router = new Router();
 
         // Set router service
         $di->set('router', $router->getRouter());
@@ -291,6 +288,7 @@ class Core extends Application
     /**
      * Set users.
      *
+     * @throws \Freischutz\Application\Exception
      * @param \Phalcon\DI $di Dependency Injector.
      * @return void
      */
@@ -302,8 +300,8 @@ class Core extends Application
     /**
      * Set authentication through Hawk.
      *
-     * @param \Phalcon\Events\Manager $eventsManager Events manager.
      * @throws \Freischutz\Application\Exception
+     * @param \Phalcon\Events\Manager $eventsManager Events manager.
      * @return void
      */
     private function authenticateHawk(EventsManager $eventsManager)
@@ -363,8 +361,8 @@ class Core extends Application
     /**
      * Set basic authentication.
      *
-     * @param \Phalcon\Events\Manager $eventsManager Events manager.
      * @throws \Freischutz\Application\Exception
+     * @param \Phalcon\Events\Manager $eventsManager Events manager.
      * @return void
      */
     private function authenticateBasic(EventsManager $eventsManager)
@@ -425,8 +423,8 @@ class Core extends Application
     /**
      * Set Bearer authentication.
      *
-     * @param \Phalcon\Events\Manager $eventsManager Events manager.
      * @throws \Freischutz\Application\Exception
+     * @param \Phalcon\Events\Manager $eventsManager Events manager.
      * @return void
      */
     private function authenticateBearer(EventsManager $eventsManager)
@@ -525,6 +523,7 @@ class Core extends Application
      * Attaches event listeners to events manager, and sets the event manager
      * to be used by certain components.
      *
+     * @throws \Freischutz\Application\Exception
      * @param \Phalcon\DI $di Dependency Injector.
      * @return void
      */
@@ -601,7 +600,7 @@ class Core extends Application
             }
             $eventsManager->attach(
                 "dispatch:beforeExecuteRoute",
-                function (Event $event) use ($acl) {
+                function () use ($acl) {
                     $controller = $this->dispatcher->getControllerName();
                     $action = $this->dispatcher->getActionName();
 
@@ -635,8 +634,6 @@ class Core extends Application
     }
 
     /**
-     * Constructor.
-     *
      * @throws \Freischutz\Application\Exception
      * @param \Phalcon\Config\Adapter\Ini $config Configuration settings.
      * @return void

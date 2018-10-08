@@ -8,8 +8,6 @@ use Phalcon\Mvc\User\Component;
 use stdClass;
 
 /**
- * Freischutz\Security\Jwt
- *
  * JSON Web Token authentication.
  *
  * @see       https://gitlab.com/tdely/freischutz/ Freischutz on GitLab
@@ -29,9 +27,6 @@ class Jwt extends Component
     /** @var stdClass|null Decoded token payload. */
     private $payload;
 
-    /**
-     * Constructor.
-     */
     public function __construct()
     {
         if (!isset($this->config->jwt)) {
@@ -84,6 +79,7 @@ class Jwt extends Component
      * Set key.
      *
      * @internal
+     * @param string $key Secret used to sign token.
      * @return void
      */
     public function setKey(string $key)
@@ -91,12 +87,11 @@ class Jwt extends Component
         $this->key = $key;
     }
 
-
     /**
      * Authenticate client request.
      *
      * @internal
-     * @return stdClass
+     * @return \stdClass
      */
     public function authenticate():stdClass
     {

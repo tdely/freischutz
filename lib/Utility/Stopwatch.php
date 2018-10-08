@@ -2,9 +2,7 @@
 namespace Freischutz\Utility;
 
 /**
- * Freischutz\Utility\Stopwatch
- *
- * Stopwatch utility.
+ * Stopwatch utility for timekeeping.
  *
  * @see       https://gitlab.com/tdely/freischutz/ Freischutz on GitLab
  *
@@ -21,9 +19,6 @@ class Stopwatch
     /** @var float|null Stopped timestamp. */
     private $timeStop;
 
-    /**
-     * Constructor.
-     */
     public function __construct()
     {
         $this->timeStart = microtime(true);

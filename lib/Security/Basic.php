@@ -5,8 +5,6 @@ use Phalcon\Mvc\User\Component;
 use stdClass;
 
 /**
- * Freischutz\Security\Basic
- *
  * Basic authentication.
  *
  * @see       https://gitlab.com/tdely/freischutz/ Freischutz on GitLab
@@ -24,9 +22,6 @@ class Basic extends Component
     /** @var string Hashed password to validate against. */
     private $keyHashed;
 
-    /**
-     * Constructor.
-     */
     public function __construct()
     {
         // Strip 'Basic ' from header
@@ -65,7 +60,7 @@ class Basic extends Component
      * Authenticate client request.
      *
      * @internal
-     * @return stdClass
+     * @return \stdClass
      */
     public function authenticate():stdClass
     {

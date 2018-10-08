@@ -2,12 +2,9 @@
 namespace Freischutz\Utility;
 
 use Freischutz\Application\Exception;
-use Freischutz\Utility\Base64url;
 use stdClass;
 
 /**
- * Freischutz\Utility\Jwt
- *
  * JSON Web Token functions.
  *
  * @see       https://gitlab.com/tdely/freischutz/ Freischutz on GitLab
@@ -60,8 +57,9 @@ class Jwt
     /**
      * Create JSON Web Token.
      *
-     * @param stdClass $header JWT header data.
-     * @param stdClass $payload JWT payload data.
+     * @throws \Freischutz\Application\Exception
+     * @param \stdClass $header JWT header data.
+     * @param \stdClass $payload JWT payload data.
      * @param string $secret Secret used to sign JWT token.
      * @return string|false
      */
@@ -86,6 +84,7 @@ class Jwt
     /**
      * Validate token signature.
      *
+     * @throws \Freischutz\Application\Exception
      * @param string $token JWT token to validate.
      * @param string $secret Secret used to sign JWT token.
      * @return bool

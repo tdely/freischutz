@@ -95,7 +95,7 @@ class Users extends Component
      * Load user details from files.
      *
      * @throws \Freischutz\Application\Exception
-     * @return \stdClass[string|int]
+     * @return \stdClass[]
      */
     private function loadFromFiles():array
     {
@@ -140,7 +140,7 @@ class Users extends Component
      * Load user details from config.
      *
      * @throws \Freischutz\Application\Exception
-     * @return \stdClass[string|int]
+     * @return \stdClass[]
      */
     private function loadFromConfig():array
     {
@@ -162,7 +162,7 @@ class Users extends Component
      * Load user details from database.
      *
      * @throws \Freischutz\Application\Exception
-     * @return \stdClass[string|int]
+     * @return \stdClass[]
      */
     private function loadFromDatabase():array
     {

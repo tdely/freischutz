@@ -218,7 +218,7 @@ class Hawk extends Component
      * @throws \Freischutz\Application\Exception
      * @param string|false $ext (optional) Value for ext ('ext="$value"' in
      *   Server-Authorization header.
-     * @return string Server-Authorization header string.
+     * @return string
      */
     public function validateResponse($ext = false):string
     {

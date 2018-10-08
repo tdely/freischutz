@@ -1,7 +1,9 @@
 Configuration Options
----------------------
+=====================
 
-### application
+application
+-----------
+
 Required section.
 * base_uri: _(string)_ shared URI prefix for all routes.
 * strict_host_check: _(boolean)_ strict host name validation, **default false**.
@@ -20,11 +22,17 @@ Required section.
 * cache_lifetime: _(int)_ time in seconds that cached data is kept, **default 60**.
 * cache_parts: _(string)_ one or more parts to cache in CSV (available: users,acl,routes), **default false**.
 
-### basic_auth
+
+basic_auth
+----------
+
 Required section **if** Basic authentication is enabled through application->authenticate.
 * realm: _(string)_ Authentication realm, **default freischutz**.
 
-### hawk
+
+hawk
+----
+
 Required section **if** Hawk authentication is enabled through application->authenticate.
 * algorithms: _(string)_ one or more algorithms to allow in CSV, **default sha256**.
 * expire: _(int)_ time in seconds from request creation until considered expired, **default 60**.
@@ -33,19 +41,28 @@ Required section **if** Hawk authentication is enabled through application->auth
 * nonce_dir: _(string)_ path to nonce file directory, **default tmp**.
 * nonce_model: _(string)_ nonce model class with full namespace including leading backslash (e.g. \Example\Model\Nonce), **required if** `storage = database`.
 
-### bearer
+
+bearer
+------
+
 Required section **if** Bearer token authentication is enabled through application->authenticate.
 * disclose: _(boolean)_ disclose issue in response when validation fails, **default false**.
 * types: _(string)_ allow bearer token types in CSV, **default jwt**.
 
-### jwt
+
+jwt
+---
+
 Required section **if** JWT is enabled through bearer->types.
 * claims: _(string)_ required claims in CSV (sub, exp and iat are **always** required), **default aud,iss**.
 * grace: _(int)_ grace period in seconds for expire (exp) and not before (nbf) checks, **default 0**.
 * aud: _(string)_ allowed audiences in CSV, **default freischutz**.
 * iss: _(string)_ allowed issuers in CSV, **default freischutz**.
 
-### acl
+
+acl
+---
+
 Optional section.
 * enable: _(boolean)_ use ACL, **default false**.
 * default_policy: _(allow|deny)_ default ACL policy, **default deny**.
@@ -57,12 +74,17 @@ Optional section.
 * resource_model: _(string)_ resource model class with full namespace including leading backslash (e.g. \Example\Model\AclResource), **required if** `backend = database`.
 * rule_model: _(string)_ rule model class with full namespace including leading backslash (e.g. \Example\Model\AclRule), **required if** `backend = database`.
 
-### users
+
+users
+-----
+
 Required section **if** users_backend is set to config under application.
 Each key-value pair represents one user: `user_id = password`.
 
 
-### Variable sections
+Variable sections
+-----------------
+
 When using cache_adapter or metadata_adapter (other than Memory), parameters
 will be loaded from sections of the same name (lower case). Setting
 `cache_adapter = Redis` will enable the use of Redis caching, and requires the

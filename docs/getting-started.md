@@ -1,4 +1,5 @@
-## Getting Started
+Getting Started
+=================
 
 Let's take a look at working with the framework through the reference
 implementation available in the example directory
@@ -29,7 +30,8 @@ These are the files we'll be looking at:
    `--index.php
 </pre>
 
-### index.php
+index.php
+---------
 
 The index file is the only file which should be accessible through the web server.
 
@@ -100,7 +102,8 @@ try {
 ```
 
 
-### Autoloader
+Autoloader
+----------
 
 All classes are included by autoloader, which in the case of Phalcon means that
 we register our namespaces together with the directory they reside in. In the
@@ -129,7 +132,8 @@ $loader->register();
 ```
 
 
-### Configuration
+Configuration
+-------------
 
 ```
 [application]
@@ -162,7 +166,8 @@ dir            = /config/acl
 ```
 
 
-### Database
+Database
+--------
 
 Multiple database connections may be set up, but one default connection must be
 created as 'default.php' which becomes available through the Phalcon dependency
@@ -197,7 +202,8 @@ return $database;
 ```
 
 
-### Controllers
+Controllers
+-----------
 
 `example/reference/private/controllers/NotFoundController.php`:
 ```php
@@ -310,7 +316,8 @@ class ExampleController extends Controller
 ```
 
 
-### Models
+Models
+------
 
 Phalcon models automatically map to a database table, the model class name is
 converted from CamelCase to snake_case: 'Example' becomes 'example', 'MyTest'
@@ -341,7 +348,31 @@ public function initialize()
 }
 ```
 
-### Routes
+The models source table name may be changed from it's automatically mapped
+value to match whatever naming is used in the database schema:
+```php
+public function getSource()
+{
+    return 'actual_table_name';
+}
+```
+
+Model attributes are automatically read from the source table columns and mapped
+with the same name. This mapping between column and attribute may be overridden
+if necessary:
+```php
+public function columnMap()
+{
+    // Keys are table column names and values are model attributes
+    return array(
+        'column_name' => 'attribute_name',
+        'another_column' => 'AnotherAttribute'
+    );
+}
+```
+
+Routes
+------
 
 Routes are rules for matching a HTTP request to a controller action depending on
 which URI and HTTP method was used.
@@ -363,7 +394,8 @@ example,json,/json,post
 ```
 
 
-### Users
+Users
+-----
 
 To use authentication and ACL, users need to exists with which to identify client requests.
 When using ACL the user identifier must have a corresponding ACL role (ID must match a role name).
@@ -380,13 +412,14 @@ jane,asd123
 ```
 
 
-### ACL
+ACL
+---
 
 The Access Control List is built from three components: resources, roles, and
 rules. Resources are controller actions, roles are 'users' and/or 'groups', and
 rules determine whether to allow or deny access for one role to a resource.
 
-#### Resources
+### Resources
 
 Controllers and their actions.
 
@@ -404,7 +437,7 @@ example,Example resource,json;xml;get;hello
 ```
 
 
-#### Roles
+### Roles
 
 Roles representing a user or group.
 For a user role the role name must correspond to a user ID.
@@ -435,7 +468,7 @@ jane,user
 ```
 
 
-#### Rules
+### Rules
 
 Rule files end in '.rules' and are made up of 4 CSV fields:
 
@@ -452,7 +485,8 @@ user,example,hello,allow
 ```
 
 
-### Web Server Configuration
+Web Server Configuration
+------------------------
 
 This is a simple example of a web server configuration for Nginx.
 It accepts regular HTTP traffic on port 80 and passes the PHP interpreting to PHP-FPM (PHP7.0).

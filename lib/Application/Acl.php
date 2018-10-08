@@ -25,16 +25,17 @@ class Acl extends Component
      * Rebuild ACL.
      *
      * @throws \Freischutz\Application\Exception
+     * @param bool $useCache Use cached ACL data if available.
      * @return void
      */
-    private function rebuild()
+    public function rebuild(bool $useCache = false)
     {
         $doCache = in_array('acl', array_map(
             'trim',
             explode(',', $this->config->application->get('cache_parts', false))
         ));
 
-        if ($this->di->has('cache') && $doCache) {
+        if ($this->di->has('cache') && $doCache && $useCache) {
             if ($acl = $this->cache->get('_freischutz_acl')) {
                 $this->acl = $acl;
                 return;
@@ -84,7 +85,7 @@ class Acl extends Component
             return $this->acl;
         }
 
-        $this->rebuild();
+        $this->rebuild(true);
         return $this->acl;
     }
 

@@ -37,6 +37,7 @@ class Acl extends Component
         if ($this->di->has('cache') && $doCache) {
             if ($acl = $this->cache->get('_freischutz_acl')) {
                 $this->acl = $acl;
+                return;
             }
         }
 

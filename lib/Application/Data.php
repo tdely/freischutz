@@ -18,6 +18,8 @@ class Data extends Component
     private $data;
 
     /**
+     * Data constructor.
+     *
      * @param mixed $data
      */
     public function __construct($data)
@@ -44,8 +46,8 @@ class Data extends Component
                 break;
             default:
                 $this->logger->debug(
-                    "[Data] Accessing raw data (type: " .
-                    $this->request->getHeader('CONTENT_TYPE') . ")"
+                    '[Data] Accessing raw data (type: ' .
+                    $this->request->getHeader('CONTENT_TYPE') . ')'
                 );
                 $data = $this->getRaw();
                 break;

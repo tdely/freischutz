@@ -48,11 +48,13 @@ class Response extends PhalconResponse
          */
         $varType = gettype($content);
         switch (true) {
-            case ($type && $type !== 'application/xml' && $type !== 'application/json'):
+            case ($type && $type !== 'application/xml'
+                    && $type !== 'application/json'):
                 // Use unknown given type
                 break;
             case ($type === 'application/xml'):
-            case ($varType === 'object' && get_class($content) === 'SimpleXMLElement'):
+            case ($varType === 'object'
+                    && get_class($content) === 'SimpleXMLElement'):
                 $content = $content->asXML();
                 $type = 'application/xml';
                 break;

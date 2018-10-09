@@ -33,6 +33,9 @@ class Hawk extends Component
     /** @var string HMAC key. */
     private $key;
 
+    /**
+     * Hawk constructor.
+     */
     public function __construct()
     {
         // Strip 'Hawk ' from header
@@ -44,13 +47,15 @@ class Hawk extends Component
             $set = str_getcsv(trim($param), '=', '"');
             $params[$set[0]] = isset($set[1]) ? trim($set[1], "'\"") : true;
         }
-        $params['ext'] = isset($params['ext']) ? $params['ext'] : false;
+        $params['ext'] = $params['ext'] ?? false;
         $this->params = (object) $params;
 
         $this->nonceCacheKey = '_freischutz_nonce_' . $params['nonce'];
 
         // Set backend
-        $this->backend = strtolower($this->config->hawk->get('backend', 'file'));
+        $this->backend = strtolower(
+            $this->config->hawk->get('backend', 'file')
+        );
     }
 
     /**
@@ -167,7 +172,8 @@ class Hawk extends Component
             if ($timedelta <= $expire
                     && (-1 * $timedelta) <= $expire) {
                 // Message is valid
-                if (isset($this->params->hash) && $hash === $this->params->hash) {
+                if (isset($this->params->hash)
+                        && $hash === $this->params->hash) {
                     // Payload hash is correct
                     $result->state = true;
                     $this->logger->debug("[Hawk] OK.");
@@ -243,7 +249,9 @@ class Hawk extends Component
                    $ext . "\n";
 
         // Create MAC
-        $mac = base64_encode(hash_hmac($this->params->alg, $message, $this->key, true));
+        $mac = base64_encode(
+            hash_hmac($this->params->alg, $message, $this->key, true)
+        );
         $extSet = $ext ? ", \"ext=$ext\"" : '';
 
         return "Hawk mac=\"$mac\", hash=\"$hash\"" . $extSet;
@@ -284,7 +292,8 @@ class Hawk extends Component
     private function manageNonceFile(string $nonce)
     {
         $timestamp = date('U');
-        $file = $this->config->hawk->get('nonce_dir', '/tmp') . '/' . $this->nonceFile;
+        $file = $this->config->hawk->get('nonce_dir', '/tmp') . '/' .
+            $this->nonceFile;
         if (file_exists($file)) {
             /**
              * Manage recorded nonces
@@ -407,7 +416,8 @@ class Hawk extends Component
      */
     private function lookUpNonceInFile(string $nonce):bool
     {
-        $file = $this->config->hawk->get('nonce_dir', '/tmp') . '/' . $this->nonceFile;
+        $file = $this->config->hawk->get('nonce_dir', '/tmp') . '/' .
+            $this->nonceFile;
         if (!file_exists($file)) {
             return false;
         }

@@ -226,7 +226,7 @@ class Acl extends Component
             if (!isset($this->config->acl->$var)) {
                 throw new Exception(
                     "ACL backend 'database' requires $var set in acl " .
-                    "section in config file."
+                    'section in config file.'
                 );
             }
         }
@@ -262,7 +262,8 @@ class Acl extends Component
         } elseif (!$metadata->hasAttribute($resourceModel, 'controller')
                 || !$metadata->hasAttribute($resourceModel, 'action')) {
             throw new Exception(
-                "Resources model must contain columns 'controller' and 'action'."
+                "Resources model must contain columns 'controller' and " .
+                "'action'."
             );
         } elseif (!$metadata->hasAttribute($ruleModel, 'role_name')
                 || !$metadata->hasAttribute($ruleModel, 'resource_controller')
@@ -278,7 +279,7 @@ class Acl extends Component
          * Read role definitions
          */
         foreach ($roleModel->find() as $role) {
-            $description = isset($role->description) ? $role->description : '';
+            $description = $role->description ?? '';
             $acl->addRole(new Role($role->name, $description));
         }
 

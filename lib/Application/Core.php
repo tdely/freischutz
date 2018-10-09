@@ -54,7 +54,10 @@ class Core extends Application
      */
     private function setLogger(DI $di)
     {
-        $destination = $this->config->application->get('log_destination', 'syslog');
+        $destination = $this->config->application->get(
+            'log_destination',
+            'syslog'
+        );
         $level = $this->config->application->get('log_level', 'error');
         $name = $this->config->application->get('log_name', 'freischutz');
 
@@ -273,7 +276,10 @@ class Core extends Application
         $adapterClass = '\\Phalcon\\Mvc\\Model\\MetaData\\' .
             $this->config->application->get('metadata_adapter', 'Memory');
 
-        $adapterName = $this->config->application->get('metadata_adapter', 'Memory');
+        $adapterName = $this->config->application->get(
+            'metadata_adapter',
+            'Memory'
+        );
         $configSection = "metadata_$adapterName";
 
         $config = isset($this->config->$configSection)
@@ -308,13 +314,13 @@ class Core extends Application
     {
         if (!isset($this->config->hawk)) {
             throw new Exception(
-                "Hawk authentication requires hawk section in config file."
+                'Hawk authentication requires hawk section in config file.'
             );
         }
 
         $eventsManager->attach(
-            "application:beforeHandleRequest",
-            function (Event $event) {
+            'application:beforeHandleRequest',
+            function () {
                 $this->hawk = new Hawk();
 
                 if (!$this->hawk->getParam('id')) {
@@ -325,7 +331,9 @@ class Core extends Application
                 } elseif ($this->users->setUser($this->hawk->getParam('id'))) {
                     $user = $this->users->getUser();
                     if (isset($user->keys->hawk_key)) {
-                        $this->logger->debug('[Core] Using user->keys->hawk_key');
+                        $this->logger->debug(
+                            '[Core] Using user->keys->hawk_key'
+                        );
                         $key = $user->keys->hawk_key;
                     } else {
                         $this->logger->debug('[Core] Using user->key');
@@ -369,13 +377,14 @@ class Core extends Application
     {
         if (!isset($this->config->basic_auth)) {
             throw new Exception(
-                "Basic authentication requires basic_auth section in config file."
+                'Basic authentication requires basic_auth section in config ' .
+                'file.'
             );
         }
 
         $eventsManager->attach(
-            "application:beforeHandleRequest",
-            function (Event $event) {
+            'application:beforeHandleRequest',
+            function () {
                 $basic = new Basic();
 
                 if (!$basic->getUser()) {
@@ -436,9 +445,8 @@ class Core extends Application
         }
 
         $eventsManager->attach(
-            "application:beforeHandleRequest",
-            function (Event $event) {
-
+            'application:beforeHandleRequest',
+            function () {
                 $token = substr($this->request->getHeader('Authorization'), 7);
 
                 $result = (object) array(
@@ -546,7 +554,7 @@ class Core extends Application
                 $this->request->getHeader('Authorization'),
                 $reqMechanism
             );
-            $reqMechanism = isset($reqMechanism[1]) ? $reqMechanism[1] : false;
+            $reqMechanism = $reqMechanism[1] ?? false;
             $acceptedMechanism = in_array(
                 strtolower($reqMechanism),
                 array_map('strtolower', $mechanisms)
@@ -557,8 +565,8 @@ class Core extends Application
                  */
                 $header = implode(', ', $mechanisms);
                 $eventsManager->attach(
-                    "application:beforeHandleRequest",
-                    function (Event $event) use ($reqMechanism, $header) {
+                    'application:beforeHandleRequest',
+                    function () use ($reqMechanism, $header) {
                         $this->response->unauthorized(
                             "Illegal authentication mechanism: $reqMechanism",
                             $header
@@ -599,7 +607,7 @@ class Core extends Application
                 $di->setShared('acl', $acl);
             }
             $eventsManager->attach(
-                "dispatch:beforeExecuteRoute",
+                'dispatch:beforeExecuteRoute',
                 function () use ($acl) {
                     $controller = $this->dispatcher->getControllerName();
                     $action = $this->dispatcher->getActionName();
@@ -634,9 +642,10 @@ class Core extends Application
     }
 
     /**
+     * Core constructor.
+     *
      * @throws \Freischutz\Application\Exception
      * @param \Phalcon\Config\Adapter\Ini $config Configuration settings.
-     * @return void
      */
     public function __construct(Ini $config)
     {

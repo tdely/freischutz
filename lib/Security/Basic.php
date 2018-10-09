@@ -22,6 +22,9 @@ class Basic extends Component
     /** @var string Hashed password to validate against. */
     private $keyHashed;
 
+    /**
+     * Basic constructor.
+     */
     public function __construct()
     {
         // Strip 'Basic ' from header
@@ -29,8 +32,8 @@ class Basic extends Component
 
         $split = explode(':', base64_decode($header));
 
-        $this->user = isset($split[0]) ? $split[0] : '';
-        $this->key = isset($split[1]) ? $split[1] : '';
+        $this->user = $split[0] ?? '';
+        $this->key = $split[1] ?? '';
     }
 
     /**

@@ -21,6 +21,8 @@ class Users extends Component
     private $user;
 
     /**
+     * Users constructor.
+     *
      * @throws \Freischutz\Application\Exception
      */
     public function __construct()
@@ -36,7 +38,9 @@ class Users extends Component
             }
         }
 
-        $backend = strtolower($this->config->application->get('users_backend', 'file'));
+        $backend = strtolower(
+            $this->config->application->get('users_backend', 'file')
+        );
         switch ($backend) {
             case 'file':
                 $userList = $this->loadFromFiles();
@@ -102,7 +106,7 @@ class Users extends Component
         if (!isset($this->config->application->users_dir)) {
             throw new Exception(
                 "Users backend 'file' requires users_dir set in application " .
-                "section in config file."
+                'section in config file.'
             );
         }
 
@@ -169,13 +173,13 @@ class Users extends Component
         if (!isset($this->config->application->users_model)) {
             throw new Exception(
                 "Users backend 'database' requires users_model set in " .
-                "application section in config file."
+                'application section in config file.'
             );
         }
 
         $modelName = $this->config->application->users_model;
         if (!class_exists($modelName)) {
-            throw new Exception("Users model not found: " . $modelName);
+            throw new Exception("Users model not found: $modelName");
         }
 
         $model = new $this->config->application->users_model(null, $this->di);
@@ -232,7 +236,8 @@ class Users extends Component
         foreach ($model->find() as $row) {
             if (!isset($row->{$map['id']})) {
                 throw new Exception(
-                    "Users model ('$modelName') column '{$map['id']}' cannot be empty."
+                    "Users model ('$modelName') column '{$map['id']}' cannot " .
+                    'be empty.'
                 );
             }
 

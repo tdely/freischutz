@@ -27,6 +27,11 @@ class Jwt extends Component
     /** @var stdClass|null Decoded token payload. */
     private $payload;
 
+    /**
+     * Jwt constructor.
+     *
+     * @throws \Freischutz\Application\Exception
+     */
     public function __construct()
     {
         if (!isset($this->config->jwt)) {
@@ -52,9 +57,12 @@ class Jwt extends Component
             $header = $parts[0];
             $payload = $parts[1];
             $signature = $parts[2];
+
+            $this->payload = json_decode(Base64url::decode($payload));
+
             if (!json_decode(Base64url::decode($header))) {
                 $this->logger->debug("[Jwt] Token header failed to decode.");
-            } elseif (!$this->payload = json_decode(Base64url::decode($payload))) {
+            } elseif (!$this->payload) {
                 $this->logger->debug("[Jwt] Token payload failed to decode.");
             } elseif (!Base64url::decode($signature)) {
                 $this->logger->debug("[Jwt] Token signature failed to decode.");
@@ -158,7 +166,7 @@ class Jwt extends Component
             $this->logger->debug("[Jwt] Missing claims: $claims.");
         } elseif (!$audienceOk) {
             $audString = implode(', ', $audiences);
-            $aud = isset($this->payload->aud) ? $this->payload->aud : false;
+            $aud = $this->payload->aud ?? false;
             $result->message = "Token audience mismatch.";
             $this->logger->debug(
                 "[Jwt] Token audience (aud) mismatch: expected (one of) " .
@@ -166,7 +174,7 @@ class Jwt extends Component
             );
         } elseif (!$issuerOk) {
             $issString = implode(', ', $issuers);
-            $iss = isset($this->payload->iss) ? $this->payload->iss : false;
+            $iss = $this->payload->iss ?? false;
             $result->message = "Token issuer mismatch.";
             $this->logger->debug(
                 "[Jwt] Token issuer (iss) mismatch: expected (one of) " .

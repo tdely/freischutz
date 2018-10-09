@@ -19,6 +19,9 @@ class Stopwatch
     /** @var float|null Stopped timestamp. */
     private $timeStop;
 
+    /**
+     * Stopwatch constructor.
+     */
     public function __construct()
     {
         $this->timeStart = microtime(true);

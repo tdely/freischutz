@@ -22,6 +22,8 @@ class Router extends Component
     private $router;
 
     /**
+     * Router constructor.
+     *
      * @throws \Freischutz\Application\Exception
      */
     public function __construct()
@@ -95,7 +97,7 @@ class Router extends Component
          */
         $routeCount = 0;
         $fileCount = 0;
-        foreach (glob($routesDir . "/*.routes") as $file) {
+        foreach (glob($routesDir . '/*.routes') as $file) {
             $fileCount++;
             $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             foreach ($lines as $line) {

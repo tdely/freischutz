@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# Simple CLI client for interacting with Freischutz RESTful APIs
+# CLI client for interacting with Freischutz RESTful APIs
 #
 # see       https://gitlab.com/tdely/freischutz/ Freischutz on GitLab
 #
@@ -14,7 +14,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-VERSION='0.9.0'
+VERSION='0.9.1'
 
 content_type='text/plain'
 method='GET'
@@ -36,7 +36,7 @@ time=$(date +%s)
 function display_help()
 {
     echo "$(basename ${BASH_SOURCE[0]}) -m <STR> [-d <JSON>][-t] <STR> TARGET"
-    echo "    -a STR    hash algorithm to use, default sha256"
+    echo "    -a STR    hash algorithm to use for Hawk, default sha256"
     echo "    -B        use basic authentication"
     echo "    -c STR    content-type, default text/plain"
     echo "    -d STR    data/payload to send"
@@ -47,8 +47,8 @@ function display_help()
     echo "    -k STR    key/password for authentication"
     echo "    -m STR    http request method to use"
     echo "    -t        display timing info:"
-    echo "               - response time: time from request until first HTTP response byte received"
-    echo "               - operation time: time from request until last HTTP response byte received"
+    echo "               - response time: from request until first response byte received"
+    echo "               - operation time: from request until last response byte received"
     echo "    -T STR    use bearer token authentication"
     echo "    -V        verbose output"
     echo "    -v        print version and exit"
@@ -206,7 +206,9 @@ fi
 # Target is first non-option argument
 target="${1}"
 
-echo -e "\n--REQUEST DETAILS"
+if [ ${verbose} = true ]; then
+    echo -e "\n--REQUEST DETAILS"
+fi
 
 if [ ${basic_auth} = true ]; then
     if [ -z "${id}" ] || [ -z "${key}" ]; then
@@ -228,19 +230,28 @@ TMP_FORMAT=$(mktemp)
 echo "${data}" > ${TMP_DATA}
 echo "${timing:-}" > ${TMP_FORMAT}
 
-# Send HTTP request
-echo "--BEGIN CURL"
-if [ ${hawk} = true ]; then
-    curl -i -w @${TMP_FORMAT} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" -H "${extra_header}" $target
-elif [ ${basic_auth} = true ]; then
-    curl -i -w @${TMP_FORMAT} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" -u "${id}:${key}" $target
-elif [ ${bearer} = true ]; then
-    curl -i -w @${TMP_FORMAT} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" -H "Authorization: Bearer ${token}" $target
-else
-    curl -i -w @${TMP_FORMAT} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" $target
+details=''
+if [ ${verbose} = true ]; then
+    details="-i -w @${TMP_FORMAT}"
+    echo "--BEGIN CURL"
 fi
 
-echo -e "\n--END CURL\n"
+# Send HTTP request
+if [ ${hawk} = true ]; then
+    curl ${details} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" -H "${extra_header}" $target
+elif [ ${basic_auth} = true ]; then
+    curl ${details} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" -u "${id}:${key}" $target
+elif [ ${bearer} = true ]; then
+    curl ${details} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" -H "Authorization: Bearer ${token}" $target
+else
+    curl ${details} -d @${TMP_DATA} -X "${method}" -H "Content-Type: ${content_type}" $target
+fi
+
+if [ ${verbose} = true ]; then
+    echo -e "\n--END CURL"
+fi
+
+echo ""
 
 # Clean up
 rm ${TMP_DATA}

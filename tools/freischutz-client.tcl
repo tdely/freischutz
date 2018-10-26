@@ -15,6 +15,7 @@ package require http
 package require tls
 package require sha256
 package require json
+package require inifile
 
 proc hawk_build {id key url method type data ext verbose} {
     regexp {^(http|https)://([^:/]+)(:([0-9]+))?(/(.+)?)?} $url matched protocol host x port uri x
@@ -88,6 +89,7 @@ set parameters {
     {type.arg   "text/plain" "HTTP request content type"}
     {data.arg   " "          "HTTP request data"}
     {ext.arg    ""           "optional ext value for Hawk"}
+    {config.arg ""           "configuration file"}
     {verbose                 "show HTTP info"}
 }
 
@@ -95,6 +97,15 @@ set usage "\[options\] \<url\>"
 if {[catch {array set options [::cmdline::getoptions ::argv $parameters $usage]}]} {
     puts [::cmdline::usage $parameters $usage]
     exit 0
+}
+
+if {[file exists $options(config)]} {
+    set ini [::ini::open $options(config)]
+    set id [::ini::value $ini "general" "id" $options(id)]
+    set key [::ini::value $ini "general" "key" $options(key)]
+} else {
+    set id $options(id)
+    set key $options(key)
 }
 
 if {[llength $argv] != 1} {
@@ -117,15 +128,17 @@ if {$options(verbose)} {
 
 set headers {}
 if {$options(hawk)} {
-    if {[string equal $options(id) {}] || [string equal $options(key) {}]} {
+    if {[string equal $id {}] || [string equal $key {}]} {
         puts "Hawk requires -id and -key to be set "
+        exit 1
     }
-    lappend headers Authorization [hawk_build $options(id) $options(key) $url $options(method) $options(type) $options(data) $options(ext) $options(verbose)]
+    lappend headers Authorization [hawk_build $id $key $url $options(method) $options(type) $options(data) $options(ext) $options(verbose)]
 } elseif {$options(basic)} {
-    if {[string equal $options(id) {}] || [string equal $options(key) {}]} {
+    if {[string equal $id {}] || [string equal $key {}]} {
         puts "Basic authentication requires -id and -key to be set "
+        exit 1
     }
-    lappend headers Authorization [basic_auth_build $options(id) $options(key)]
+    lappend headers Authorization [basic_auth_build $id $key]
 } elseif {![string equal $options(bearer) {}]} {
     lappend headers Authorization $options(bearer)
 }
@@ -135,7 +148,9 @@ set token [::http::geturl $url -method $options(method) -type $options(type) -he
 upvar #0 $token state
 
 regexp {[0-9]{3}} $state(http) status
-set result "{\"status\":\"$status\",\"type\":\"$state(type)\",\"content\":\"$state(body)\"}"
+expr {[string match "application/json*" $state(type)] == 1 ? [set content $state(body)] : [set content "\"$state(body)\""]}
+
+set result "{\"status\":\"$status\",\"type\":\"$state(type)\",\"content\":$content}"
 
 if {$options(verbose)} {
     parray state

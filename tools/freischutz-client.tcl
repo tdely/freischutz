@@ -101,8 +101,8 @@ if {[catch {array set options [::cmdline::getoptions ::argv $parameters $usage]}
 
 if {[file exists $options(config)]} {
     set ini [::ini::open $options(config)]
-    set id [::ini::value $ini "general" "id" $options(id)]
-    set key [::ini::value $ini "general" "key" $options(key)]
+    set id [::ini::value $ini "user" "id" $options(id)]
+    set key [::ini::value $ini "user" "key" $options(key)]
 } else {
     set id $options(id)
     set key $options(key)
@@ -129,13 +129,13 @@ if {$options(verbose)} {
 set headers {}
 if {$options(hawk)} {
     if {[string equal $id {}] || [string equal $key {}]} {
-        puts "Hawk requires -id and -key to be set "
+        puts "Hawk requires -id and -key to be set"
         exit 1
     }
     lappend headers Authorization [hawk_build $id $key $url $options(method) $options(type) $options(data) $options(ext) $options(verbose)]
 } elseif {$options(basic)} {
     if {[string equal $id {}] || [string equal $key {}]} {
-        puts "Basic authentication requires -id and -key to be set "
+        puts "Basic authentication requires -id and -key to be set"
         exit 1
     }
     lappend headers Authorization [basic_auth_build $id $key]

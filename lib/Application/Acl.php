@@ -280,6 +280,9 @@ class Acl extends Component
          */
         foreach ($roleModel->find() as $role) {
             $description = $role->description ?? '';
+            if ($role->name === '*') {
+                continue;
+            }
             $acl->addRole(new Role($role->name, $description));
         }
 

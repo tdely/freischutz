@@ -28,6 +28,19 @@ basic_auth
 
 Required section **if** Basic authentication is enabled through application->authenticate.
 * realm: _(string)_ Authentication realm, **default freischutz**.
+* ldap: _(boolean)_ Authenticate with LDAP instead of stored password, **default false**.
+
+
+ldap
+----
+
+Required section **if** Basic authentication using LDAP is enabled.
+* address: _(string)_ LDAP server address, **required**.
+* port: _(int)_ LDAP server port , **default 389**.
+* timeout: _(int)_ network timeout when connecting to LDAP server, **default 5**.
+* version_3: _(boolean)_ use LDAP protocol version 3, **default false**.
+* naming_attribute: _(string)_ naming attribute for the RDN (e.g. uid or cn), **default cn**.
+* ldap_path: _(string)_ LDAP path which when added to the RDN creates the DN.
 
 
 hawk

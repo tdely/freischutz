@@ -1,6 +1,7 @@
 <?php
 namespace Freischutz\Security;
 
+use Freischutz\Application\Exception;
 use Phalcon\Mvc\User\Component;
 use stdClass;
 
@@ -63,6 +64,7 @@ class Basic extends Component
      * Authenticate client request.
      *
      * @internal
+     * @throws \Freischutz\Application\Exception
      * @return \stdClass
      */
     public function authenticate():stdClass
@@ -76,12 +78,41 @@ class Basic extends Component
             return $result;
         }
 
-        if (password_verify($this->key, $this->keyHashed)) {
-            $result->state = true;
-            $this->logger->debug("[Basic] OK.");
+        if ($this->config->basic_auth->get('ldap', false)) {
+            $address = $this->config->ldap->get('address', false);
+            $port = $this->config->ldap->get('port', 389);
+            if ($ldap = ldap_connect($address, $port)) {
+                if ($this->config->ldap->get('version_3', false)) {
+                    ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
+                }
+                $timeout = $this->config->ldap->get('timeout', 5);
+                ldap_set_option($ldap, LDAP_OPT_NETWORK_TIMEOUT, $timeout);
+
+                $attribute = $this->config->ldap->get('naming_attribute', 'cn');
+                $path = $this->config->ldap->get('ldap_path', false);
+                $dn = "$attribute={$this->user}" . ($path ? ",$path" : '');
+
+                if (!ldap_bind($ldap, $dn, $this->key)) {
+                    if (ldap_get_option($ldap, LDAP_OPT_ERROR_STRING, $error)) {
+                        $this->logger->debug("[Basic] $error");
+                    }
+                    $result->message = 'LDAP authentication failed.';
+                    $this->logger->debug("[Basic] LDAP authentication failed.");
+                } else {
+                    $result->state = true;
+                    $this->logger->debug("[Basic] LDAP OK.");
+                }
+            } else {
+                throw new Exception('Malformed address and/or port in LDAP connection');
+            }
         } else {
-            $result->message = 'Password did not verify.';
-            $this->logger->debug("[Basic] password did not verify.");
+            if (password_verify($this->key, $this->keyHashed)) {
+                $result->state = true;
+                $this->logger->debug("[Basic] OK.");
+            } else {
+                $result->message = 'Password did not verify.';
+                $this->logger->debug("[Basic] password did not verify.");
+            }
         }
 
         return $result;

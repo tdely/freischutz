@@ -4,55 +4,46 @@ Public API Documentation
 Table of contents
 -----------------
 
-- [\Freischutz\Application\Exception](#class-freischutzapplicationexception)
-- [\Freischutz\Application\Users](#class-freischutzapplicationusers)
-- [\Freischutz\Application\Acl](#class-freischutzapplicationacl)
-- [\Freischutz\Application\Router](#class-freischutzapplicationrouter)
 - [\Freischutz\Application\Core](#class-freischutzapplicationcore)
+- [\Freischutz\Application\Acl](#class-freischutzapplicationacl)
 - [\Freischutz\Application\Data](#class-freischutzapplicationdata)
+- [\Freischutz\Application\Users](#class-freischutzapplicationusers)
+- [\Freischutz\Application\Exception](#class-freischutzapplicationexception)
+- [\Freischutz\Security\Hawk](#class-freischutzsecurityhawk)
 - [\Freischutz\Security\Basic](#class-freischutzsecuritybasic)
 - [\Freischutz\Security\Jwt](#class-freischutzsecurityjwt)
-- [\Freischutz\Security\Hawk](#class-freischutzsecurityhawk)
-- [\Freischutz\Utility\Jwt](#class-freischutzutilityjwt)
-- [\Freischutz\Utility\Stopwatch](#class-freischutzutilitystopwatch)
-- [\Freischutz\Utility\Base64url](#class-freischutzutilitybase64url)
+- [\Freischutz\Utility\CacheableModel](#class-freischutzutilitycacheablemodel)
 - [\Freischutz\Utility\Response](#class-freischutzutilityresponse)
+- [\Freischutz\Utility\Base64url](#class-freischutzutilitybase64url)
+- [\Freischutz\Utility\Stopwatch](#class-freischutzutilitystopwatch)
+- [\Freischutz\Utility\Jwt](#class-freischutzutilityjwt)
 - [\Freischutz\Validation\Json](#class-freischutzvalidationjson)
 
-<hr />
+<hr /><a id="class-freischutzapplicationcore"></a>
 
-### Class: \Freischutz\Application\Exception
+### Class: \Freischutz\Application\Core
 
-> Freischutz exception.
+> Freischutz application core.
 
-| Visibility | Function |
-|:-----------|:---------|
-
-*This class extends \Exception*
-
-*This class implements \Throwable*
-
-<hr />
-
-### Class: \Freischutz\Application\Users
-
-> Freischutz user handling component.
+See [Freischutz on GitLab](https://gitlab.com/tdely/freischutz/)<br />
 
 | Visibility | Function |
 |:-----------|:---------|
-| public | <strong>__construct()</strong> : <em>void</em> |
-| public | <strong>getUser()</strong> : <em>[\stdClass](http://php.net/manual/en/class.stdclass.php)</em><br /><em>Get user.</em> |
-| public | <strong>setUser(</strong><em>\string</em> <strong>$id</strong>)</strong> : <em>bool</em><br /><em>Set user. User object matching given string $id is read from $userList property and written to $user property.</em> |
+| public | <strong>__construct(</strong><em>[\Phalcon\Config\Adapter\Ini](http://php.net/manual/en/class.phalconconfigadapterini.php)</em> <strong>$config</strong>)</strong> : <em>void</em><br /><em>Core constructor.</em> |
+| public static | <strong>getVersion()</strong> : <em>string</em><br /><em>Get Freischutz version.</em> |
+| public | <strong>run()</strong> : <em>void</em><br /><em>Run application and display output.</em> |
 
-*This class extends \Phalcon\Mvc\User\Component*
+*This class extends \Phalcon\Mvc\Application*
 
-*This class implements \Phalcon\Di\InjectionAwareInterface, \Phalcon\Events\EventsAwareInterface*
+*This class implements \Phalcon\Events\EventsAwareInterface, \Phalcon\Di\InjectionAwareInterface*
 
-<hr />
+<hr /><a id="class-freischutzapplicationacl"></a>
 
 ### Class: \Freischutz\Application\Acl
 
 > Freischutz Access Control List component.
+
+See [Freischutz on GitLab](https://gitlab.com/tdely/freischutz/)<br />
 
 | Visibility | Function |
 |:-----------|:---------|
@@ -63,45 +54,17 @@ Table of contents
 
 *This class implements \Phalcon\Di\InjectionAwareInterface, \Phalcon\Events\EventsAwareInterface*
 
-<hr />
-
-### Class: \Freischutz\Application\Router
-
-> Freischutz router component.
-
-| Visibility | Function |
-|:-----------|:---------|
-| public | <strong>__construct()</strong> : <em>void</em> |
-
-*This class extends \Phalcon\Mvc\User\Component*
-
-*This class implements \Phalcon\Di\InjectionAwareInterface, \Phalcon\Events\EventsAwareInterface*
-
-<hr />
-
-### Class: \Freischutz\Application\Core
-
-> Freischutz application core.
-
-| Visibility | Function |
-|:-----------|:---------|
-| public | <strong>__construct(</strong><em>[\Phalcon\Config\Adapter\Ini](http://php.net/manual/en/class.phalconconfigadapterini.php)</em> <strong>$config</strong>)</strong> : <em>void</em> |
-| public static | <strong>getVersion()</strong> : <em>string</em><br /><em>Get Freischutz version.</em> |
-| public | <strong>run()</strong> : <em>void</em><br /><em>Run application and display output.</em> |
-
-*This class extends \Phalcon\Mvc\Application*
-
-*This class implements \Phalcon\Events\EventsAwareInterface, \Phalcon\Di\InjectionAwareInterface*
-
-<hr />
+<hr /><a id="class-freischutzapplicationdata"></a>
 
 ### Class: \Freischutz\Application\Data
 
 > Freischutz data handling component.
 
+See [Freischutz on GitLab](https://gitlab.com/tdely/freischutz/)<br />
+
 | Visibility | Function |
 |:-----------|:---------|
-| public | <strong>__construct(</strong><em>mixed</em> <strong>$data</strong>)</strong> : <em>void</em> |
+| public | <strong>__construct(</strong><em>mixed</em> <strong>$data</strong>)</strong> : <em>void</em><br /><em>Data constructor.</em> |
 | public | <strong>get()</strong> : <em>mixed</em><br /><em>Get data handled according to content-type.</em> |
 | public | <strong>getJson(</strong><em>bool</em> <strong>$assoc=false</strong>)</strong> : <em>[\stdClass](http://php.net/manual/en/class.stdclass.php)/string[]/int[]/false</em><br /><em>Handle JSON data.</em> |
 | public | <strong>getRaw()</strong> : <em>mixed</em><br /><em>Get raw data.</em> |
@@ -111,91 +74,112 @@ Table of contents
 
 *This class implements \Phalcon\Di\InjectionAwareInterface, \Phalcon\Events\EventsAwareInterface*
 
-<hr />
+<hr /><a id="class-freischutzapplicationusers"></a>
 
-### Class: \Freischutz\Security\Basic
+### Class: \Freischutz\Application\Users
 
-> Basic authentication.
+> Freischutz user handling component.
+
+See [Freischutz on GitLab](https://gitlab.com/tdely/freischutz/)<br />
 
 | Visibility | Function |
 |:-----------|:---------|
-| public | <strong>__construct()</strong> : <em>void</em> |
+| public | <strong>__construct()</strong> : <em>void</em><br /><em>Users constructor.</em> |
+| public | <strong>getUser()</strong> : <em>[\stdClass](http://php.net/manual/en/class.stdclass.php)</em><br /><em>Get user.</em> |
 
 *This class extends \Phalcon\Mvc\User\Component*
 
 *This class implements \Phalcon\Di\InjectionAwareInterface, \Phalcon\Events\EventsAwareInterface*
 
-<hr />
+<hr /><a id="class-freischutzapplicationexception"></a>
 
-### Class: \Freischutz\Security\Jwt
+### Class: \Freischutz\Application\Exception
 
-> JSON Web Token authentication.
+> Freischutz exception.
+
+See [Freischutz on GitLab](https://gitlab.com/tdely/freischutz/)<br />
 
 | Visibility | Function |
 |:-----------|:---------|
-| public | <strong>__construct()</strong> : <em>void</em> |
 
-*This class extends \Phalcon\Mvc\User\Component*
+*This class extends \Exception*
 
-*This class implements \Phalcon\Di\InjectionAwareInterface, \Phalcon\Events\EventsAwareInterface*
+*This class implements \Throwable*
 
-<hr />
+<hr /><a id="class-freischutzsecurityhawk"></a>
 
 ### Class: \Freischutz\Security\Hawk
 
 > Hawk authentication. Implementation of the Hawk protocol. HTTP HMAC authentication with partial cryptographic verification of request, which covers method, URI, host and port, various other authentication details, and payload. Optionally allows for verification of response.
 
+See [Freischutz on GitLab](https://gitlab.com/tdely/freischutz/)<br />
+See [The original Hawk on GitHub](https://github.com/hueniverse/hawk)<br />
+
 | Visibility | Function |
 |:-----------|:---------|
-| public | <strong>__construct()</strong> : <em>void</em> |
+| public | <strong>__construct()</strong> : <em>void</em><br /><em>Hawk constructor.</em> |
 
 *This class extends \Phalcon\Mvc\User\Component*
 
 *This class implements \Phalcon\Di\InjectionAwareInterface, \Phalcon\Events\EventsAwareInterface*
 
-<hr />
+<hr /><a id="class-freischutzsecuritybasic"></a>
 
-### Class: \Freischutz\Utility\Jwt
+### Class: \Freischutz\Security\Basic
 
-> JSON Web Token functions.
+> Basic authentication.
 
-| Visibility | Function |
-|:-----------|:---------|
-| public static | <strong>create(</strong><em>[\stdClass](http://php.net/manual/en/class.stdclass.php)</em> <strong>$header</strong>, <em>[\stdClass](http://php.net/manual/en/class.stdclass.php)</em> <strong>$payload</strong>, <em>\string</em> <strong>$secret</strong>)</strong> : <em>string/false</em><br /><em>Create JSON Web Token.</em> |
-| public static | <strong>createSignature(</strong><em>\string</em> <strong>$algorithm</strong>, <em>\string</em> <strong>$token</strong>, <em>string</em> <strong>$secret</strong>)</strong> : <em>string</em><br /><em>Create signature from token.</em> |
-| public static | <strong>validate(</strong><em>\string</em> <strong>$token</strong>, <em>\string</em> <strong>$secret</strong>)</strong> : <em>bool</em><br /><em>Validate token signature.</em> |
-
-<hr />
-
-### Class: \Freischutz\Utility\Stopwatch
-
-> Stopwatch utility for timekeeping.
+See [Freischutz on GitLab](https://gitlab.com/tdely/freischutz/)<br />
 
 | Visibility | Function |
 |:-----------|:---------|
-| public | <strong>__construct()</strong> : <em>void</em> |
-| public | <strong>elapsed()</strong> : <em>float</em><br /><em>Get time elapsed without stopping.</em> |
-| public | <strong>getMarks()</strong> : <em>float[]</em><br /><em>Get marks.</em> |
-| public | <strong>mark()</strong> : <em>float</em><br /><em>Mark time elapsed without stopping.</em> |
-| public | <strong>reset()</strong> : <em>void</em><br /><em>Reset start time to now, clear marks and clear stop time.</em> |
-| public | <strong>stop()</strong> : <em>float</em><br /><em>Stop timekeeping.</em> |
+| public | <strong>__construct()</strong> : <em>void</em><br /><em>Basic constructor.</em> |
 
-<hr />
+*This class extends \Phalcon\Mvc\User\Component*
 
-### Class: \Freischutz\Utility\Base64url
+*This class implements \Phalcon\Di\InjectionAwareInterface, \Phalcon\Events\EventsAwareInterface*
 
-> Base64url functions.
+<hr /><a id="class-freischutzsecurityjwt"></a>
+
+### Class: \Freischutz\Security\Jwt
+
+> JSON Web Token authentication.
+
+See [Freischutz on GitLab](https://gitlab.com/tdely/freischutz/)<br />
 
 | Visibility | Function |
 |:-----------|:---------|
-| public static | <strong>decode(</strong><em>\string</em> <strong>$input</strong>)</strong> : <em>string</em><br /><em>Decode from base64url.</em> |
-| public static | <strong>encode(</strong><em>\string</em> <strong>$input</strong>)</strong> : <em>string</em><br /><em>Encode to base64url.</em> |
+| public | <strong>__construct()</strong> : <em>void</em><br /><em>Jwt constructor.</em> |
 
-<hr />
+*This class extends \Phalcon\Mvc\User\Component*
+
+*This class implements \Phalcon\Di\InjectionAwareInterface, \Phalcon\Events\EventsAwareInterface*
+
+<hr /><a id="class-freischutzutilitycacheablemodel"></a>
+
+### Class: \Freischutz\Utility\CacheableModel
+
+> Extended model class for easy caching.
+
+See [Freischutz on GitLab](https://gitlab.com/tdely/freischutz/)<br />
+
+| Visibility | Function |
+|:-----------|:---------|
+| public static | <strong>find(</strong><em>mixed</em> <strong>$parameters=null</strong>)</strong> : <em>[\Phalcon\Mvc\Model](http://php.net/manual/en/class.phalconmvcmodel.php)\ResultsetInterface</em><br /><em>Query for a set of records that match the specified conditions.</em> |
+| public static | <strong>findFirst(</strong><em>mixed</em> <strong>$parameters=null</strong>)</strong> : <em>[\Phalcon\Mvc\Model](http://php.net/manual/en/class.phalconmvcmodel.php)</em><br /><em>Query the first record that matches the specified conditions.</em> |
+| public | <strong>uncache(</strong><em>int/string</em> <strong>$key</strong>, <em>\string</em> <strong>$service=`'cache'`</strong>)</strong> : <em>void</em><br /><em>Remove an item cached through find/findFirst.</em> |
+
+*This class extends \Phalcon\Mvc\Model*
+
+*This class implements \JsonSerializable, \Serializable, \Phalcon\Di\InjectionAwareInterface, \Phalcon\Mvc\Model\ResultInterface, \Phalcon\Mvc\ModelInterface, \Phalcon\Mvc\EntityInterface*
+
+<hr /><a id="class-freischutzutilityresponse"></a>
 
 ### Class: \Freischutz\Utility\Response
 
 > HTTP response utility.
+
+See [Freischutz on GitLab](https://gitlab.com/tdely/freischutz/)<br />
 
 | Visibility | Function |
 |:-----------|:---------|
@@ -264,11 +248,57 @@ Table of contents
 
 *This class implements \Phalcon\Di\InjectionAwareInterface, \Phalcon\Http\ResponseInterface*
 
-<hr />
+<hr /><a id="class-freischutzutilitybase64url"></a>
+
+### Class: \Freischutz\Utility\Base64url
+
+> Base64url functions.
+
+See [Freischutz on GitLab](https://gitlab.com/tdely/freischutz/)<br />
+
+| Visibility | Function |
+|:-----------|:---------|
+| public static | <strong>decode(</strong><em>\string</em> <strong>$input</strong>)</strong> : <em>string</em><br /><em>Decode from base64url.</em> |
+| public static | <strong>encode(</strong><em>\string</em> <strong>$input</strong>)</strong> : <em>string</em><br /><em>Encode to base64url.</em> |
+
+<hr /><a id="class-freischutzutilitystopwatch"></a>
+
+### Class: \Freischutz\Utility\Stopwatch
+
+> Stopwatch utility for timekeeping.
+
+See [Freischutz on GitLab](https://gitlab.com/tdely/freischutz/)<br />
+
+| Visibility | Function |
+|:-----------|:---------|
+| public | <strong>__construct()</strong> : <em>void</em><br /><em>Stopwatch constructor.</em> |
+| public | <strong>elapsed()</strong> : <em>float</em><br /><em>Get time elapsed without stopping.</em> |
+| public | <strong>getMarks()</strong> : <em>float[]</em><br /><em>Get marks.</em> |
+| public | <strong>mark()</strong> : <em>float</em><br /><em>Mark time elapsed without stopping.</em> |
+| public | <strong>reset()</strong> : <em>void</em><br /><em>Reset start time to now, clear marks and clear stop time.</em> |
+| public | <strong>stop()</strong> : <em>float</em><br /><em>Stop timekeeping.</em> |
+
+<hr /><a id="class-freischutzutilityjwt"></a>
+
+### Class: \Freischutz\Utility\Jwt
+
+> JSON Web Token functions.
+
+See [Freischutz on GitLab](https://gitlab.com/tdely/freischutz/)<br />
+
+| Visibility | Function |
+|:-----------|:---------|
+| public static | <strong>create(</strong><em>[\stdClass](http://php.net/manual/en/class.stdclass.php)</em> <strong>$header</strong>, <em>[\stdClass](http://php.net/manual/en/class.stdclass.php)</em> <strong>$payload</strong>, <em>\string</em> <strong>$secret</strong>)</strong> : <em>string/false</em><br /><em>Create JSON Web Token.</em> |
+| public static | <strong>createSignature(</strong><em>\string</em> <strong>$algorithm</strong>, <em>\string</em> <strong>$token</strong>, <em>string</em> <strong>$secret</strong>)</strong> : <em>string</em><br /><em>Create signature from token.</em> |
+| public static | <strong>validate(</strong><em>\string</em> <strong>$token</strong>, <em>\string</em> <strong>$secret</strong>)</strong> : <em>bool</em><br /><em>Validate token signature.</em> |
+
+<hr /><a id="class-freischutzvalidationjson"></a>
 
 ### Class: \Freischutz\Validation\Json
 
 > JSON attribute validation.
+
+See [Freischutz on GitLab](https://gitlab.com/tdely/freischutz/)<br />
 
 | Visibility | Function |
 |:-----------|:---------|
@@ -277,4 +307,3 @@ Table of contents
 *This class extends \Phalcon\Validation\Validator*
 
 *This class implements \Phalcon\Validation\ValidatorInterface*
-

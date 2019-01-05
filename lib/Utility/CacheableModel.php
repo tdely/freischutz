@@ -21,7 +21,7 @@ class CacheableModel extends Model
      * @param int|string $key
      * @return string
      */
-    protected static function _createKey($key):string
+    protected static function createKey($key):string
     {
         $cpath = explode('\\', static::class);
         $class = strtolower(array_pop($cpath));
@@ -36,7 +36,7 @@ class CacheableModel extends Model
      * @param mixed $parameters
      * @return string
      */
-    protected static function _defaultKey($parameters):string
+    protected static function defaultKey($parameters):string
     {
         $uniqueKey = array();
 
@@ -44,7 +44,7 @@ class CacheableModel extends Model
             if (is_scalar($value)) {
                 $uniqueKey[] = ($key !== 0 ? $key : 'condition') . ':' . $value;
             } elseif (is_array($value)) {
-                $uniqueKey[] = $key . ':[' . self::_defaultKey($value) . ']';
+                $uniqueKey[] = $key . ':[' . self::defaultKey($value) . ']';
             }
         }
 
@@ -61,7 +61,7 @@ class CacheableModel extends Model
     public function uncache($key, string $service = 'cache')
     {
         if ($this->di->has($service)) {
-            $this->di->cache->delete($this->_createKey($key));
+            $this->di->cache->delete($this->createKey($key));
         }
     }
 
@@ -75,8 +75,8 @@ class CacheableModel extends Model
     {
         if ($parameters['cache']) {
             $key = $parameters['cache']['key']
-                ? self::_createKey($parameters['cache']['key'])
-                : self::_createKey(self::_defaultKey($parameters));
+                ? self::createKey($parameters['cache']['key'])
+                : self::createKey(self::defaultKey($parameters));
             $parameters['cache'] = array(
                 'key' => $key,
                 'lifetime' => ($parameters['cache']['lifetime'] ?? 300),
@@ -97,8 +97,8 @@ class CacheableModel extends Model
     {
         if (isset($parameters['cache'])) {
             $key = $parameters['cache']['key']
-                ? self::_createKey($parameters['cache']['key'])
-                : self::_createKey(self::_defaultKey($parameters));
+                ? self::createKey($parameters['cache']['key'])
+                : self::createKey(self::defaultKey($parameters));
             $parameters['cache'] = array(
                 'key' => $key,
                 'lifetime' => ($parameters['cache']['lifetime'] ?? 300),

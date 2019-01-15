@@ -61,7 +61,7 @@ class CacheableModel extends Model
     public function uncache($key, string $service = 'cache')
     {
         if ($this->di->has($service)) {
-            $this->di->cache->delete($this->createKey($key));
+            $this->di->get($service)->delete($this->createKey($key));
         }
     }
 

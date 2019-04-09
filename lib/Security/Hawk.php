@@ -42,12 +42,19 @@ class Hawk extends Component
         $header = substr($this->request->getHeader('Authorization'), 5);
 
         // Set authentication parameters
-        $params = array();
+        $params = array(
+            "id" => false,
+            "ts" => false,
+            "nonce" => false,
+            "mac" => false,
+            "hash" => false,
+            "ext" => false,
+            "alg" => false
+        );
         foreach (str_getcsv($header, ',', '"') as $param) {
             $set = str_getcsv(trim($param), '=', '"');
             $params[$set[0]] = isset($set[1]) ? trim($set[1], "'\"") : true;
         }
-        $params['ext'] = $params['ext'] ?? false;
         $this->params = (object) $params;
 
         $this->nonceCacheKey = '_freischutz_nonce_' . $params['nonce'];
@@ -116,16 +123,16 @@ class Hawk extends Component
             explode(',', $this->config->hawk->get('algorithms', 'sha256'))
         );
 
-        if (!isset($this->params->alg) || empty($this->params->alg)) {
+        if (!preg_match('/alg=([[:alnum:]]+)/', $this->params->ext, $matches)) {
             // No algorithm requested, use default algorithm
-            $alg = $algorithms[0];
-        } elseif (!in_array($this->params->alg, $algorithms, true)) {
+            $this->params->alg = $algorithms[0];
+        } elseif (!in_array(strtolower($matches[1]), $algorithms, true)) {
             // Requested algorithm not allowed
             $result->message = 'Algorithm not allowed.';
             return $result;
         } else {
             // Use requested algorithm
-            $alg = $this->params->alg;
+            $this->params->alg = $matches[1];
         }
 
         // Check nonce
@@ -142,7 +149,7 @@ class Hawk extends Component
             $payload = "hawk.1.payload\n" .
                        $this->request->getContentType() . "\n" .
                        $this->data->getRaw() . "\n";
-            $hash = base64_encode(hash($alg, $payload, true));
+            $hash = base64_encode(hash($this->params->alg, $payload, true));
         } else {
             $hash = '';
         }
@@ -159,7 +166,9 @@ class Hawk extends Component
                    $this->params->ext . "\n";
 
         // Create MAC for comparison
-        $serverMac = base64_encode(hash_hmac($alg, $message, $this->key, true));
+        $serverMac = base64_encode(
+            hash_hmac($this->params->alg, $message, $this->key, true)
+        );
 
         /**
          * Authenticate

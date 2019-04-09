@@ -145,7 +145,7 @@ class Hawk extends Component
         $this->manageNonces($this->params->nonce);
 
         // Create payload string
-        if (isset($this->params->hash)) {
+        if ($this->params->hash !== false) {
             $payload = "hawk.1.payload\n" .
                        $this->request->getContentType() . "\n" .
                        $this->data->getRaw() . "\n";
@@ -186,7 +186,7 @@ class Hawk extends Component
                     // Payload hash is correct
                     $result->state = true;
                     $this->logger->debug("[Hawk] OK.");
-                } elseif (!isset($this->params->hash)) {
+                } elseif ($this->params->hash === false) {
                     // Payload not included in validation
                     $result->state = true;
                     $this->logger->debug(

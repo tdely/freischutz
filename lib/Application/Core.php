@@ -34,7 +34,7 @@ use Phalcon\Mvc\View;
 class Core extends Application
 {
     /** @var string Freischutz version number. */
-    const VERSION = '0.9.3';
+    const VERSION = '0.9.4';
 
     /**
      * Get Freischutz version.

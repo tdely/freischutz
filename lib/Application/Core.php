@@ -556,7 +556,7 @@ class Core extends Application
             );
             $reqMechanism = $reqMechanism[1] ?? false;
             $acceptedMechanism = in_array(
-                strtolower($reqMechanism),
+                ($reqMechanism ? strtolower($reqMechanism) : false),
                 array_map('strtolower', $mechanisms)
             );
             if (!$reqMechanism || !$acceptedMechanism) {

@@ -88,6 +88,12 @@ function hawk_build()
 
     local payload_hash=$(echo -ne "${payload}"|openssl dgst -${algorithm} -binary|base64 -w0)
 
+    if [ "$ext" != "" ]; then
+        ext="alg=${algorithm};${ext}"
+    else
+        ext="alg=${algorithm}"
+    fi
+
     # Build Hawk header string for MAC
     local message="hawk.1.header\n"
     message+="${time}\n"
@@ -111,7 +117,7 @@ function hawk_build()
         echo -e "${mac}\n"
     fi
 
-    extra_header="Authorization: Hawk id=\"${id}\", ts=\"${time}\", nonce=\"${nonce}\", mac=\"${mac}\", hash=\"${payload_hash}\", alg=\"${algorithm}\""
+    extra_header="Authorization: Hawk id=\"${id}\", ts=\"${time}\", nonce=\"${nonce}\", mac=\"${mac}\", hash=\"${payload_hash}\", ext=\"${ext}\""
 }
 
 # getopt index variable

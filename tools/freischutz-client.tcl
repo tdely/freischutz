@@ -47,6 +47,12 @@ proc hawk_build {id key url method type data ext verbose} {
        append nonce [string range $chars $pos $pos]
     }
 
+    if {![string equal $ext {}]} {
+        set ext [join [list "alg=sha256" $ext] ";"]
+    } else {
+        set ext "alg=sha256"
+    }
+
     set msg "hawk.1.header\n"
     append msg "$time\n"
     append msg "$nonce\n"
@@ -69,7 +75,7 @@ proc hawk_build {id key url method type data ext verbose} {
     }
 
     set header "Hawk id=\"$id\", ts=\"$time\", nonce=\"$nonce\", "
-    append header "mac=\"$mac\", hash=\"$hash\", alg=\"sha256\""
+    append header "mac=\"$mac\", hash=\"$hash\", ext=\"$ext\""
 
     return $header
 }

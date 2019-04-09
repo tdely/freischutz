@@ -49,8 +49,7 @@ def hawk_build(uid, key, url, method, ctype, data='', alg='', ext='', verbose=Fa
         sys.exit(1)
 
     matches = re.match(r'^(http|https)://([^:/]+)(:([0-9]+))?(/(.+)?)?', url)
-    (protocol, host, x, port, uri, x) = matches.groups()
-    del x
+    (protocol, host, x, port, uri, _) = matches.groups()
 
     if port is None:
         if protocol == "https":
@@ -74,6 +73,11 @@ def hawk_build(uid, key, url, method, ctype, data='', alg='', ext='', verbose=Fa
         random.choice(string.ascii_lowercase + string.digits) for _ in range(6)
     )
 
+    if ext:
+        ext = "alg={};{}".format(alg, ext)
+    else:
+        ext = "alg={}".format(alg)
+
     msg = "hawk.1.header\n"
     msg += "{}\n"
     msg += "{}\n"
@@ -95,8 +99,8 @@ def hawk_build(uid, key, url, method, ctype, data='', alg='', ext='', verbose=Fa
               "-------------------------------------------\n"
               "MAC:\n{}\n".format(payload, msg, mac))
 
-    header = 'Hawk id="{}", ts="{}", nonce="{}", mac="{}", hash="{}", alg="{}"'.format(
-        uid, ts, nonce, mac, payload_hash, alg
+    header = 'Hawk id="{}", ts="{}", nonce="{}", mac="{}", hash="{}", ext="{}"'.format(
+        uid, ts, nonce, mac, payload_hash, ext
     )
 
     return header

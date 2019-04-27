@@ -27,21 +27,22 @@ class Json extends Validator
     {
         $value = $validation->getValue($attribute);
 
+        if (!is_string($value) && !empty($value)) {
+            $validation->appendMessage(new Message(
+                "Invalid JSON in $attribute: expected string, got " . gettype($value),
+                $attribute,
+                'JsonDecode'
+            ));
+            return false;
+        }
         if (empty($value) || json_decode($value)) {
             return true;
         }
 
-        $error = json_last_error();
-        $messages = array(
-            JSON_ERROR_DEPTH => 'maximum stack depth exceeded',
-            JSON_ERROR_STATE_MISMATCH => 'state mismatch',
-            JSON_ERROR_CTRL_CHAR => 'unexpected control character',
-            JSON_ERROR_SYNTAX => 'syntax error',
-            JSON_ERROR_UTF8 => 'malformed UTF-8 characters'
-        );
+        $error = json_last_error_msg();
 
         $validation->appendMessage(new Message(
-            "Invalid JSON in $attribute: {$messages[$error]}",
+            "Invalid JSON in $attribute: $error",
             $attribute,
             'JsonDecode'
         ));
